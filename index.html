@@ -518,6 +518,7 @@ body.xp #note{border-radius:0}
     <button data-s="zipin" role="menuitem">🗜 ZIP·전체 백업 불러오기</button>
     <hr>
     <button data-s="zipout" role="menuitem">💾 전체 백업 저장 (ZIP)</button>
+    <button data-s="share" role="menuitem">🔗 보여주기 페이지 만들기</button>
     <button data-s="trash" role="menuitem">🗑 휴지통 열기</button>
     <hr>
     <button data-s="box" role="menuitem">📁 로그 보관함</button>
@@ -1054,7 +1055,7 @@ const sm=$('#smenu'),sb=$('#startb');
 sb.onclick=e=>{e.stopPropagation();sm.hidden=!sm.hidden;sb.setAttribute('aria-expanded',!sm.hidden);sb.setAttribute('aria-pressed',!sm.hidden)};
 document.addEventListener('click',e=>{if(!sm.hidden&&!e.target.closest('#smenu')){sm.hidden=true;sb.setAttribute('aria-expanded','false');sb.setAttribute('aria-pressed','false')}});
 sm.addEventListener('click',e=>{const b=e.target.closest('[data-s]');if(!b)return;sm.hidden=true;sb.setAttribute('aria-pressed','false');const k=b.dataset.s;
-  if(k==='up')pick();else if(k==='zipin'){if(canWrite)$('#zipfile').click();else toast('이 화면에서는 가져올 수 없어요')}else if(k==='zipout')zipAll();else if(k==='trash'){view.where='trash';sel.clear();showWin('main');render()}else if(k==='deco')openDeco();else if(k==='desk')showDesktop();else if(k==='box')showWin('main');else if(k==='arc')openArc();else if(k==='sch')openSched();else if(k==='gal')openGal()});
+  if(k==='up')pick();else if(k==='zipin'){if(canWrite)$('#zipfile').click();else toast('이 화면에서는 가져올 수 없어요')}else if(k==='zipout')zipAll();else if(k==='share')shareDialog();else if(k==='trash'){view.where='trash';sel.clear();showWin('main');render()}else if(k==='deco')openDeco();else if(k==='desk')showDesktop();else if(k==='box')showWin('main');else if(k==='arc')openArc();else if(k==='sch')openSched();else if(k==='gal')openGal()});
 addEventListener('keydown',e=>{if(e.key==='Escape'){if(!sm.hidden){sm.hidden=true;return}if(!$('#decow').hidden){closeDeco();return}if(!docw.hidden&&docMode==='view'){closeDoc()}}});
 function tick(){const d=new Date();$('#clock').textContent=look.clock24?String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'):(d.getHours()<12?'AM ':'PM ')+((d.getHours()%12)||12)+':'+String(d.getMinutes()).padStart(2,'0')}
 setInterval(tick,15000);
@@ -1845,6 +1846,120 @@ async function viewClick(e){const v=$('#gview');if(e.target===v||(e.target.class
 function closeView(){const v=$('#gview');if(v)v.remove();gView=null}
 addEventListener('keydown',e=>{if(!gView)return;if(e.key==='+'||e.key==='='||e.key==='-'||e.key==='0'){const b=document.querySelector(`#gview [data-v=${e.key==='-'?'zout':e.key==='0'?'zfit':'zin'}]`);if(b){e.preventDefault();b.click()}return}if(e.key==='Escape'){closeView();e.stopPropagation()}if(e.key==='ArrowRight'||e.key==='ArrowLeft'){const b=document.querySelector(`#gview [data-v=${e.key==='ArrowRight'?'next':'prev'}]`);if(b)b.click()}},true);
 
+
+/* ---------- share page: one read-only HTML file that anyone can open ---------- */
+async function packedOf(f){if(memory)return memBlobs.get(f.asset);const r=await fetch(blobUrl(f.asset));if(!r.ok)throw new Error('missing');return (await r.text()).trim()}
+const blobToDataURL=b=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(b)});
+async function shareDialog(){
+  const fl=folderList(),live=[...files.values()].filter(f=>!f.trashed),imgs=[...coll.images.values()].filter(x=>x.asset),lks=[...links.values()].length+[...coll.images.values()].filter(x=>!x.asset).length;
+  const sz=n=>fmtSize(n);const fsize=ids=>live.filter(f=>ids(f)).reduce((a,f)=>a+(f.stored||f.size||0),0);const isz=imgs.reduce((a,x)=>a+(x.size||0),0)*1.37;
+  const m=document.createElement('div');m.className='modal';
+  m.innerHTML=`<div class="win raised" role="dialog" aria-label="보여주기 페이지 만들기" style="width:min(520px,100%)"><div class="tb"><div class="ti">${pix('globe',14)}<span>보여주기 페이지 만들기</span></div><button class="wb x" data-sh="x" aria-label="닫기">×</button></div>
+   <div class="bd" style="max-height:min(78vh,640px);overflow:auto">
+    <p class="hint" style="margin:0">고른 것만 담아 <b>HTML 파일 한 개</b>로 만들어요. 받는 사람은 그 파일을 열기만 하면 되고, 고칠 수는 없어요. 깃허브 저장소에 같이 올리면 링크로도 보여 줄 수 있어요.</p>
+    <label style="display:grid;gap:3px;font:11.5px var(--pixel);color:var(--ink2)">제목<input type="text" id="shT" value="${esc(look.band&&look.band!=='LOG BOX 95'?look.band:'나의 로그 아카이브')}" maxlength="40"></label>
+    <label style="display:grid;gap:3px;font:11.5px var(--pixel);color:var(--ink2)">소개 한 줄<input type="text" id="shD" value="" maxlength="200" placeholder="예: 2026년 여름 VOID 세션 기록"></label>
+    <fieldset style="border:1px dashed var(--lo);border-radius:8px;padding:8px 10px;display:grid;gap:6px;margin:0"><legend style="font:12px var(--pixel);color:var(--ink2)">로그 파일 · ${live.length}개</legend>
+     <label class="opt"><input type="radio" name="shF" value="none">넣지 않기</label>
+     <label class="opt"><input type="radio" name="shF" value="star">★ 즐겨찾기만 (${live.filter(f=>f.star).length}개 · 약 ${sz(fsize(f=>f.star))})</label>
+     <label class="opt"><input type="radio" name="shF" value="all" checked>전부 (약 ${sz(fsize(()=>true))})</label>
+     ${fl.length?`<label class="opt"><input type="radio" name="shF" value="pick">폴더 골라서</label><div id="shFolders" style="display:grid;gap:4px;padding-left:24px">${fl.map(d=>`<label class="opt" style="font-size:13px"><input type="checkbox" value="${d.id}" checked>${esc(d.name)} (${live.filter(f=>f.folder===d.id).length})</label>`).join('')}<label class="opt" style="font-size:13px"><input type="checkbox" value="" checked>폴더 밖 (${live.filter(f=>!f.folder||!folders.has(f.folder)).length})</label></div>`:''}</fieldset>
+    <label class="opt"><input type="checkbox" id="shI"${imgs.length?' checked':''}${imgs.length?'':' disabled'}>이미지 ${imgs.length}장 (출처 포함 · 약 ${sz(isz)})</label>
+    <label class="opt"><input type="checkbox" id="shL"${lks?' checked':''}${lks?'':' disabled'}>외부 백업 링크 ${lks}개</label>
+    <label class="opt"><input type="checkbox" id="shS"${coll.sessions.size?'':' disabled'}>세션 기록·캐릭터 (${coll.sessions.size}개 세션)</label>
+    <label class="opt" style="padding-left:24px;font-size:13px"><input type="checkbox" id="shP">PL 이름도 보이기</label>
+    <div class="act"><span class="hint" id="shErr" style="flex:1;color:var(--danger)"></span><button class="btn" data-sh="x">취소</button><button class="btn pink" data-sh="go">만들기</button></div></div></div>`;
+  document.body.appendChild(m);
+  m.addEventListener('click',async e=>{const b=e.target.closest('[data-sh]');if(!b)return;if(b.dataset.sh==='x'){m.remove();return}
+    const mode=m.querySelector('[name=shF]:checked').value;const pickF=new Set([...m.querySelectorAll('#shFolders input:checked')].map(i=>i.value));
+    const pickedFiles=mode==='none'?[]:live.filter(f=>mode==='all'||(mode==='star'&&f.star)||(mode==='pick'&&pickF.has(f.folder&&folders.has(f.folder)?f.folder:'')));
+    const opts={title:m.querySelector('#shT').value.trim()||'로그 아카이브',desc:m.querySelector('#shD').value.trim(),files:pickedFiles,images:m.querySelector('#shI').checked,links:m.querySelector('#shL').checked,sessions:m.querySelector('#shS').checked,pl:m.querySelector('#shP').checked};
+    if(!opts.files.length&&!opts.images&&!opts.links&&!opts.sessions){m.querySelector('#shErr').textContent='담을 것을 하나 이상 골라 주세요';return}
+    m.remove();await buildShare(opts)});
+}
+async function buildShare(o){
+  const b=busy('보여주기 페이지 만드는 중');
+  try{const D={v:1,title:o.title,desc:o.desc,made:now(),logs:[],images:[],links:[],sessions:[],chars:[],
+      theme:(()=>{const T=themeOf();return {t1:T.t1,t2:T.t2,t3:T.t3,acc:T.acc,sel:T.sel,face:T.face,face2:T.face2,lo:T.lo,edge:T.edge,ink:T.ink,ink2:T.ink2,ink3:T.ink3,desk:T.plain,dot:T.dot}})()};
+    const fname=id=>{const d=folders.get(id);return d?d.name:''};
+    for(let i=0;i<o.files.length;i++){const f=o.files[i];b.set(i/(o.files.length+1)*.7,f.name);D.logs.push({name:f.name,folder:fname(f.folder),tags:f.tags||[],memo:f.memo||'',color:colorOf(f.color),size:f.size||0,date:(f.createdAt||'').slice(0,10),gz:await packedOf(f)})}
+    if(o.images){const imgs=[...coll.images.values()].filter(x=>x.asset).sort((a,b2)=>(gDay(b2)).localeCompare(gDay(a)));for(let i=0;i<imgs.length;i++){const x=imgs[i];b.set(.7+i/imgs.length*.25,x.name||'이미지');try{const r=await fetch(imgSrc(x));D.images.push({name:x.name,group:x.group||'',kind:(SRCK.find(s2=>s2[0]===x.kind)||[])[1]||'',artist:x.artist||'',artistUrl:x.artistUrl||'',date:x.date||'',memo:x.memo||'',tags:x.tags||[],src:await blobToDataURL(await r.blob())})}catch(e){}}}
+    if(o.links){for(const l of links.values())D.links.push({name:l.name,url:l.url,group:l.group||'',memo:l.memo||''});for(const x of coll.images.values())if(!x.asset)D.links.push({name:x.name,url:x.url,group:x.group||'',memo:[credit(x),x.memo].filter(Boolean).join(' · ')})}
+    if(o.sessions){const st=k=>(STAT.find(x=>x[0]===k)||STAT[0])[1];for(const x of [...coll.sessions.values()].sort((a,b2)=>(a.date||'').localeCompare(b2.date||'')))D.sessions.push({title:x.title,round:x.round||'',rule:x.rule||'',date:x.date||'',status:st(x.status||'plan'),gm:x.gm||'',color:x.color||'',pcs:(x.pcs||[]).map(p=>{const c=p.char&&coll.chars.get(p.char);return {name:c?c.name:p.name,pl:o.pl?p.pl:'',ho:p.ho||'',res:p.res||''}})});
+      for(const c of coll.chars.values())D.chars.push({name:c.name,pl:o.pl?c.pl||'':'',rule:c.rule||'',status:(CSTAT.find(x=>x[0]===c.status)||CSTAT[0])[1],job:c.job||'',desc:c.desc||'',color:c.color||'',img:c.img?await (async()=>{try{return await blobToDataURL(await (await fetch(c.img.startsWith('mem:')?wgObj.get(c.img):blobUrl(c.img))).blob())}catch(e){return ''}})():''})}
+    b.set(.97,'파일로 묶는 중…');const html=shareHTML(D);const blob=new Blob([html],{type:'text/html'});b.done();
+    await saveFile(safeName(o.title)+'.html',blob);toast(`보여주기 페이지를 만들었어요 · ${fmtSize(blob.size)}`);
+  }catch(e){b.done();toast('만들지 못했어요: '+errText(e))}
+}
+function shareHTML(D){
+  const json=JSON.stringify(D).replace(/</g,'\\u003c');const T=D.theme;
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>${esc(D.title)}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Gowun+Dodum&family=Jua&display=swap" rel="stylesheet">
+<style>
+:root{--t1:${T.t1};--t2:${T.t2};--t3:${T.t3};--acc:${T.acc};--sel:${T.sel};--face:${T.face};--face2:${T.face2};--lo:${T.lo};--edge:${T.edge};--ink:${T.ink};--ink2:${T.ink2};--ink3:${T.ink3};--desk:${T.desk};--dot:${T.dot};color-scheme:light}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:var(--desk);background-image:radial-gradient(var(--dot) 1px,transparent 1.3px);background-size:8px 8px;color:var(--ink);font:15px/1.6 "Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere;padding:max(18px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) 40px max(14px,env(safe-area-inset-left))}
+.win{max-width:1080px;margin:0 auto;background:var(--face);border-radius:10px;overflow:hidden;box-shadow:inset -2px -2px 0 var(--lo),inset 2px 2px 0 #fff,0 0 0 1px var(--edge),6px 8px 0 color-mix(in srgb,var(--edge) 25%,transparent)}
+.tb{display:flex;align-items:center;gap:8px;padding:7px 12px;background:linear-gradient(90deg,var(--t1),var(--t2) 60%,var(--t3));border-bottom:2px solid var(--edge);font:15px "DotGothic16","Jua",monospace}
+.tb .d{margin-left:auto;display:flex;gap:4px}.tb .d i{width:14px;height:14px;border-radius:3px;background:var(--face);box-shadow:0 0 0 1px var(--edge)}
+.hd{padding:18px 18px 6px}.hd h1{margin:0;font:28px/1.25 "Jua",sans-serif;text-wrap:balance}.hd p{margin:6px 0 0;color:var(--ink2)}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;padding:10px 14px 0;border-bottom:1px solid var(--lo)}
+.tabs button{font:14px "Jua",sans-serif;color:var(--ink);border:0;cursor:pointer;background:var(--face2);border-radius:7px 7px 0 0;padding:7px 14px;box-shadow:inset 1px 1px 0 #fff,0 0 0 1px var(--lo)}
+.tabs button[aria-selected=true]{background:#fff;position:relative;top:1px}
+.pane{padding:16px;min-height:300px;display:grid;gap:16px;align-content:start}
+h3{margin:0 0 8px;font:12.5px "DotGothic16",monospace;color:var(--ink2);letter-spacing:.06em}
+.lg{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.lf{display:flex;gap:10px;align-items:center;border:0;text-align:left;font:inherit;color:inherit;cursor:pointer;padding:10px 12px;border-radius:8px;background:#fff;box-shadow:0 0 0 1px var(--lo);border-left:5px solid var(--c)}
+.lf:hover{background:var(--face2)}.lf b{font:15px/1.3 "Jua",sans-serif;display:block}.lf small{font:11px "DotGothic16",monospace;color:var(--ink3)}
+.gg{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.gc{border:0;padding:0;cursor:pointer;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 0 0 1px var(--lo);text-align:left;font:inherit;color:inherit}
+.gc span.th{display:block;aspect-ratio:1;background:center/cover no-repeat}.gc span.cp{display:block;padding:6px 8px}.gc b{display:block;font:13.5px "Jua",sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gc small{font:11px "DotGothic16",monospace;color:var(--ink2)}
+.lk{display:block;padding:10px 12px;border-radius:8px;background:#fff;box-shadow:0 0 0 1px var(--lo);color:inherit;text-decoration:none}.lk:hover{background:var(--face2)}.lk b{font:15px "Jua",sans-serif}.lk small{display:block;font:11px "DotGothic16",monospace;color:var(--ink3)}.lk span{font-size:13px;color:var(--ink2)}
+.ss{display:grid;gap:6px;padding:10px 12px;border-radius:8px;background:#fff;box-shadow:0 0 0 1px var(--lo);border-left:5px solid var(--c)}
+.ss b{font:15px "Jua",sans-serif}.mt{font:11.5px "DotGothic16",monospace;color:var(--ink2);display:flex;gap:8px;flex-wrap:wrap}
+.pc{display:inline-block;font:12px "Jua",sans-serif;border-radius:10px;padding:1px 8px;background:var(--face2);box-shadow:0 0 0 1px var(--lo);margin:0 4px 4px 0}
+.ch{display:grid;grid-template-columns:64px minmax(0,1fr);gap:4px 12px;padding:10px;border-radius:8px;background:#fff;box-shadow:0 0 0 1px var(--lo)}
+.ch .av{grid-row:span 3;width:64px;height:64px;border-radius:8px;background:var(--c) center/cover;box-shadow:0 0 0 1px var(--edge)}
+.ch p{margin:0;font-size:13px;color:var(--ink2);white-space:pre-wrap}
+.ov{position:fixed;inset:0;z-index:9;background:rgba(20,16,30,.8);display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:8px;padding:max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
+.ov .bar{display:flex;gap:8px;align-items:center;color:#fff;font:15px "Jua",sans-serif}.ov .bar span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ov iframe{width:100%;height:100%;border:0;border-radius:6px;background:#fff}
+.ov .stage{min-height:0;display:grid;place-items:center;overflow:hidden;touch-action:none}.ov .stage img{max-width:100%;max-height:100%;object-fit:contain;transform-origin:center;cursor:zoom-in;user-select:none}
+.ov .cap{background:var(--face);border-radius:8px;padding:10px 12px;max-width:820px;width:100%;justify-self:center;font-size:14px}.ov .cap a{color:inherit}
+.btn{font:14px "Jua",sans-serif;color:var(--ink);border:0;cursor:pointer;border-radius:6px;padding:6px 12px;background:var(--face);box-shadow:inset -2px -2px 0 var(--lo),inset 2px 2px 0 #fff,0 0 0 1px var(--edge)}
+.empty{color:var(--ink3);text-align:center;padding:30px}
+footer{max-width:1080px;margin:12px auto 0;text-align:center;font:11px "DotGothic16",monospace;color:var(--ink2)}
+:focus-visible{outline:2px dashed var(--edge);outline-offset:2px}
+</style></head><body>
+<div class="win"><div class="tb">♡ <span>${esc(D.title)}.exe</span><span class="d"><i></i><i></i></span></div>
+<div class="hd"><h1>${esc(D.title)}</h1>${D.desc?`<p>${esc(D.desc)}</p>`:''}</div>
+<div class="tabs" role="tablist" id="tabs"></div><div class="pane" id="pane"></div></div>
+<footer>${esc(D.made.slice(0,10).replace(/-/g,'.'))} 에 만든 보기 전용 페이지</footer>
+<script type="application/json" id="data">${json}<\/script>
+<script>
+(()=>{const D=JSON.parse(document.getElementById('data').textContent);const $=s=>document.querySelector(s);const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const host=u=>{try{return new URL(u).host.replace(/^www\\./,'')}catch(e){return u}};
+const T=[['logs','로그',D.logs.length],['images','이미지',D.images.length],['links','링크',D.links.length],['sessions','세션 기록',D.sessions.length+D.chars.length]].filter(t=>t[2]);let cur=T.length?T[0][0]:'';
+function tabs(){$('#tabs').innerHTML=T.map(t=>'<button role="tab" data-t="'+t[0]+'" aria-selected="'+(t[0]===cur)+'">'+t[1]+' · '+t[2]+'</button>').join('');}
+function group(list,key){const m=new Map();list.forEach((x,i)=>{const k=x[key]||'';if(!m.has(k))m.set(k,[]);m.get(k).push([x,i])});return [...m]}
+function draw(){tabs();const p=$('#pane');if(!cur){p.innerHTML='<div class="empty">담긴 내용이 없어요</div>';return}
+ if(cur==='logs')p.innerHTML=group(D.logs,'folder').map(([g,xs])=>'<section><h3>'+esc(g||'로그')+' · '+xs.length+'</h3><div class="lg">'+xs.map(([x,i])=>'<button class="lf" data-log="'+i+'" style="--c:'+esc(x.color==='#ffffff'?'var(--lo)':x.color)+'"><span><b>'+esc(x.name)+'</b><small>'+esc([x.date&&x.date.replace(/-/g,'.'),(x.tags||[]).join(', ')].filter(Boolean).join(' · '))+'</small></span></button>').join('')+'</div></section>').join('');
+ if(cur==='images')p.innerHTML=group(D.images,'group').map(([g,xs])=>'<section><h3>'+esc(g||'이미지')+' · '+xs.length+'</h3><div class="gg">'+xs.map(([x,i])=>'<button class="gc" data-img="'+i+'"><span class="th" style="background-image:url('+x.src+')"></span><span class="cp"><b>'+esc(x.name||'이미지')+'</b><small>'+esc([x.kind,x.artist&&'© '+x.artist].filter(Boolean).join(' · '))+'</small></span></button>').join('')+'</div></section>').join('');
+ if(cur==='links')p.innerHTML=group(D.links,'group').map(([g,xs])=>'<section><h3>'+esc(g||'링크')+' · '+xs.length+'</h3><div class="lg">'+xs.map(([x])=>'<a class="lk" href="'+esc(x.url)+'" target="_blank" rel="noopener noreferrer"><b>'+esc(x.name)+' ↗</b><small>'+esc(host(x.url))+'</small>'+(x.memo?'<span>'+esc(x.memo)+'</span>':'')+'</a>').join('')+'</div></section>').join('');
+ if(cur==='sessions')p.innerHTML=(D.sessions.length?'<section><h3>세션 · '+D.sessions.length+'</h3><div style="display:grid;gap:8px">'+D.sessions.map(x=>'<div class="ss" style="--c:'+esc(x.color||'var(--acc)')+'"><b>'+esc(x.title)+(x.round?' <small>'+esc(x.round)+'</small>':'')+'</b><div class="mt"><span>'+esc((x.date||'').replace(/-/g,'.'))+'</span><span>'+esc(x.rule)+'</span><span>'+esc(x.status)+'</span>'+(x.gm?'<span>GM '+esc(x.gm)+'</span>':'')+'</div><div>'+x.pcs.map(c=>'<span class="pc">'+esc(c.name)+(c.ho?' · '+esc(c.ho):'')+(c.pl?' ('+esc(c.pl)+')':'')+(c.res?' · '+esc(c.res):'')+'</span>').join('')+'</div></div>').join('')+'</div></section>':'')+
+   (D.chars.length?'<section><h3>캐릭터 · '+D.chars.length+'</h3><div class="lg">'+D.chars.map(c=>'<div class="ch"><span class="av" style="--c:'+esc(c.color||'var(--acc)')+';'+(c.img?'background-image:url('+c.img+')':'')+'"></span><b style="font:16px Jua,sans-serif">'+esc(c.name)+'</b><span class="mt">'+esc([c.rule,c.status,c.job,c.pl&&'PL '+c.pl].filter(Boolean).join(' · '))+'</span><p>'+esc(c.desc)+'</p></div>').join('')+'</div></section>':'');
+}
+$('#tabs').addEventListener('click',e=>{const b=e.target.closest('[data-t]');if(b){cur=b.dataset.t;draw()}});
+async function unpack(gz){const bin=atob(gz);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return await new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip'))).text()}
+function overlay(html){const o=document.createElement('div');o.className='ov';o.innerHTML=html;document.body.appendChild(o);document.body.style.overflow='hidden';const close=()=>{o.remove();document.body.style.overflow='';removeEventListener('keydown',k)};const k=e=>{if(e.key==='Escape')close()};addEventListener('keydown',k);o.querySelector('[data-x]').onclick=close;return o}
+$('#pane').addEventListener('click',async e=>{const l=e.target.closest('[data-log]');if(l){const x=D.logs[+l.dataset.log];const o=overlay('<div class="bar"><span>'+esc(x.name)+'</span><button class="btn" data-x>← 목록</button></div><iframe title="'+esc(x.name)+'" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"></iframe><div></div>');try{o.querySelector('iframe').srcdoc=await unpack(x.gz)}catch(err){o.querySelector('iframe').srcdoc='<p style="font-family:sans-serif;padding:20px">이 브라우저에서는 로그를 열 수 없어요. 최신 크롬·사파리·웨일·엣지에서 열어 주세요.</p>'}return}
+ const g=e.target.closest('[data-img]');if(g){let i=+g.dataset.img;const o=overlay('<div class="bar"><span></span><button class="btn" data-p>◀</button><button class="btn" data-n>▶</button><button class="btn" data-x>닫기</button></div><div class="stage"><img alt=""></div><div class="cap"></div>');let s=1;
+   const show=()=>{const x=D.images[i];const im=o.querySelector('img');im.src=x.src;im.alt=x.name||'';s=1;im.style.transform='';o.querySelector('.bar span').textContent=x.name||'이미지';o.querySelector('.cap').innerHTML='<b>'+esc(x.name||'')+'</b><div>'+[x.kind,x.artist?(x.artistUrl?'<a href="'+esc(x.artistUrl)+'" target="_blank" rel="noopener noreferrer">© '+esc(x.artist)+'</a>':'© '+esc(x.artist)):'',x.date&&esc(x.date.replace(/-/g,'.'))].filter(Boolean).join(' · ')+'</div>'+(x.memo?'<div style="color:var(--ink2);white-space:pre-wrap">'+esc(x.memo)+'</div>':'')};
+   o.querySelector('[data-p]').onclick=()=>{i=(i-1+D.images.length)%D.images.length;show()};o.querySelector('[data-n]').onclick=()=>{i=(i+1)%D.images.length;show()};
+   const st=o.querySelector('.stage'),im=o.querySelector('img');st.addEventListener('wheel',ev=>{ev.preventDefault();s=Math.max(1,Math.min(8,s*Math.exp(-ev.deltaY*.0015)));im.style.transform='scale('+s+')'},{passive:false});im.addEventListener('click',()=>{s=s>1?1:2.5;im.style.transform='scale('+s+')'});show()}});
+draw()})();
+<\/script></body></html>`;
+}
+
 /* ---------- boot ---------- */
 lookReady=true;render();applyLook();sync();renderWidgets();armSaver();
 if(window.__standalone){let seen=null;try{seen=localStorage.getItem('logbox-welcome')}catch(e){}if(!seen)setTimeout(async()=>{await dialog('로그 보관함에 오신 걸 환영해요',`<p style="margin:0;line-height:1.7">이 보관함에 넣은 로그·일정·꾸미기는 <b>지금 쓰는 브라우저 안에</b> 저장돼요.<br>다른 기기나 브라우저에서는 비어 보이고, 브라우저 데이터를 지우면 함께 사라져요.</p><p class="hint" style="margin:0">시작 메뉴 → ‘💾 전체 백업 저장’으로 가끔 백업해 두고, 다른 곳에서는 ‘🗜 ZIP·전체 백업 불러오기’로 옮겨 오세요.</p>`,'알겠어요');try{localStorage.setItem('logbox-welcome','1')}catch(e){}},1600)}
@@ -1857,8 +1972,7 @@ if(window.__standalone){let seen=null;try{seen=localStorage.getItem('logbox-welc
   $('#up').disabled=!canWrite;$('#newf').disabled=!canWrite;$('#arcadd').hidden=!canWrite;
   db.collection('files').onSnapshot(s=>{files=new Map(s.docs.map(d=>[d.id,Object.assign({id:d.id},d.data())]));if(selId&&!files.has(selId))selId=null;render();if(docId&&!files.has(docId)){docId=null;sync()}},e=>toast('목록을 불러오지 못했어요'));
   let booted=false;const boot1=()=>{if(!booted){booted=true;bootScreen();armSaver()}};
-  if(!canWrite){loadLocalLook();boot1()}
-  else db.collection('settings').doc('look').onSnapshot(d=>{if(d.exists&&!lookDirty){look=Object.assign(defLook(),d.data());applyLook();renderWidgets();if(!$('#decow').hidden)renderDeco()}boot1()},()=>{loadLocalLook();boot1()});
+  db.collection('settings').doc('look').onSnapshot(d=>{if(d.exists&&!lookDirty){look=Object.assign(defLook(),d.data());applyLook();renderWidgets();if(!$('#decow').hidden)renderDeco()}boot1()},()=>{loadLocalLook();boot1()});
   for(const c of ['sessions','chars','images'])db.collection(c).onSnapshot(s=>{coll[c]=new Map(s.docs.map(d=>[d.id,Object.assign({id:d.id},d.data())]));collChanged()},()=>{});
   db.collection('widgets').onSnapshot(s=>{widgets=new Map(s.docs.map(d=>[d.id,Object.assign({id:d.id},d.data())]));if(!wgBusy)renderWidgets();if(decoOpen&&decoTab==='wg')renderDeco()},()=>{});
   db.collection('links').onSnapshot(s=>{links=new Map(s.docs.map(d=>[d.id,Object.assign({id:d.id},d.data())]));refreshLinks()},()=>{});
