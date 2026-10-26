@@ -252,6 +252,34 @@ body.w98 .wg.photo .pic,body.xp .wg.photo .pic{margin-top:0}
 .bbar i:nth-child(2){background:var(--t2);animation-delay:.12s}.bbar i:nth-child(3){background:var(--t3);animation-delay:.24s}
 @keyframes bootmove{from{transform:translateX(-30px)}to{transform:translateX(190px)}}
 body.w98 #boot,body.xp #boot{background:#000;color:#fff}body.w98 #boot .bl,body.xp #boot .bl{color:#fff}body.w98 #boot small,body.xp #boot small{color:#bbb}
+/* image archive */
+.galbody{flex:1;min-height:0;overflow:auto;background:var(--face);padding:12px;display:grid;gap:14px;align-content:start;position:relative}
+.galbody.dragover{background:repeating-linear-gradient(45deg,var(--face) 0 10px,color-mix(in srgb,var(--acc) 30%,var(--face)) 10px 20px)}
+.ggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.gcard{display:flex;flex-direction:column;border:0;padding:0;border-radius:8px;overflow:hidden;background:var(--sunk);box-shadow:0 0 0 1px var(--lo);cursor:pointer;text-align:left;font:inherit;color:inherit;min-width:0}
+.gcard:hover{box-shadow:0 0 0 2px var(--edge)}
+.gcard .th{aspect-ratio:1;max-width:100%;background:var(--face2) center/cover no-repeat;display:grid;place-items:center;color:var(--ink3);font:11px var(--pixel);text-align:center;padding:6px}
+.gcard .cap{padding:6px 8px 8px;display:grid;gap:2px;min-width:0}
+.gcard b{font:13.5px/1.3 var(--cute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gcard .cr{font:11px var(--pixel);color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gcard .kind{font:10px var(--pixel);color:var(--ink3)}
+.gview{position:fixed;inset:0;z-index:86;background:rgba(20,16,30,.78);display:grid;grid-template-rows:minmax(0,1fr) auto;padding:calc(14px + env(safe-area-inset-top,0px)) max(14px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px));gap:10px}
+.gview .stage{min-height:0;display:grid;place-items:center;position:relative}
+.gview .stage{overflow:hidden;touch-action:none}
+.gview .stage img{max-width:100%;max-height:100%;object-fit:contain;border-radius:4px;box-shadow:0 10px 30px rgba(0,0,0,.4);background:#fff;transform-origin:center center;cursor:zoom-in;user-select:none;-webkit-user-drag:none;will-change:transform}
+.gview .stage.zoomed img{cursor:grab}.gview .stage.panning img{cursor:grabbing}
+.gview .zbar{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);display:flex;gap:4px;align-items:center;padding:4px 6px;border-radius:8px;z-index:2}
+.gview .zbar span{font:12px var(--pixel);min-width:46px;text-align:center}
+.gview .nav{position:absolute;top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:50%;border:0;background:rgba(255,255,255,.85);cursor:pointer;font:18px var(--pixel)}
+.gview .nav.l{left:4px}.gview .nav.r{right:4px}
+.gview .info{max-width:820px;width:100%;justify-self:center;border-radius:10px;padding:12px 14px;display:grid;gap:6px}
+.gview .info b{font:17px var(--cute)}
+.gview .credit{font-size:13.5px;color:var(--ink);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.gview .credit a{color:inherit}
+.gview .acts{display:flex;gap:6px;flex-wrap:wrap}
+.gform{display:grid;grid-template-columns:minmax(0,220px) minmax(0,1fr);gap:14px;align-items:start;max-width:860px}
+.gform .pv{aspect-ratio:1;max-width:100%;border-radius:8px;background:var(--face2) center/contain no-repeat;box-shadow:0 0 0 1px var(--lo);display:grid;place-items:center;color:var(--ink3);font:11px var(--pixel);text-align:center;padding:8px}
+@media (max-width:640px){.gform{grid-template-columns:minmax(0,1fr)}.ggrid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}}
 /* session scheduler */
 .schw .menu{flex-wrap:wrap}
 .tabs.plain{padding:0;border:0;gap:4px}
@@ -471,6 +499,12 @@ body.xp #note{border-radius:0}
   <div class="menu"><button class="btn pink" id="arcadd">＋ 링크 추가</button><span class="sp"></span><input type="search" class="q" id="arcq" placeholder="이름·주소·메모 찾기" aria-label="링크 찾기"></div>
   <div class="arcbody" id="arcbody"></div>
 </section>
+<section class="win galw raised fw" id="galw" data-w="gal" hidden aria-label="이미지 보관함"><i class="rz" data-d="n"></i><i class="rz" data-d="s"></i><i class="rz" data-d="e"></i><i class="rz" data-d="w"></i><i class="rz" data-d="ne"></i><i class="rz" data-d="nw"></i><i class="rz" data-d="se"></i><i class="rz" data-d="sw"></i>
+  <div class="tb"><div class="ti"><span id="galico"></span><span>이미지 보관함.exe</span></div><button class="wb" id="galmin" title="최소화" aria-label="최소화">_</button><button class="wb" id="galmax" title="최대화" aria-label="최대화">□</button><button class="wb x" id="galclose" title="닫기" aria-label="닫기">×</button></div>
+  <div class="menu"><button class="btn pink" id="galup">＋ 이미지 올리기</button><button class="btn" id="gallink">＋ 백업 링크</button><span class="sp"></span><select id="galsort" aria-label="정렬" style="width:auto"><option value="new">최근 올린 순</option><option value="old">처음 올린 순</option><option value="dnew">받은 날 최신순</option><option value="dold">받은 날 오래된 순</option><option value="name">이름 순</option></select><select id="galgrp" aria-label="묶음" style="width:auto"></select><input type="search" class="q" id="galq" placeholder="이름·작가·태그 찾기" aria-label="이미지 찾기"></div>
+  <div class="galbody" id="galbody"></div>
+</section>
+<input type="file" id="galin" accept="image/png,image/jpeg,image/gif,image/webp" multiple hidden>
 <section class="win schw raised fw" id="schw" data-w="sch" hidden aria-label="세션 일정"><i class="rz" data-d="n"></i><i class="rz" data-d="s"></i><i class="rz" data-d="e"></i><i class="rz" data-d="w"></i><i class="rz" data-d="ne"></i><i class="rz" data-d="nw"></i><i class="rz" data-d="se"></i><i class="rz" data-d="sw"></i>
   <div class="tb"><div class="ti"><span id="schico"></span><span>세션 일정.exe</span></div><button class="wb" id="schmin" title="최소화" aria-label="최소화">_</button><button class="wb" id="schmax" title="최대화" aria-label="최대화">□</button><button class="wb x" id="schclose" title="닫기" aria-label="닫기">×</button></div>
   <div class="menu"><div class="tabs plain" role="tablist" id="schtabs"><button role="tab" data-st="cal" aria-selected="true">달력</button><button role="tab" data-st="list" aria-selected="false">일정 목록</button><button role="tab" data-st="chars" aria-selected="false">캐릭터</button><button role="tab" data-st="scen" aria-selected="false">시나리오</button></div><span class="sp"></span><button class="btn pink" id="schadd">＋ 세션 잡기</button></div>
@@ -488,6 +522,7 @@ body.xp #note{border-radius:0}
     <hr>
     <button data-s="box" role="menuitem">📁 로그 보관함</button>
     <button data-s="sch" role="menuitem">📅 세션 일정</button>
+    <button data-s="gal" role="menuitem">🖼 이미지 보관함</button>
     <button data-s="arc" role="menuitem">🌐 아카이브 (외부 링크)</button>
     <button data-s="deco" role="menuitem">🎨 꾸미기</button>
     <button data-s="desk" role="menuitem">🖥 바탕화면 보기</button>
@@ -569,7 +604,7 @@ const specialIcon={all:'<svg width="18" height="18" viewBox="0 0 16 16" shape-re
 
 /* ---------- storage: db + assets, or a memory fallback ---------- */
 let db=null,assets=null,dl=null,canWrite=true,memory=false;
-let files=new Map(),folders=new Map(),links=new Map(),widgets=new Map();const coll={sessions:new Map(),chars:new Map()};const textCache=new Map();const memBlobs=new Map();
+let files=new Map(),folders=new Map(),links=new Map(),widgets=new Map();const coll={sessions:new Map(),chars:new Map(),images:new Map()};const textCache=new Map();const memBlobs=new Map();
 async function gz(text){const s=new Blob([text]).stream().pipeThrough(new CompressionStream('gzip'));return new Uint8Array(await new Response(s).arrayBuffer())}
 async function ungz(u8){const s=new Blob([u8]).stream().pipeThrough(new DecompressionStream('gzip'));return await new Response(s).text()}
 function b64(u8){let s='';for(let i=0;i<u8.length;i+=0x8000)s+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000));return btoa(s)}
@@ -809,8 +844,8 @@ async function zipFiles(list,label,full){
       ents.push({name:nm,data:'﻿'+await getText(f)});meta.files[nm]={name:f.name,folder:dir?folders.get(f.folder).name:'',tags:f.tags||[],memo:f.memo||'',color:f.color||'',star:!!f.star};meta.fileIds[nm]=f.id;
     }
     if(full){b.set(.9,'설정·일정·위젯 담는 중…');const strip=m=>[...m.values()].map(x=>JSON.parse(JSON.stringify(x)));
-      Object.assign(meta,{folders:strip(folders),links:strip(links),widgets:strip(widgets).filter(w=>w.type!=='music'),sessions:strip(coll.sessions),chars:strip(coll.chars),look:JSON.parse(JSON.stringify(look)),assets:{}});
-      const want=new Set();meta.widgets.forEach(w=>w.asset&&want.add(w.asset));meta.chars.forEach(c=>c.img&&want.add(c.img));if(look.wallImg)want.add(look.wallImg);
+      Object.assign(meta,{folders:strip(folders),links:strip(links),widgets:strip(widgets).filter(w=>w.type!=='music'),sessions:strip(coll.sessions),chars:strip(coll.chars),images:strip(coll.images),look:JSON.parse(JSON.stringify(look)),assets:{}});
+      const want=new Set();meta.widgets.forEach(w=>w.asset&&want.add(w.asset));meta.chars.forEach(c=>c.img&&want.add(c.img));meta.images.forEach(x=>x.asset&&want.add(x.asset));if(look.wallImg)want.add(look.wallImg);
       for(const id of want){if(id.startsWith('mem:'))continue;try{const r=await fetch(blobUrl(id));if(!r.ok)continue;const type=(r.headers.get('content-type')||'application/octet-stream').split(';')[0];ents.push({name:'assets/'+id,data:new Uint8Array(await r.arrayBuffer())});meta.assets[id]={path:'assets/'+id,type}}catch(e){}}
       meta.exportedAt=now()}
     ents.push({name:'logbox.json',data:JSON.stringify(meta,null,1)});
@@ -828,13 +863,14 @@ async function restoreAll(meta,ents,fileMap){
     b.set(.45);for(const l of meta.links||[]){const {id,...rest}=l;linkMap[id]=await S.addLink(rest)}
     b.set(.6);for(const c of meta.chars||[]){const {id,...rest}=c;if(rest.img)rest.img=assetMap[rest.img]||'';charMap[id]=await S.cAdd('chars',rest)}
     b.set(.75);for(const x of meta.sessions||[]){const {id,...rest}=x;rest.pcs=(rest.pcs||[]).map(p=>Object.assign({},p,{char:charMap[p.char]||''}));rest.logId=fileMap[rest.logId]||'';await S.cAdd('sessions',rest)}
+    b.set(.8);for(const x of meta.images||[]){const {id,...rest}=x;if(rest.asset){if(!assetMap[rest.asset])continue;rest.asset=assetMap[rest.asset]}await S.cAdd('images',rest)}
     b.set(.85);for(const w of meta.widgets||[]){const {id,...rest}=w;if(rest.asset){if(!assetMap[rest.asset])continue;rest.asset=assetMap[rest.asset]}await S.addWidget(rest)}
     if(meta.look){const L=Object.assign(defLook(),meta.look);if(L.wallImg)L.wallImg=assetMap[L.wallImg]||'';
       const rk=k=>k.startsWith('f:')?(folderMap[k.slice(2)]?'f:'+folderMap[k.slice(2)]:null):k.startsWith('d:')?(fileMap[k.slice(2)]?'d:'+fileMap[k.slice(2)]:null):k.startsWith('l:')?(linkMap[k.slice(2)]?'l:'+linkMap[k.slice(2)]:null):k;
       for(const key of ['iconOver','iconCells']){const o={};for(const k in L[key]||{}){const nk=rk(k);if(nk)o[nk]=L[key][k]}L[key]=o}
       if(L.wallImg&&L.wallImg.startsWith('mem:')){wallObj=wgObj.get(L.wallImg)}
       look=L;applyLook();saveLook()}
-    b.done();toast(`전체 백업을 되살렸어요 · 일정 ${(meta.sessions||[]).length} · 캐릭터 ${(meta.chars||[]).length} · 위젯 ${(meta.widgets||[]).length}`);render();
+    b.done();toast(`전체 백업을 되살렸어요 · 이미지 ${(meta.images||[]).length} · 일정 ${(meta.sessions||[]).length} · 캐릭터 ${(meta.chars||[]).length} · 위젯 ${(meta.widgets||[]).length}`);render();
   }catch(e){b.done();toast('일부를 되살리지 못했어요: '+errText(e))}
 }
 /* ---------- interactions: side ---------- */
@@ -881,9 +917,13 @@ filesEl.addEventListener('click',async e=>{
   if(selMode||e.ctrlKey||e.metaKey){sel.has(id)?sel.delete(id):sel.add(id);anchor=id}
   else if(e.shiftKey&&anchor){const ids=visible().map(x=>x.id);const a=ids.indexOf(anchor),b=ids.indexOf(id);if(a>=0&&b>=0){sel=new Set(ids.slice(Math.min(a,b),Math.max(a,b)+1))}else sel=new Set([id])}
   else{sel=new Set([id]);anchor=id}
-  renderFiles();renderProps();filesEl.querySelector(`[data-f="${id}"]`)?.focus({preventScroll:true});
+  // second click on the same file within the double-click window opens it (works for touch too)
+  const plain=!(selMode||e.ctrlKey||e.metaKey||e.shiftKey);const nowT=Date.now();
+  if(plain&&lastClick.id===id&&nowT-lastClick.t<450){lastClick={id:null,t:0};if(!files.get(id).trashed){openDoc(id);return}}
+  lastClick={id,t:nowT};
+  filesEl.querySelectorAll('[data-f]').forEach(x=>x.classList.toggle('on',sel.has(x.dataset.f)));renderProps();f.focus({preventScroll:true});
 });
-filesEl.addEventListener('dblclick',e=>{const f=e.target.closest('[data-f]');if(f&&!files.get(f.dataset.f).trashed)openDoc(f.dataset.f)});
+let lastClick={id:null,t:0};
 filesEl.addEventListener('keydown',e=>{
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='a'&&!e.target.closest('input,textarea')){e.preventDefault();sel=new Set(visible().map(f=>f.id));renderFiles();renderProps();return}
   if((e.key==='Delete'||e.key==='Backspace')&&sel.size&&canWrite&&view.where!=='trash'&&!e.target.closest('input,textarea')){e.preventDefault();moveFiles([...sel],'trash');return}
@@ -1014,7 +1054,7 @@ const sm=$('#smenu'),sb=$('#startb');
 sb.onclick=e=>{e.stopPropagation();sm.hidden=!sm.hidden;sb.setAttribute('aria-expanded',!sm.hidden);sb.setAttribute('aria-pressed',!sm.hidden)};
 document.addEventListener('click',e=>{if(!sm.hidden&&!e.target.closest('#smenu')){sm.hidden=true;sb.setAttribute('aria-expanded','false');sb.setAttribute('aria-pressed','false')}});
 sm.addEventListener('click',e=>{const b=e.target.closest('[data-s]');if(!b)return;sm.hidden=true;sb.setAttribute('aria-pressed','false');const k=b.dataset.s;
-  if(k==='up')pick();else if(k==='zipin'){if(canWrite)$('#zipfile').click();else toast('이 화면에서는 가져올 수 없어요')}else if(k==='zipout')zipAll();else if(k==='trash'){view.where='trash';sel.clear();showWin('main');render()}else if(k==='deco')openDeco();else if(k==='desk')showDesktop();else if(k==='box')showWin('main');else if(k==='arc')openArc();else if(k==='sch')openSched()});
+  if(k==='up')pick();else if(k==='zipin'){if(canWrite)$('#zipfile').click();else toast('이 화면에서는 가져올 수 없어요')}else if(k==='zipout')zipAll();else if(k==='trash'){view.where='trash';sel.clear();showWin('main');render()}else if(k==='deco')openDeco();else if(k==='desk')showDesktop();else if(k==='box')showWin('main');else if(k==='arc')openArc();else if(k==='sch')openSched();else if(k==='gal')openGal()});
 addEventListener('keydown',e=>{if(e.key==='Escape'){if(!sm.hidden){sm.hidden=true;return}if(!$('#decow').hidden){closeDeco();return}if(!docw.hidden&&docMode==='view'){closeDoc()}}});
 function tick(){const d=new Date();$('#clock').textContent=look.clock24?String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'):(d.getHours()<12?'AM ':'PM ')+((d.getHours()%12)||12)+':'+String(d.getMinutes()).padStart(2,'0')}
 setInterval(tick,15000);
@@ -1090,15 +1130,15 @@ function applyLook(){
 }
 
 /* ---------- windows & taskbar ---------- */
-const W={main:{el:()=>$('#mainw'),min:false,label:()=>'📁 로그 보관함'},arc:{el:()=>$('#arcw'),min:false,label:()=>'🌐 아카이브'},sch:{el:()=>$('#schw'),min:false,label:()=>'📅 세션 일정'},doc:{el:()=>docw,min:false,label:()=>docId&&files.get(docId)?'📄 '+files.get(docId).name:'📄 문서'},deco:{el:()=>$('#decow'),min:false,label:()=>'🎨 꾸미기'}};
-let top='main',mainOpen=true;const ORDER=['main','doc','deco','arc','sch'];let zOrder=['main'];
-function isOpen(k){return k==='main'?mainOpen:k==='doc'?!!docId:k==='deco'?decoOpen:k==='arc'?arcOpen:k==='sch'?schOpen:false}
+const W={main:{el:()=>$('#mainw'),min:false,label:()=>'📁 로그 보관함'},arc:{el:()=>$('#arcw'),min:false,label:()=>'🌐 아카이브'},sch:{el:()=>$('#schw'),min:false,label:()=>'📅 세션 일정'},gal:{el:()=>$('#galw'),min:false,label:()=>'🖼 이미지 보관함'},doc:{el:()=>docw,min:false,label:()=>docId&&files.get(docId)?'📄 '+files.get(docId).name:'📄 문서'},deco:{el:()=>$('#decow'),min:false,label:()=>'🎨 꾸미기'}};
+let top='main',mainOpen=true;const ORDER=['main','doc','deco','arc','sch','gal'];let zOrder=['main'];
+function isOpen(k){return k==='main'?mainOpen:k==='doc'?!!docId:k==='deco'?decoOpen:k==='arc'?arcOpen:k==='sch'?schOpen:k==='gal'?galOpen:false}
 function sync(){
   zOrder=zOrder.filter(k=>k!==top);if(top)zOrder.push(top);
   for(const k in W){const el=W[k].el();el.hidden=!isOpen(k)||W[k].min;const i=zOrder.indexOf(k);el.style.zIndex=30+(i<0?0:i);applyGeo(k)}
   setTasks()}
 function showWin(k){if(k==='main')mainOpen=true;W[k].min=false;top=k;sync()}
-function closeWin(k){if(k==='main')mainOpen=false;else if(k==='arc')arcOpen=false;else if(k==='sch')schOpen=false;W[k].min=false;if(top===k)top=[...zOrder].reverse().find(x=>x!==k&&isOpen(x)&&!W[x].min)||'';sync()}
+function closeWin(k){if(k==='main')mainOpen=false;else if(k==='arc')arcOpen=false;else if(k==='sch')schOpen=false;else if(k==='gal')galOpen=false;W[k].min=false;if(top===k)top=[...zOrder].reverse().find(x=>x!==k&&isOpen(x)&&!W[x].min)||'';sync()}
 function minWin(k){W[k].min=true;if(top===k)top=[...zOrder].reverse().find(x=>x!==k&&isOpen(x)&&!W[x].min)||'';sync()}
 function setTasks(){$('#tasks').innerHTML=Object.keys(W).filter(isOpen).map(k=>`<button class="btn sm" data-t="${k}" aria-pressed="${!W[k].min&&top===k}">${esc(W[k].label())}</button>`).join('')}
 $('#tasks').addEventListener('click',e=>{const t=e.target.closest('[data-t]');if(!t)return;const k=t.dataset.t;if(!W[k].min&&top===k)minWin(k);else showWin(k)});
@@ -1109,10 +1149,11 @@ function showDesktop(){for(const k in W)if(isOpen(k))W[k].min=true;top='';sync()
 /* window geometry: each window remembers where it sits and how big it is (per device) */
 const TASKH=46;
 function deskRect(){const cs=getComputedStyle(document.documentElement);const t=parseFloat(cs.paddingTop)||0,b=parseFloat(cs.paddingBottom)||0;return{w:innerWidth,h:innerHeight-TASKH-t-b,top:t}}
-const MINS={main:[520,340],doc:[360,260],deco:[340,280],arc:[360,300],sch:[420,360]};
+const MINS={main:[520,340],doc:[360,260],deco:[340,280],arc:[360,300],sch:[420,360],gal:[400,340]};
 function defGeo(k){const D=deskRect();const fit=(w,h,x,y)=>({w:Math.min(w,D.w-16),h:Math.min(h,D.h-16),x,y,max:false});
   if(k==='main'){const w=Math.min(1180,Math.round(D.w*.9)),h=Math.round(D.h*.88);return fit(w,h,Math.round((D.w-w)/2),Math.round(D.top+(D.h-h)/2))}
   if(k==='doc'){const w=Math.min(1040,Math.round(D.w*.8)),h=Math.round(D.h*.84);return fit(w,h,Math.round((D.w-w)/2)+30,D.top+30)}
+  if(k==='gal'){const w=Math.min(1040,D.w-24),h=Math.min(700,D.h-30);return fit(w,h,Math.round((D.w-w)/2)-10,D.top+30)}
   if(k==='sch'){const w=Math.min(1100,D.w-24),h=Math.min(720,D.h-30);return fit(w,h,Math.round((D.w-w)/2)+20,D.top+20)}
   if(k==='arc'){const w=Math.min(820,D.w-24),h=Math.min(600,D.h-40);return fit(w,h,Math.round((D.w-w)/2)-40,D.top+60)}
   const w=Math.min(640,D.w-24),h=Math.min(560,D.h-40);return fit(w,h,Math.round((D.w-w)/2),D.top+40)}
@@ -1123,7 +1164,7 @@ function clampGeo(g,k){const D=deskRect();const[mw,mh]=MINS[k];g.w=Math.max(Math
   g.x=Math.min(Math.max(g.x,-g.w+120),D.w-120);g.y=Math.min(Math.max(g.y,D.top),D.top+D.h-34);return g}
 function applyGeo(k){const el=W[k].el(),g=clampGeo(GEO[k],k);el.classList.toggle('max',!!g.max);el.style.left=g.x+'px';el.style.top=g.y+'px';el.style.width=g.w+'px';el.style.height=g.h+'px'}
 function toggleMax(k){GEO[k].max=!GEO[k].max;applyGeo(k);saveGeo()}
-$('#mmax').onclick=()=>toggleMax('main');$('#arcmax').onclick=()=>toggleMax('arc');$('#schmax').onclick=()=>toggleMax('sch');$('#schmin').onclick=()=>minWin('sch');$('#schclose').onclick=()=>closeSch();$('#arcmin').onclick=()=>minWin('arc');$('#arcclose').onclick=()=>closeWin('arc');$('#dmax').onclick=()=>toggleMax('doc');$('#decomax').onclick=()=>toggleMax('deco');
+$('#mmax').onclick=()=>toggleMax('main');$('#arcmax').onclick=()=>toggleMax('arc');$('#schmax').onclick=()=>toggleMax('sch');$('#galmax').onclick=()=>toggleMax('gal');$('#galmin').onclick=()=>minWin('gal');$('#galclose').onclick=()=>closeGal();$('#schmin').onclick=()=>minWin('sch');$('#schclose').onclick=()=>closeSch();$('#arcmin').onclick=()=>minWin('arc');$('#arcclose').onclick=()=>closeWin('arc');$('#dmax').onclick=()=>toggleMax('doc');$('#decomax').onclick=()=>toggleMax('deco');
 addEventListener('resize',()=>{for(const k of ORDER)applyGeo(k)});
 (()=>{let op=null;const narrow=()=>matchMedia('(max-width:640px)').matches;
   document.addEventListener('pointerdown',e=>{if(e.button!==0||narrow())return;
@@ -1147,7 +1188,7 @@ addEventListener('resize',()=>{for(const k of ORDER)applyGeo(k)});
 let dSel=null;
 function deskItems(){
   const O=look.iconOver||{};const ic=(k,def,over)=>pix((O[k]&&O[k].ic)||def,40,over);const lb=(k,def)=>(O[k]&&O[k].lb)||def;const tc=countIn('trash');
-  const it=[{k:'box',lb:lb('box','로그 보관함'),ic:ic('box','archive')},{k:'arc',lb:lb('arc','아카이브'),ic:ic('arc','globe')},{k:'sch',lb:lb('sch','세션 일정'),ic:ic('sch','calendar')},{k:'deco',lb:lb('deco','꾸미기'),ic:ic('deco','palette')},
+  const it=[{k:'box',lb:lb('box','로그 보관함'),ic:ic('box','archive')},{k:'arc',lb:lb('arc','아카이브'),ic:ic('arc','globe')},{k:'sch',lb:lb('sch','세션 일정'),ic:ic('sch','calendar')},{k:'gal',lb:lb('gal','이미지 보관함'),ic:ic('gal','camera')},{k:'deco',lb:lb('deco','꾸미기'),ic:ic('deco','palette')},
     {k:'trash',lb:lb('trash','휴지통')+(tc?` (${tc})`:''),ic:ic('trash',tc?'trashfull':'trash')}];
   if(look.deskFolders)for(const d of folderList())it.push({k:'f:'+d.id,lb:d.name,ic:ic('f:'+d.id,'folder',d.color&&look.iconStyle!=='w98'?{y:colorOf(d.color)}:null)});
   if(look.deskFav)for(const f of [...files.values()].filter(f=>f.star&&!f.trashed))it.push({k:'d:'+f.id,lb:f.name,ic:ic('d:'+f.id,'doc',f.color?{a:colorOf(f.color)}:null)});
@@ -1176,6 +1217,7 @@ function openDesk(k){
   else if(k.startsWith('d:'))openDoc(k.slice(2));
   else if(k==='arc')openArc();
   else if(k==='sch')openSched();
+  else if(k==='gal')openGal();
   else if(k.startsWith('l:')){const l=links.get(k.slice(2));if(l)openUrl(l.url)}
 }
 (()=>{const box=$('#dicons');let drag=null,hint=null;
@@ -1236,7 +1278,7 @@ function renderDeco(){
    <p class="hint" style="margin:8px 0 0">붙인 것은 끌어서 옮기고, 모서리를 끌어 크기를 바꿔요. 스티커는 누르면 돌리기·지우기 버튼이 나와요. 오른쪽 클릭하면 앞/뒤 순서도 바꿀 수 있어요.</p></div>
    <div><h4>지금 붙어 있는 것 · ${n}개</h4>${n?`<div class="seg"><button class="btn" data-a="wgclear">모두 떼기</button></div>${wgConfirm?`<div class="ask" style="margin-top:8px">바탕화면의 사진 창·스티커·위젯 ${n}개를 모두 뗄까요?<div style="display:flex;gap:6px"><button class="btn sm danger" data-a="wgclearyes">모두 떼기</button><button class="btn sm" data-a="wgno">취소</button></div></div>`:''}`:'<p class="hint" style="margin:0">아직 없어요.</p>'}</div>`}
   else if(decoTab==='icons'){const items=deskItems();p.innerHTML=`<div><h4>아이콘 스타일</h4><div class="seg">${[['pastel','파스텔 도트'],['w98','윈도우 98'],['xp','윈도우 XP']].map(x=>`<button class="btn" data-icst="${x[0]}" ${pr('iconStyle',x[0])} style="display:flex;gap:6px;align-items:center">${pix('computer',22,null,x[0])}${pix('folder',22,null,x[0])}${x[1]}</button>`).join('')}</div></div>
-   <div><h4>아이콘 하나씩 바꾸기 <span class="hint" style="letter-spacing:0">· 바탕화면 아이콘을 오른쪽 클릭해도 돼요</span></h4><div style="display:grid;gap:6px">${items.filter(x=>!x.k.startsWith('l:')).map(x=>`<div style="display:flex;gap:8px;align-items:center">${x.ic.replace(/width="40" height="40"/,'width="26" height="26"')}<span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--cute)">${esc(x.lb)}</span><button class="btn sm" data-icpick="${esc(x.k)}">아이콘</button>${['box','arc','deco','trash','sch'].includes(x.k)?`<button class="btn sm" data-icname="${esc(x.k)}">이름</button>`:''}</div>`).join('')}</div></div>`}
+   <div><h4>아이콘 하나씩 바꾸기 <span class="hint" style="letter-spacing:0">· 바탕화면 아이콘을 오른쪽 클릭해도 돼요</span></h4><div style="display:grid;gap:6px">${items.filter(x=>!x.k.startsWith('l:')).map(x=>`<div style="display:flex;gap:8px;align-items:center">${x.ic.replace(/width="40" height="40"/,'width="26" height="26"')}<span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--cute)">${esc(x.lb)}</span><button class="btn sm" data-icpick="${esc(x.k)}">아이콘</button>${['box','arc','deco','trash','sch','gal'].includes(x.k)?`<button class="btn sm" data-icname="${esc(x.k)}">이름</button>`:''}</div>`).join('')}</div></div>`}
   else p.innerHTML=`<div><h4>효과</h4><div class="seg" style="flex-direction:column"><label class="opt"><input type="checkbox" data-ck="sparkle"${look.sparkle?' checked':''}>누를 때 반짝이 ✦</label><label class="opt"><input type="checkbox" data-ck="scan"${look.scan?' checked':''}>옛날 모니터 줄무늬</label></div></div>
    <div><h4>마우스 커서</h4><div class="curs">${CURSORS.map(([k,t])=>`<button class="btn sm" data-cur="${k}" aria-pressed="${(look.cursorType||'default')===k}">${k==='default'?'↖':k==='custom'?(look.cursorImg?`<img src="${look.cursorImg}" width="18" height="18" alt="">`:'🖼'):pix(k,18)}${t}</button>`).join('')}</div><p class="hint" style="margin:6px 0 0">‘내 그림’은 작은 그림을 올리면 32×32로 줄여서 커서로 써요.</p></div>
    <div><h4>화면 보호기</h4><div class="seg">${[[0,'끄기'],[1,'1분'],[3,'3분'],[5,'5분'],[10,'10분']].map(([v,t])=>`<button class="btn sm" data-saver="${v}" aria-pressed="${(+look.saver||0)===v}">${t}</button>`).join('')}</div>
@@ -1261,7 +1303,7 @@ $('#dpane').addEventListener('click',async e=>{const b=e.target.closest('button'
   else if(d.icname){renameDesk(d.icname);return}
   else if(d.font)look.font=d.font;else if(d.icon)look.icon=d.icon;else if(d.sq!==undefined)look.square=d.sq==='1';
   else if(d.a==='wallup'){$('#wallin').click();return}
-  else if(d.a==='wallclear'){const old=look.wallImg;look.wallImg='';if(old&&!old.startsWith('mem:'))dropAsset(old)}
+  else if(d.a==='wallclear'){const old=look.wallImg;look.wallImg='';if(old&&!old.startsWith('mem:')&&![...coll.images.values()].some(x=>x.asset===old))dropAsset(old)}
   else if(d.a==='colreset'){look.t1='';look.t2='';look.acc=''}
   else if(d.a==='iconreset'){look.iconCells={}}
   else if(d.a==='lookreset'){const keep={noteText:look.noteText,wallImg:''};look=Object.assign(defLook(),keep)}
@@ -1271,7 +1313,7 @@ $('#dpane').addEventListener('input',e=>{const t=e.target;if(t.dataset.col){look
 $('#dpane').addEventListener('change',e=>{const t=e.target;if(t.dataset.ck){look[t.dataset.ck]=t.checked;applyLook();saveLook()}});
 $('#wallin').onchange=async()=>{const f=$('#wallin').files[0];$('#wallin').value='';if(!f)return;
   if(memory||!assets){wallObj=URL.createObjectURL(f);look.wallImg='mem:1';applyLook();renderDeco();toast('이번에만 쓰는 배경이에요 (저장소에 연결되면 계속 남아요)');return}
-  const b=busy('배경화면 올리는 중');try{const type=f.type||({png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',gif:'image/gif',webp:'image/webp'}[(f.name.split('.').pop()||'').toLowerCase()]);const r=await assets.upload(f,{type});const old=look.wallImg;look.wallImg=r.id;if(look.wallFit==='')look.wallFit='cover';applyLook();renderDeco();saveLook();if(old&&!old.startsWith('mem:'))dropAsset(old);b.done();toast('배경화면을 바꿨어요 ♡')}catch(e){b.done();toast('사진을 올리지 못했어요: '+errText(e))}};
+  const b=busy('배경화면 올리는 중');try{const type=f.type||({png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',gif:'image/gif',webp:'image/webp'}[(f.name.split('.').pop()||'').toLowerCase()]);const r=await assets.upload(f,{type});const old=look.wallImg;look.wallImg=r.id;if(look.wallFit==='')look.wallFit='cover';applyLook();renderDeco();saveLook();if(old&&!old.startsWith('mem:')&&![...coll.images.values()].some(x=>x.asset===old))dropAsset(old);b.done();toast('배경화면을 바꿨어요 ♡')}catch(e){b.done();toast('사진을 올리지 못했어요: '+errText(e))}};
 
 
 /* ---------- archive: links to backups kept elsewhere ---------- */
@@ -1329,7 +1371,7 @@ function showCtx(x,y,k,wid){wgCtx=wid||null;
   if(k){h+=`<button data-c="open">열기</button>`;
     if(k.startsWith('l:'))h+=`<button data-c="editlink">링크 고치기</button>`;
     h+=`<hr><button data-c="icon">아이콘 바꾸기…</button>`;
-    if(['box','arc','deco','trash','sch'].includes(k)||k.startsWith('f:')||k.startsWith('d:')||k.startsWith('l:'))h+=`<button data-c="rename">이름 바꾸기…</button>`;
+    if(['box','arc','deco','trash','sch','gal'].includes(k)||k.startsWith('f:')||k.startsWith('d:')||k.startsWith('l:'))h+=`<button data-c="rename">이름 바꾸기…</button>`;
     if((look.iconOver||{})[k])h+=`<button data-c="reset">원래 아이콘으로</button>`;
     if(k.startsWith('l:'))h+=`<hr><button data-c="unpin">바탕화면에서 빼기</button>`;
     if(k.startsWith('d:'))h+=`<hr><button data-c="unstar">바탕화면에서 빼기 (즐겨찾기 해제)</button><button data-c="trash">휴지통으로</button>`;
@@ -1368,7 +1410,7 @@ async function iconPicker(k){
   if(k.startsWith('l:')){await S.updLink(k.slice(2),{ic:r.ic});return}
   look.iconOver=Object.assign({},look.iconOver,{[k]:Object.assign({},(look.iconOver||{})[k],{ic:r.ic})});saveLook();renderDesktop();if(decoOpen)renderDeco()}
 async function renameDesk(k){
-  const cur=k.startsWith('f:')?(folders.get(k.slice(2))||{}).name:k.startsWith('d:')?(files.get(k.slice(2))||{}).name:k.startsWith('l:')?(links.get(k.slice(2))||{}).name:(((look.iconOver||{})[k]||{}).lb||({box:'로그 보관함',arc:'아카이브',deco:'꾸미기',trash:'휴지통',sch:'세션 일정'})[k]);
+  const cur=k.startsWith('f:')?(folders.get(k.slice(2))||{}).name:k.startsWith('d:')?(files.get(k.slice(2))||{}).name:k.startsWith('l:')?(links.get(k.slice(2))||{}).name:(((look.iconOver||{})[k]||{}).lb||({box:'로그 보관함',arc:'아카이브',deco:'꾸미기',trash:'휴지통',sch:'세션 일정',gal:'이미지 보관함'})[k]);
   const r=await dialog('이름 바꾸기',`<input type="text" value="${esc(cur||'')}" maxlength="40" aria-label="새 이름">`,'바꾸기');const v=r&&r.text&&r.text.trim();if(!v)return;
   if(k.startsWith('f:'))await S.updFolder(k.slice(2),{name:v});else if(k.startsWith('d:'))await S.updFile(k.slice(2),{name:v,updatedAt:now()});else if(k.startsWith('l:'))await S.updLink(k.slice(2),{name:v});
   else{look.iconOver=Object.assign({},look.iconOver,{[k]:Object.assign({},(look.iconOver||{})[k],{lb:v})});saveLook();renderDesktop();if(decoOpen)renderDeco()}}
@@ -1398,7 +1440,7 @@ function renderWidgets(){
     return ''}).join('');
 }
 setInterval(()=>{const c=clockText();document.querySelectorAll('[data-clk]').forEach(e=>e.textContent=c.t);document.querySelectorAll('[data-clkd]').forEach(e=>e.textContent=c.d)},10000);
-async function delWidget(w,quiet){if(w.type==='music'&&window.__music)window.__music.remove(w.id);if(w.asset&&!w.asset.startsWith('mem:')&&![...widgets.values()].some(x=>x.id!==w.id&&x.asset===w.asset))dropAsset(w.asset);await S.delWidget(w.id);if(wgSel===w.id)wgSel=null;if(!quiet)toast('떼어 냈어요')}
+async function delWidget(w,quiet){if(w.type==='music'&&window.__music)window.__music.remove(w.id);if(w.asset&&!w.asset.startsWith('mem:')&&![...widgets.values()].some(x=>x.id!==w.id&&x.asset===w.asset)&&![...coll.images.values()].some(x=>x.asset===w.asset))dropAsset(w.asset);await S.delWidget(w.id);if(wgSel===w.id)wgSel=null;if(!quiet)toast('떼어 냈어요')}
 function spot(w,h){const A=wgArea();const n=widgets.size;return{x:Math.max(10,Math.round(A.w/2-w/2+((n*37)%160)-80)),y:Math.max(10,Math.round(A.h/2-h/2+((n*29)%120)-60))}}
 const nextZ=()=>Math.max(0,...[...widgets.values()].map(x=>x.z||0))+1;
 async function addWidget(type){
@@ -1513,7 +1555,7 @@ const fmtDay=ds=>{if(!ds)return '날짜 미정';const [y,m,d]=ds.split('-').map(
 function nextSession(){const t=todayStr();return [...coll.sessions.values()].filter(x=>x.date&&x.date>=t&&(x.status||'plan')!=='cancel'&&(x.status||'plan')!=='done').sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||'')))[0]||null}
 let schSel=new Set(),schMulti=false,dayDrag=null;
 let schOpen=false,schTab='cal',schYM=null,schDay=null,schEdit=null,schDraft=null,charEdit=null,charDraft=null,schConfirm=null,calOff={},diceSt={},schFilter='';
-function collChanged(){if(lookReady){renderWidgets();if(schOpen&&!schEdit&&!charEdit)renderSch()}}
+function collChanged(){if(lookReady){renderWidgets();if(schOpen&&!schEdit&&!charEdit)renderSch();if(galOpen&&!galEdit)renderGal();if(gView)drawView()}}
 function openSched(day){schOpen=true;if(day){schDay=day;const [y,m]=day.split('-').map(Number);schYM=[y,m-1];schTab='cal'}if(!schYM){const d=new Date();schYM=[d.getFullYear(),d.getMonth()];schDay=schDay||todayStr()}renderSch();showWin('sch')}
 async function closeSch(){if((schEdit||charEdit)&&!(await askDiscard()))return;schEdit=null;charEdit=null;schDraft=null;charDraft=null;closeWin('sch')}
 $('#schtabs').addEventListener('click',async e=>{const b=e.target.closest('[data-st]');if(!b)return;if((schEdit||charEdit)&&!(await askDiscard()))return;schEdit=null;charEdit=null;schTab=b.dataset.st;renderSch()});
@@ -1675,6 +1717,134 @@ document.addEventListener('keydown',e=>{const i=e.target.closest&&e.target.close
 
 
 if(window.__standalone)window.__lb={S,dialog,toast,pix,esc,normUrl,openUrl,renderWidgets,widgets:()=>widgets,canWrite:()=>canWrite};
+
+/* ---------- image archive: uploaded pictures and image links, with commission credits ---------- */
+const SRCK=[['comm','커미션'],['gift','선물'],['self','자작'],['official','공식'],['trade','교환·트레'],['etc','기타']];
+let galSort='new';try{galSort=localStorage.getItem('logbox-galsort')||'new'}catch(e){}
+let galOpen=false,galEdit=null,galDraft=null,galGrp='',galQ='',galConfirm=null,gView=null;
+const imgSrc=x=>x.asset?(x.asset.startsWith('mem:')?(wgObj.get(x.asset)||''):blobUrl(x.asset)):(x.url||'');
+// the Claude page cannot show pictures from other sites, so linked images appear as link cards there
+const showable=x=>!!x.asset;
+function openGal(){galOpen=true;renderGal();showWin('gal')}
+async function closeGal(){if(galEdit&&!(await askDiscard()))return;galEdit=null;galDraft=null;closeWin('gal')}
+const galList=()=>galSorted(galList0());
+const galList0=()=>{const q=galQ.trim().toLowerCase();return [...coll.images.values()].filter(x=>(!galGrp||(x.group||'')===galGrp)&&(!q||[x.name,x.artist,x.group,(x.tags||[]).join(' '),x.memo].join(' ').toLowerCase().includes(q)))};
+const gDay=x=>x.date||(x.createdAt||'').slice(0,10);
+function galSorted(list){const by={new:(a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''),old:(a,b)=>(a.createdAt||'').localeCompare(b.createdAt||''),dnew:(a,b)=>(gDay(b)+(b.createdAt||'')).localeCompare(gDay(a)+(a.createdAt||'')),dold:(a,b)=>(gDay(a)+(a.createdAt||'')).localeCompare(gDay(b)+(b.createdAt||'')),name:(a,b)=>(a.name||'').localeCompare(b.name||'','ko',{numeric:true})};return list.sort(by[galSort]||by.new)}
+const credit=x=>{const k=(SRCK.find(s2=>s2[0]===x.kind)||[])[1];return [k,x.artist?'© '+x.artist:''].filter(Boolean).join(' · ')};
+function renderGal(){
+  $('#galico').innerHTML=pix('camera',16);$('#galup').hidden=!canWrite;$('#gallink').hidden=!canWrite;
+  const groups=[...new Set([...coll.images.values()].map(x=>x.group).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ko'));
+  if(galGrp&&!groups.includes(galGrp))galGrp='';$('#galgrp').innerHTML=`<option value="">모든 묶음</option>`+groups.map(g=>`<option value="${esc(g)}"${g===galGrp?' selected':''}>${esc(g)}</option>`).join('');
+  const body=$('#galbody');
+  if(galEdit){body.innerHTML=galForm();return}
+  const list=galList();
+  if(!coll.images.size){body.innerHTML=`<div class="empty"><span class="art">${pix('camera',48)}</span><b>아직 이미지가 없어요</b><span>커미션, 선물 그림, 스탠딩, 세션 스크린샷을 모아 두세요.<br>이미지를 이 창에 끌어다 놓거나 ‘＋ 이미지 올리기’를 누르면 돼요. 포스타입·블로그 같은 다른 곳의 백업은 ‘＋ 백업 링크’로 모아 둘 수 있어요.</span>${canWrite?'<button class="btn pink" data-g="up">＋ 이미지 올리기</button>':''}</div>`;return}
+  const imgs=list.filter(x=>x.asset),lks=list.filter(x=>!x.asset);
+  const gcard=x=>`<button class="gcard" data-gid="${x.id}"><span class="th" style="background-image:url('${esc(imgSrc(x))}')"></span><span class="cap"><b>${esc(x.name||'이미지')}</b>${credit(x)?`<span class="cr">${esc(credit(x))}</span>`:''}${galSort==='dnew'||galSort==='dold'?`<span class="kind">${esc(gDay(x).replace(/-/g,'.'))}</span>`:''}</span></button>`;
+  const lcard=x=>`<div class="lk" data-lid="${x.id}"><span class="ic">${pix(x.ic||'link',36)}</span><b title="${esc(x.name)}">${esc(x.name||'백업 링크')}</b><span class="u">${esc(hostOf(x.url))}</span>${x.memo||credit(x)?`<span class="m">${esc([credit(x),x.memo].filter(Boolean).join(' · '))}</span>`:''}
+    <div class="ops"><a class="btn sm pink" href="${esc(x.url)}" target="_blank" rel="noopener noreferrer">열기 ↗</a>${canWrite?`<button class="btn sm" data-g="edit" data-id="${x.id}">고치기</button><button class="btn sm" data-g="ldel" data-id="${x.id}">지우기</button>`:''}</div>
+    ${galConfirm==='l:'+x.id?`<div class="ask" style="grid-column:1/-1">‘${esc(x.name)}’ 링크를 지울까요? (원래 사이트는 그대로예요)<div style="display:flex;gap:6px"><button class="btn sm danger" data-g="ldelyes" data-id="${x.id}">지우기</button><button class="btn sm" data-g="lno">취소</button></div></div>`:''}</div>`;
+  body.innerHTML=!list.length?`<div class="empty"><b>찾는 이미지가 없어요</b></div>`:
+   (imgs.length?(galSort==='dnew'||galSort==='dold'?(()=>{const m=new Map();for(const x of imgs){const k=gDay(x).slice(0,7)||'날짜 없음';if(!m.has(k))m.set(k,[]);m.get(k).push(x)}return [...m].map(([k,xs])=>`<section class="grp"><h4 style="margin:0 0 8px;font:12px var(--pixel);color:var(--ink2)">${k==='날짜 없음'?k:`${k.slice(0,4)}년 ${+k.slice(5,7)}월`} · ${xs.length}</h4><div class="ggrid">${xs.map(gcard).join('')}</div></section>`).join('')})():`<section class="grp"><h4 style="margin:0 0 8px;font:12px var(--pixel);color:var(--ink2)">이미지 · ${imgs.length}</h4><div class="ggrid">${imgs.map(x=>`<button class="gcard" data-gid="${x.id}"><span class="th" style="background-image:url('${esc(imgSrc(x))}')"></span><span class="cap"><b>${esc(x.name||'이미지')}</b>${credit(x)?`<span class="cr">${esc(credit(x))}</span>`:''}</span></button>`).join('')}</div></section>`):'')+
+   (lks.length?`<section class="grp"><h4 style="margin:0 0 8px;font:12px var(--pixel);color:var(--ink2)">외부 백업 링크 · ${lks.length}</h4><div class="links">${lks.map(lcard).join('')}</div></section>`:'');
+}
+$('#galgrp').onchange=e=>{galGrp=e.target.value;renderGal()};
+$('#galsort').value=galSort;$('#galsort').onchange=e=>{galSort=e.target.value;try{localStorage.setItem('logbox-galsort',galSort)}catch(_){}renderGal()};
+$('#galq').addEventListener('input',e=>{galQ=e.target.value;renderGal()});
+$('#galup').onclick=()=>$('#galin').click();
+$('#gallink').onclick=async()=>{if(galEdit&&!(await askDiscard()))return;galEdit='new';galDraft={name:'',url:'',ic:'link',group:galGrp,kind:'',artist:'',artistUrl:'',date:'',memo:'',tags:[]};renderGal()};
+async function addImages(fs){
+  fs=[...fs].filter(f=>/^image\//.test(f.type)||/\.(png|jpe?g|gif|webp)$/i.test(f.name));if(!fs.length){toast('PNG, JPG, GIF, WEBP 이미지를 넣어 주세요');return}
+  if(!canWrite){toast('이 화면에서는 올릴 수 없어요');return}
+  const b=busy('이미지 올리는 중');const ids=[];
+  for(let i=0;i<fs.length;i++){const f=fs[i];b.set(i/fs.length,f.name);try{if(f.size>20*1048576){toast(`‘${f.name}’은(는) 20MB가 넘어요`);continue}
+    const [w,h]=await imgSize(f);let id;if(memory||!assets){id='mem:'+Math.random().toString(36).slice(2);wgObj.set(id,URL.createObjectURL(f))}else{const type=f.type||({png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',gif:'image/gif',webp:'image/webp'}[(f.name.split('.').pop()||'').toLowerCase()]);const r=await assets.upload(f,{type});id=r.id}
+    ids.push(await S.cAdd('images',{name:f.name.replace(/\.[^.]+$/,'').slice(0,80),asset:id,size:f.size,w,h,group:galGrp,kind:'comm',artist:'',artistUrl:'',date:'',memo:'',tags:[],createdAt:now()}))}catch(e){toast('올리지 못했어요: '+errText(e))}}
+  b.done();if(ids.length===1){const x=coll.images.get(ids[0]);if(x){galEdit=ids[0];galDraft=JSON.parse(JSON.stringify(x));renderGal();toast('올렸어요 · 이름과 출처를 적어 주세요')}}else if(ids.length)toast(`${ids.length}장을 올렸어요 · 출처는 각 이미지를 눌러 적어 주세요`);
+}
+$('#galin').onchange=()=>{addImages($('#galin').files);$('#galin').value=''};
+const galBody=$('#galbody');
+galBody.addEventListener('dragover',e=>{if([...e.dataTransfer.types].includes('Files')){e.preventDefault();galBody.classList.add('dragover')}});
+galBody.addEventListener('dragleave',e=>{if(e.target===galBody)galBody.classList.remove('dragover')});
+galBody.addEventListener('drop',e=>{galBody.classList.remove('dragover');if(e.dataTransfer.files.length){e.preventDefault();addImages(e.dataTransfer.files)}});
+function galForm(){const d=galDraft;const ro=!canWrite?' disabled':'';const groups=[...new Set([...coll.images.values()].map(x=>x.group).filter(Boolean))];const isLink=!d.asset;
+  return `<form class="sform" id="gform" style="max-width:none"><h3 style="margin:0;font:18px var(--cute)">${isLink?(galEdit==='new'?'외부 백업 링크 추가':'백업 링크 고치기'):'이미지 정보'}</h3>
+   <div class="gform"><div class="pv" style="${d.asset?`background-image:url('${esc(imgSrc(d))}')`:''}">${d.asset?'':`${pix(d.ic||'link',72)}<br>${esc(d.url?hostOf(d.url):'백업 주소')}`}</div>
+    <div style="display:grid;gap:10px">
+     ${isLink?`<label>백업 주소<input type="text" name="url" value="${esc(d.url||'')}" maxlength="2000" placeholder="https://… (포스타입·블로그·드라이브·트위터 등)"${ro}></label>
+      <label>아이콘<div class="icpick" id="gicp">${PIXNAMES.map(([n,t])=>`<button type="button" data-gic="${n}" title="${t}" aria-label="${t}" aria-pressed="${(d.ic||'link')===n}"${ro}>${pix(n,26)}</button>`).join('')}</div></label>`:''}
+     <div class="row2"><label>이름<input type="text" name="name" value="${esc(d.name||'')}" maxlength="80" placeholder="${isLink?'예: VOID 포스타입 백업':'예: 코나 반신 커미션'}"${ro}></label><label>묶음<input type="text" name="group" value="${esc(d.group||'')}" list="dl-ggroups" maxlength="30" placeholder="예: VOID, 코나"${ro}></label></div><datalist id="dl-ggroups">${groups.map(g=>`<option value="${esc(g)}">`).join('')}</datalist>
+     <fieldset><legend>${isLink?'출처 (선택)':'출처'}</legend><div class="row2"><label>종류<select name="kind"${ro}>${isLink?`<option value=""${!d.kind?' selected':''}>—</option>`:''}${SRCK.map(([k,t])=>`<option value="${k}"${d.kind===k?' selected':''}>${t}</option>`).join('')}</select></label><label>작가 이름<input type="text" name="artist" value="${esc(d.artist||'')}" maxlength="60" placeholder="예: @artist"${ro}></label></div>
+      <label>작가·출처 링크<input type="text" name="artistUrl" value="${esc(d.artistUrl||'')}" maxlength="500" placeholder="작가 계정, 커미션 페이지 등"${ro}></label><label>받은 날<input type="date" name="date" value="${esc(d.date||'')}"${ro}></label></fieldset>
+     <div class="row2"><label>태그<input type="text" name="tags" value="${esc((d.tags||[]).join(', '))}" maxlength="120" placeholder="쉼표로 나누기"${ro}></label></div>
+     <label>메모<textarea name="memo" rows="3" maxlength="2000" placeholder="사용 범위, 신청 내용 등"${ro}>${esc(d.memo||'')}</textarea></label>
+     <div class="acts">${canWrite?`<button class="btn pink" type="submit">${galEdit==='new'?'추가하기':'저장하기'}</button>`:''}<button type="button" class="btn" data-g="cancel">${canWrite?'그만두기':'닫기'}</button>${canWrite&&galEdit!=='new'?'<button type="button" class="btn" data-g="del">지우기</button>':''}<span class="hint" id="gerr" style="color:var(--danger)"></span></div>
+     ${galConfirm===galEdit?`<div class="ask">${isLink?'이 링크를':'이 이미지를'} 지울까요? 되돌릴 수 없어요.<div style="display:flex;gap:6px"><button type="button" class="btn sm danger" data-g="delyes">지우기</button><button type="button" class="btn sm" data-g="no">취소</button></div></div>`:''}
+    </div></div></form>`}
+function readGalForm(){const f=$('#gform');if(!f||!galDraft)return;const gp=f.querySelector('[data-gic][aria-pressed="true"]');if(gp)galDraft.ic=gp.dataset.gic;for(const k of ['name','group','kind','artist','artistUrl','date','memo'])galDraft[k]=f.elements[k].value;if(f.elements.url)galDraft.url=f.elements.url.value;galDraft.tags=f.elements.tags.value.split(/[,，]/).map(x=>x.trim()).filter(Boolean).slice(0,15)}
+galBody.addEventListener('click',async e=>{
+  const c=e.target.closest('[data-gid]');if(c){openView(c.dataset.gid);return}
+  const gi=e.target.closest('[data-gic]');if(gi){gi.closest('.icpick').querySelectorAll('[data-gic]').forEach(x=>x.setAttribute('aria-pressed',x===gi));return}
+  const b=e.target.closest('[data-g]');if(!b)return;const k=b.dataset.g;
+  if(k==='edit'){const x=coll.images.get(b.dataset.id);if(x){galEdit=x.id;galDraft=JSON.parse(JSON.stringify(x));galConfirm=null;renderGal()}return}
+  if(k==='ldel'){galConfirm='l:'+b.dataset.id;renderGal();return}
+  if(k==='lno'){galConfirm=null;renderGal();return}
+  if(k==='ldelyes'){await S.cDel('images',b.dataset.id);galConfirm=null;toast('링크를 지웠어요');return}
+  if(k==='up')$('#galin').click();
+  else if(k==='cancel'){galEdit=null;galDraft=null;galConfirm=null;renderGal()}
+  else if(k==='del'){readGalForm();galConfirm=galEdit;renderGal()}
+  else if(k==='no'){readGalForm();galConfirm=null;renderGal()}
+  else if(k==='delyes'){const x=coll.images.get(galEdit);await delImage(x);galEdit=null;galDraft=null;galConfirm=null;renderGal();toast('이미지를 지웠어요')}
+});
+async function delImage(x){if(!x)return;if(x.asset&&!x.asset.startsWith('mem:')&&![...widgets.values()].some(w=>w.asset===x.asset)&&![...coll.images.values()].some(o=>o.id!==x.id&&o.asset===x.asset))dropAsset(x.asset);await S.cDel('images',x.id)}
+galBody.addEventListener('submit',async e=>{e.preventDefault();readGalForm();const d=galDraft;
+  const out={name:(d.name||'').trim().slice(0,80)||'이미지',group:(d.group||'').trim().slice(0,30),kind:d.kind,artist:(d.artist||'').trim().slice(0,60),artistUrl:(d.artistUrl||'').trim()?normUrl(d.artistUrl):'',date:d.date||'',memo:(d.memo||'').slice(0,2000),tags:d.tags||[],updatedAt:now()};
+  if(!d.asset){const u=normUrl(d.url);if(!u){$('#gerr').textContent='http:// 나 https:// 로 시작하는 주소를 적어 주세요';return}out.url=u;out.ic=d.ic||'link';if(!(d.name||'').trim())out.name=hostOf(u)}
+  try{if(galEdit==='new'){out.createdAt=now();await S.cAdd('images',out);toast('백업 링크를 추가했어요')}else{await S.cUpd('images',galEdit,out);toast('저장했어요')}galEdit=null;galDraft=null;renderGal()}catch(err){$('#gerr').textContent='저장하지 못했어요: '+errText(err)}});
+// full-screen viewer with the credit under the picture
+function openView(id){gView=id;drawView()}
+function drawView(){let v=$('#gview');const x=coll.images.get(gView);if(!x||!x.asset){if(v)v.remove();gView=null;return}
+  if(!v){v=document.createElement('div');v.id='gview';v.className='gview';v.setAttribute('role','dialog');v.setAttribute('aria-label','이미지 보기');document.body.appendChild(v);v.addEventListener('click',viewClick);v.tabIndex=-1}
+  const list=galList().filter(o=>o.asset);const i=list.findIndex(o=>o.id===x.id);const sh=showable(x);
+  const cr=[(SRCK.find(s2=>s2[0]===x.kind)||[])[1],x.artist?(x.artistUrl?`<a href="${esc(x.artistUrl)}" target="_blank" rel="noopener noreferrer">© ${esc(x.artist)}</a>`:'© '+esc(x.artist)):'',x.date?esc(x.date.replace(/-/g,'.')):''].filter(Boolean);
+  v.innerHTML=`<div class="stage">${sh?`<img src="${esc(imgSrc(x))}" alt="${esc(x.name||'')}">`:`<div class="raised" style="padding:24px;border-radius:10px;text-align:center;display:grid;gap:10px;justify-items:center">${pix('link',48)}<b style="font:16px var(--cute)">링크로 저장한 이미지예요</b><span class="hint">${esc(hostOf(x.url))}</span><a class="btn pink" href="${esc(x.url)}" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:inherit">원본 열기 ↗</a></div>`}
+   ${list.length>1&&i>=0?`<button class="nav l" data-v="prev" aria-label="이전 이미지">◀</button><button class="nav r" data-v="next" aria-label="다음 이미지">▶</button>`:''}${sh?`<div class="zbar raised"><button class="btn sm" data-v="zout" aria-label="축소">－</button><span id="zpct">맞춤</span><button class="btn sm" data-v="zin" aria-label="확대">＋</button><button class="btn sm" data-v="zfit">맞춤</button><button class="btn sm" data-v="z100">원본 크기</button></div>`:''}</div>
+   <div class="info raised"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><b style="flex:1;min-width:0">${esc(x.name||'이미지')}</b>${x.group?`<span class="pill">${esc(x.group)}</span>`:''}${x.w?`<span class="hint">${x.w}×${x.h}</span>`:''}</div>
+    <div class="credit">${cr.length?cr.join(' · '):'<span class="hint">출처를 아직 적지 않았어요</span>'}</div>${x.memo?`<div class="hint" style="white-space:pre-wrap">${esc(x.memo)}</div>`:''}${(x.tags||[]).length?`<div class="tags">${x.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>`:''}
+    <div class="acts">${canWrite?'<button class="btn" data-v="edit">정보 고치기</button>':''}${x.asset?'<button class="btn" data-v="dl">내려받기</button>':`<a class="btn" href="${esc(x.url)}" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:inherit">원본 열기 ↗</a>`}${canWrite&&x.asset?'<button class="btn" data-v="desk">바탕화면에 사진 창으로</button>':''}${canWrite&&x.asset?'<button class="btn" data-v="wall">배경화면으로</button>':''}<span class="sp" style="flex:1"></span><button class="btn pink" data-v="close">닫기</button></div></div>`;
+  v.focus();zoomInit()}
+// zoom & pan: wheel or pinch to zoom, drag to move, double-click to toggle
+let Z={s:1,x:0,y:0};
+function zApply(){const st=document.querySelector('#gview .stage'),im=st&&st.querySelector('img');if(!im)return;im.style.transform=`translate(${Z.x}px,${Z.y}px) scale(${Z.s})`;st.classList.toggle('zoomed',Z.s>1.001);const p=$('#zpct');if(p)p.textContent=Z.s<=1.001?'맞춤':Math.round(Z.s*100*(im.clientWidth/(im.naturalWidth||im.clientWidth)))+'%'}
+function zClamp(){const st=document.querySelector('#gview .stage'),im=st&&st.querySelector('img');if(!im)return;Z.s=Math.max(1,Math.min(12,Z.s));if(Z.s<=1){Z.x=Z.y=0;return}const mx=Math.max(0,(im.clientWidth*Z.s-st.clientWidth)/2),my=Math.max(0,(im.clientHeight*Z.s-st.clientHeight)/2);Z.x=Math.max(-mx,Math.min(mx,Z.x));Z.y=Math.max(-my,Math.min(my,Z.y))}
+function zAt(ns,cx,cy){const st=document.querySelector('#gview .stage');if(!st)return;const r=st.getBoundingClientRect();const ox=cx-(r.left+r.width/2),oy=cy-(r.top+r.height/2);ns=Math.max(1,Math.min(12,ns));const k=ns/Z.s;Z.x=ox-(ox-Z.x)*k;Z.y=oy-(oy-Z.y)*k;Z.s=ns;zClamp();zApply()}
+function zoomInit(){Z={s:1,x:0,y:0};const st=document.querySelector('#gview .stage'),im=st&&st.querySelector('img');if(!im)return;zApply();
+  st.addEventListener('wheel',e=>{e.preventDefault();zAt(Z.s*Math.exp(-e.deltaY*0.0015),e.clientX,e.clientY)},{passive:false});
+  const pts=new Map();let pan=null,pinch=null,moved=false;
+  st.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});st.setPointerCapture(e.pointerId);moved=false;
+    if(pts.size===2){const [a,b]=[...pts.values()];pinch={d:Math.hypot(a.x-b.x,a.y-b.y),s:Z.s};pan=null}else pan={x:e.clientX,y:e.clientY,zx:Z.x,zy:Z.y}});
+  st.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(pinch&&pts.size===2){const [a,b]=[...pts.values()];moved=true;zAt(pinch.s*Math.hypot(a.x-b.x,a.y-b.y)/pinch.d,(a.x+b.x)/2,(a.y+b.y)/2);return}
+    if(pan&&Z.s>1){const dx=e.clientX-pan.x,dy=e.clientY-pan.y;if(Math.abs(dx)+Math.abs(dy)>3){moved=true;st.classList.add('panning')}Z.x=pan.zx+dx;Z.y=pan.zy+dy;zClamp();zApply()}
+    else if(pan&&Math.abs(e.clientX-pan.x)+Math.abs(e.clientY-pan.y)>3)moved=true});
+  const up=e=>{pts.delete(e.pointerId);if(pts.size<2)pinch=null;if(!pts.size){pan=null;st.classList.remove('panning')}};
+  st.addEventListener('pointerup',up);st.addEventListener('pointercancel',up);
+  st.addEventListener('click',e=>{if(moved){e.stopPropagation();moved=false}},true);
+  im.addEventListener('dblclick',e=>{if(Z.s>1.001){Z={s:1,x:0,y:0};zApply()}else zAt(2.5,e.clientX,e.clientY)});
+  addEventListener('resize',()=>{zClamp();zApply()},{once:true})}
+async function viewClick(e){const v=$('#gview');if(e.target===v||(e.target.classList.contains('stage')&&Z.s<=1.001)){closeView();return}const b=e.target.closest('[data-v]');if(!b)return;const x=coll.images.get(gView);if(!x)return;const k=b.dataset.v;const list=galList().filter(o=>o.asset);const i=list.findIndex(o=>o.id===x.id);
+  if(k==='zin'||k==='zout'){const st=document.querySelector('#gview .stage').getBoundingClientRect();zAt(Z.s*(k==='zin'?1.4:1/1.4),st.left+st.width/2,st.top+st.height/2);return}
+  if(k==='zfit'){Z={s:1,x:0,y:0};zApply();return}
+  if(k==='z100'){const im=document.querySelector('#gview .stage img');if(im&&im.naturalWidth){const st=document.querySelector('#gview .stage').getBoundingClientRect();zAt(Math.max(1,im.naturalWidth/im.clientWidth),st.left+st.width/2,st.top+st.height/2)}return}
+  if(k==='close')closeView();else if(k==='prev'||k==='next'){const n=list[(i+(k==='next'?1:-1)+list.length)%list.length];if(n){gView=n.id;drawView()}}
+  else if(k==='edit'){closeView();galEdit=x.id;galDraft=JSON.parse(JSON.stringify(x));galConfirm=null;renderGal();showWin('gal')}
+  else if(k==='dl'){try{const r=await fetch(imgSrc(x));const bl=await r.blob();const ext=(bl.type.split('/')[1]||'png').replace('jpeg','jpg');await saveFile(safeName(x.name||'이미지')+'.'+ext,bl)}catch(err){toast('내려받지 못했어요')}}
+  else if(k==='desk'){const w=Math.min(360,Math.max(160,x.w||300));const h=Math.round(w*(x.h||3)/(x.w||4))+30;const p=spot(w,h);await S.addWidget({type:'photo',asset:x.asset,title:(x.name||'사진').slice(0,40),x:p.x,y:p.y,w,h:Math.min(h,520),z:nextZ(),createdAt:now()});toast('바탕화면에 붙였어요')}
+  else if(k==='wall'){look.wallImg=x.asset;look.wallFit=look.wallFit||'cover';applyLook();saveLook();toast('배경화면으로 바꿨어요')}}
+function closeView(){const v=$('#gview');if(v)v.remove();gView=null}
+addEventListener('keydown',e=>{if(!gView)return;if(e.key==='+'||e.key==='='||e.key==='-'||e.key==='0'){const b=document.querySelector(`#gview [data-v=${e.key==='-'?'zout':e.key==='0'?'zfit':'zin'}]`);if(b){e.preventDefault();b.click()}return}if(e.key==='Escape'){closeView();e.stopPropagation()}if(e.key==='ArrowRight'||e.key==='ArrowLeft'){const b=document.querySelector(`#gview [data-v=${e.key==='ArrowRight'?'next':'prev'}]`);if(b)b.click()}},true);
+
 /* ---------- boot ---------- */
 lookReady=true;render();applyLook();sync();renderWidgets();armSaver();
 if(window.__standalone){let seen=null;try{seen=localStorage.getItem('logbox-welcome')}catch(e){}if(!seen)setTimeout(async()=>{await dialog('로그 보관함에 오신 걸 환영해요',`<p style="margin:0;line-height:1.7">이 보관함에 넣은 로그·일정·꾸미기는 <b>지금 쓰는 브라우저 안에</b> 저장돼요.<br>다른 기기나 브라우저에서는 비어 보이고, 브라우저 데이터를 지우면 함께 사라져요.</p><p class="hint" style="margin:0">시작 메뉴 → ‘💾 전체 백업 저장’으로 가끔 백업해 두고, 다른 곳에서는 ‘🗜 ZIP·전체 백업 불러오기’로 옮겨 오세요.</p>`,'알겠어요');try{localStorage.setItem('logbox-welcome','1')}catch(e){}},1600)}
@@ -1689,7 +1859,7 @@ if(window.__standalone){let seen=null;try{seen=localStorage.getItem('logbox-welc
   let booted=false;const boot1=()=>{if(!booted){booted=true;bootScreen();armSaver()}};
   if(!canWrite){loadLocalLook();boot1()}
   else db.collection('settings').doc('look').onSnapshot(d=>{if(d.exists&&!lookDirty){look=Object.assign(defLook(),d.data());applyLook();renderWidgets();if(!$('#decow').hidden)renderDeco()}boot1()},()=>{loadLocalLook();boot1()});
-  for(const c of ['sessions','chars'])db.collection(c).onSnapshot(s=>{coll[c]=new Map(s.docs.map(d=>[d.id,Object.assign({id:d.id},d.data())]));collChanged()},()=>{});
+  for(const c of ['sessions','chars','images'])db.collection(c).onSnapshot(s=>{coll[c]=new Map(s.docs.map(d=>[d.id,Object.assign({id:d.id},d.data())]));collChanged()},()=>{});
   db.collection('widgets').onSnapshot(s=>{widgets=new Map(s.docs.map(d=>[d.id,Object.assign({id:d.id},d.data())]));if(!wgBusy)renderWidgets();if(decoOpen&&decoTab==='wg')renderDeco()},()=>{});
   db.collection('links').onSnapshot(s=>{links=new Map(s.docs.map(d=>[d.id,Object.assign({id:d.id},d.data())]));refreshLinks()},()=>{});
   db.collection('folders').onSnapshot(s=>{folders=new Map(s.docs.map(d=>[d.id,Object.assign({id:d.id},d.data())]));if(view.where&&!['all','star','trash'].includes(view.where)&&!folders.has(view.where))view.where='all';render()});
