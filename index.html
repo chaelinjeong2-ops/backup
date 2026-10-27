@@ -34,7 +34,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 /* bevels */
 .raised{background:var(--face);box-shadow:inset -2px -2px 0 var(--lo),inset 2px 2px 0 var(--hi),0 0 0 1px var(--edge)}
 .sunken{background:var(--sunk);box-shadow:inset 2px 2px 0 var(--lo),inset -2px -2px 0 var(--hi),0 0 0 1px var(--edge)}
-.btn{border:0;border-radius:6px;padding:5px 12px;cursor:pointer;background:var(--face);box-shadow:inset -2px -2px 0 var(--lo),inset 2px 2px 0 var(--hi),0 0 0 1px var(--edge);white-space:nowrap;font-family:var(--cute);font-size:13.5px;letter-spacing:.01em}
+.btn{border:0;border-radius:6px;padding:5px 12px;cursor:pointer;color:var(--ink);background:var(--face);box-shadow:inset -2px -2px 0 var(--lo),inset 2px 2px 0 var(--hi),0 0 0 1px var(--edge);white-space:nowrap;font-family:var(--cute);font-size:13.5px;letter-spacing:.01em}
 .btn:hover{background:var(--face2)}
 .btn:active,.btn[aria-pressed="true"]{box-shadow:inset 2px 2px 0 var(--lo),inset -2px -2px 0 var(--hi),0 0 0 1px var(--edge);background:var(--sel)}
 .btn:disabled{opacity:.45;cursor:default}
@@ -108,7 +108,7 @@ body.sq .btn,body.sq .wb,body.sq input,body.sq select,body.sq textarea,body.sq .
 .tb{display:flex;align-items:center;gap:8px;padding:5px 6px 5px 10px;background:linear-gradient(90deg,var(--t1),var(--t2) 60%,var(--t3));border-bottom:2px solid var(--edge);font-family:var(--pixel);font-size:14px;color:var(--ink);user-select:none}
 .tb .ti{display:flex;align-items:center;gap:7px;min-width:0;flex:1}
 .tb .ti span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tb .wb{width:22px;height:20px;display:grid;place-items:center;border:0;border-radius:4px;cursor:pointer;background:var(--face);box-shadow:inset -2px -2px 0 var(--lo),inset 2px 2px 0 var(--hi),0 0 0 1px var(--edge);font:12px/1 var(--pixel);padding:0}
+.tb .wb{width:22px;height:20px;display:grid;place-items:center;border:0;border-radius:4px;cursor:pointer;color:var(--ink);background:var(--face);box-shadow:inset -2px -2px 0 var(--lo),inset 2px 2px 0 var(--hi),0 0 0 1px var(--edge);font:12px/1 var(--pixel);padding:0}
 .tb .wb:active{box-shadow:inset 2px 2px 0 var(--lo),0 0 0 1px var(--edge)}
 .menu{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:7px 8px;border-bottom:1px solid var(--lo);background:var(--face)}
 .menu .sp{flex:1}
@@ -303,6 +303,8 @@ body.diner #note{background:#fff7d6}
 .wg.qt{display:flex;flex-direction:column;min-width:180px}.wg.qt .tb{cursor:move}
 .wg.on.qt{outline:1px dashed var(--edge);outline-offset:3px}
 .scrow .fl{display:grid;gap:3px;font:11.5px var(--pixel);color:var(--ink2)}.scrow .fl input{width:100%}
+.roomrow{display:flex;align-items:center;gap:8px;margin:-4px 0 4px 8px;flex-wrap:wrap}.roomrow a.btn{text-decoration:none;padding:4px 12px}.roomrow .hint{font-size:11px}
+.addto{display:grid;gap:6px;padding:9px 10px;border-radius:8px;background:var(--sunk);box-shadow:0 0 0 1px var(--lo)}.addto b{font:12px var(--pixel);color:var(--ink2);font-weight:400}.addto .btn{justify-self:start}
 /* frame + timer widgets */
 .wg.frm{display:flex;flex-direction:column;min-width:150px;min-height:150px}.wg.frm .tb{cursor:move}
 .wg.frm .fimg{flex:1;min-height:0;position:relative;background:var(--sunk) center/contain no-repeat;display:grid;place-items:center;text-align:center;font:12px var(--pixel);color:var(--ink3);cursor:zoom-in;transition:background-image .3s}
@@ -442,7 +444,7 @@ body.w98 #boot,body.xp #boot{background:#000;color:#fff}body.w98 #boot .bl,body.
 .wg.cal .cg span[data-day]{cursor:pointer;position:relative}
 .wg.cal .cg span.has::after{content:"";position:absolute;left:50%;bottom:1px;width:4px;height:4px;margin-left:-2px;border-radius:50%;background:var(--danger)}
 .wg.cal .cnav{display:flex;gap:2px;margin-left:auto}
-.wg.cal .cnav button{width:20px;height:18px;border:0;border-radius:3px;background:var(--face);cursor:pointer;font:11px var(--pixel);padding:0;box-shadow:0 0 0 1px var(--lo)}
+.wg.cal .cnav button{width:20px;height:18px;border:0;border-radius:3px;color:var(--ink);background:var(--face);cursor:pointer;font:11px var(--pixel);padding:0;box-shadow:0 0 0 1px var(--lo)}
 .wg.cal .nx{padding:6px 8px 8px;background:var(--face);font:12px var(--cute);border-top:1px dashed var(--lo);cursor:pointer}
 .wg.dice{width:210px;display:flex;flex-direction:column}
 .wg.dice .tb{cursor:move}
@@ -1131,7 +1133,7 @@ function withChap(b,doc){const k=b.dataset&&b.dataset.k;if(voidEd&&k&&k[0]==='c'
 function setTool(t){if(t!=='pick')clearPick();edTool=t;const doc=frame.contentDocument;if(doc){doc.designMode=t==='type'?'on':'off';doc.documentElement.classList.toggle('lbx-type',t==='type');doc.querySelectorAll('[data-lbx-h]').forEach(x=>x.removeAttribute('data-lbx-h'))}edBar()}
 function edMsg(){const m=dbar.querySelector('.msg');const gone=edUndo.reduce((a,u)=>a+(u.g?u.g.length:1),0);const sel=pickSel.size;
   if(m)m.textContent=edTool==='del'?`지울 줄을 누르세요${voidEd?' (챕터 제목을 누르면 챕터 통째로)':''} · ${gone}개 지움`:edTool==='pick'?(pickRange?(pickAnc?'끝 줄을 누르세요':'시작 줄을 누르세요'):'지울 줄을 여러 개 누르세요 (Shift+클릭: 범위)')+` · ${sel}개 고름`:'글자를 눌러 바로 고치세요';
-  const u=dbar.querySelector('[data-d="undo"]');if(u)u.disabled=!edUndo.length;const d=dbar.querySelector('[data-d="pdel"]');if(d){d.disabled=!sel;d.textContent=`선택한 ${sel}개 지우기`}const c=dbar.querySelector('[data-d="pclr"]');if(c)c.disabled=!sel}
+  const u=dbar.querySelector('[data-d="undo"]');if(u)u.disabled=!edUndo.length;dbar.querySelectorAll('[data-d="save"],[data-d="saveas"]').forEach(x=>x.hidden=!edDirty);const d=dbar.querySelector('[data-d="pdel"]');if(d){d.disabled=!sel;d.textContent=`선택한 ${sel}개 지우기`}const c=dbar.querySelector('[data-d="pclr"]');if(c)c.disabled=!sel}
 /* bulk delete: click to pick many lines, Shift+click or 범위 mode for a range, or a whole tab at once */
 let pickSel=new Set(),pickAnc=null,pickLast=null,pickRange=false;
 function clearPick(){pickSel.forEach(n=>n.removeAttribute('data-lbx-sel'));pickSel=new Set();if(pickAnc)pickAnc.removeAttribute('data-lbx-anc');pickAnc=null;pickLast=null}
@@ -1163,8 +1165,8 @@ function voidText(){const doc=frame.contentDocument;const text=docText;const a=t
   D.ch=D.ch.filter((c,ci)=>{if(gone('c'+ci))return false;c.r=c.r.map((r,ri)=>[r[0].filter((it,ii)=>!gone(ci+'.'+ri+'.0.'+ii)),r[1].filter((it,ii)=>!gone(ci+'.'+ri+'.1.'+ii))]).filter(r=>r[0].length||r[1].length);return c.r.length>0});
   if(Array.isArray(D.total)){const t=[0,0,0,0,0,0,0];for(const c of D.ch)for(const r of c.r){for(const it of r[0]){if(it[0]===-3)t[2]++;else if(it[0]===-4)t[2+it[1]]=(t[2+it[1]]||0)+1;else t[0]++}t[1]+=r[1].length}D.total=t.slice(0,Math.max(D.total.length,7))}
   return text.slice(0,s0)+JSON.stringify(D).replace(/<\//g,'<\\/')+text.slice(e)}
-function startCode(){docMode='code';edDirty=false;frame.hidden=true;code.hidden=false;code.value=docText;code.oninput=()=>{edDirty=true};
-  dbar.innerHTML=`<span class="msg">HTML을 직접 고칠 수 있어요. 큰 파일은 조금 느릴 수 있어요.</span><button class="btn sm pink" data-d="save">덮어쓰기 저장</button><button class="btn sm" data-d="saveas">사본으로 저장</button><button class="btn sm" data-d="cancel">그만두기</button>`}
+function startCode(){docMode='code';edDirty=false;frame.hidden=true;code.hidden=false;code.value=docText;code.oninput=()=>{const was=edDirty;edDirty=code.value!==docText;if(was!==edDirty)dbar.querySelectorAll('[data-d="save"],[data-d="saveas"]').forEach(x=>x.hidden=!edDirty)};
+  dbar.innerHTML=`<span class="msg">HTML을 직접 고칠 수 있어요. 큰 파일은 조금 느릴 수 있어요.</span><button class="btn sm pink" data-d="save" hidden>덮어쓰기 저장</button><button class="btn sm" data-d="saveas" hidden>사본으로 저장</button><button class="btn sm" data-d="cancel">그만두기</button>`}
 async function saveDoc(asCopy){
   const f=files.get(docId);if(!f)return;const text=docMode==='code'?code.value:editedText();
   const b=busy(asCopy?'사본 저장 중':'저장 중');
@@ -1825,15 +1827,24 @@ function newSession(date){let dates=null;if(Array.isArray(date)){dates=date.leng
 const charById=id=>coll.chars.get(id);
 const charByName=n=>[...coll.chars.values()].find(c=>c.name===n);
 function pcChip(p){const c=p.char?charById(p.char):charByName(p.name);const nm=c?c.name:p.name;if(!nm)return '';const img=c&&c.img?`background-image:url('${esc(blobUrl(c.img))}')`:'';return `<span class="pc${p.res==='로스트'?' lost':''}" style="--c:${esc((c&&c.color)||'#c9b6ff')}"><i style="${img}"></i>${esc(nm)}${p.ho?` <small style="color:var(--ink3)">${esc(p.ho)}</small>`:''}</span>`}
+function roomBtn(x){const u=x.place&&/^(https?:\/\/|www\.|[\w-]+\.[a-z]{2,}\/)/i.test(x.place.trim())?normUrl(x.place.trim()):'';
+  if(u)return `<div class="roomrow"><a class="btn pink" href="${esc(u)}" target="_blank" rel="noopener noreferrer">🚪 방 열기</a><span class="hint">${esc(hostOf(u))}</span></div>`;
+  if(x.place)return `<div class="roomrow"><span class="hint">📍 ${esc(x.place)}</span></div>`;
+  return canWrite?`<div class="roomrow"><button class="btn sm" data-sid="${x.id}">＋ 방 링크 넣기</button></div>`:''}
 function sessCard(x,showDate){const st=x.status||'plan';return `<div class="scard" data-sid="${x.id}" style="--c:${esc(x.color||SCOL[0])}" role="button" tabindex="0"><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><b style="flex:1;min-width:0">${esc(x.title||'(시나리오명 없음)')}${x.round?` <small style="color:var(--ink2)">${esc(x.round)}</small>`:''}</b><span class="pill st-${st}">${statName(st)}</span>${x.date&&st!=='done'&&st!=='cancel'&&dDiff(x.date)>=0?`<span class="pill dd">${ddText(x.date)}</span>`:''}</div>
   <div class="mt">${showDate?`<span>${fmtDay(x.date)}</span>`:''}${x.time?`<span>${esc(x.time)}${x.end?'~'+esc(x.end):''}</span>`:''}${x.rule?`<span>${esc(x.rule)}</span>`:''}${x.gm?`<span>GM ${esc(x.gm)}</span>`:''}${(x.todo||[]).length?`<span>준비 ${(x.todo||[]).filter(t=>t.done).length}/${x.todo.length}</span>`:''}</div>
   <div class="pcs">${(x.pcs||[]).map(pcChip).join('')}</div></div>`}
+let schOrig='',schOrigFor=null,charOrig='',charOrigFor=null;
+function syncSave(){const sf=$('#sform');if(sf&&schEdit&&schEdit!=='new'){readSessForm();const j=JSON.stringify(schDraft);if(schOrigFor!==schEdit){schOrigFor=schEdit;schOrig=j}const b=sf.querySelector('button[type=submit]');if(b)b.hidden=j===schOrig}
+  const cf=$('#cform');if(cf&&charEdit&&charEdit!=='new'){readCharForm();const j=JSON.stringify(charDraft);if(charOrigFor!==charEdit){charOrigFor=charEdit;charOrig=j}const b=cf.querySelector('button[type=submit]');if(b)b.hidden=j===charOrig}
+  const nf=$('#scnform');if(nf){const j=[...nf.querySelectorAll('input,select,textarea')].map(x=>x.value).join('\u0001');if(nf.dataset.orig==null)nf.dataset.orig=j;const b=nf.querySelector('button[type=submit]');if(b)b.hidden=j===nf.dataset.orig}}
 function renderSch(){
   $('#schico').innerHTML=pix('calendar',16);$('#schadd').hidden=!canWrite;
   document.querySelectorAll('#schtabs [data-st]').forEach(b=>b.setAttribute('aria-selected',b.dataset.st===schTab));
   const body=$('#schbody');
-  if(schEdit){body.innerHTML=sessForm();return}
-  if(charEdit){body.innerHTML=charForm();return}
+  if(!schEdit)schOrigFor=null;if(!charEdit)charOrigFor=null;
+  if(schEdit){body.innerHTML=sessForm();syncSave();return}
+  if(charEdit){body.innerHTML=charForm();syncSave();return}
   if(schTab==='cal'){
     if(!schYM){const d=new Date();schYM=[d.getFullYear(),d.getMonth()]}const [y,m]=schYM;const first=new Date(y,m,1).getDay();const start=new Date(y,m,1-first);const t=todayStr();
     const byDay={};for(const x of coll.sessions.values()){if(x.date)(byDay[x.date]=byDay[x.date]||[]).push(x)}
@@ -1842,13 +1853,14 @@ function renderSch(){
       g+=`<button class="mday${d.getMonth()!==m?' out':''}${ds===t?' td':''}${ds===schDay&&schSel.size<2?' on':''}${schSel.size>1&&schSel.has(ds)?' sel':''}${d.getDay()===0?' su':''}" data-day="${ds}"><span class="dn">${d.getDate()}</span>${ev.slice(0,3).map(x=>`<span class="ev ${x.status==='done'?'done':x.status==='cancel'?'cancel':''}" style="--c:${esc(x.color||SCOL[0])}">${esc(x.time?x.time+' ':'')}${esc(x.title||'세션')}</span>`).join('')}${ev.length>3?`<span class="ev" style="--c:var(--face)">+${ev.length-3}</span>`:''}</button>`}
     const dayEv=(byDay[schDay]||[]).sort((a,b)=>(a.time||'').localeCompare(b.time||''));const nx=nextSession();
     body.innerHTML=`<div class="sch2"><div class="mcal${look.calSk&&look.calSk!=='win'?' sk-'+look.calSk:''}"><div class="mhead"><button class="btn sm" data-sa="mprev" aria-label="지난달">◀</button><b>${y}년 ${m+1}월</b><button class="btn sm" data-sa="mnext" aria-label="다음 달">▶</button><button class="btn sm" data-sa="today">오늘</button>${canWrite?`<button class="btn sm" data-sa="multi" aria-pressed="${schMulti}" title="누르는 날마다 골라져요">☑ 여러 날</button>`:''}</div><div class="mgrid${schMulti?' picking':''}">${g}</div><p class="hint" style="margin:0">끌어서 여러 날을 한 번에 고르거나, Ctrl(⌘)·Shift를 누른 채 눌러도 돼요.</p></div>
-      <div class="dside">${schSel.size>1?(()=>{const ds=[...schSel].sort();const had=ds.filter(x=>byDay[x]&&byDay[x].length).length;return `<h3>${ds.length}일 골랐어요</h3><div class="dchips">${ds.map(x=>`<span class="dchip">${fmtDay(x)}<button data-sa="seldel" data-d="${x}" aria-label="${fmtDay(x)} 빼기">✕</button></span>`).join('')}</div>${had?`<p class="hint" style="margin:0">이 중 ${had}일에는 이미 세션이 있어요.</p>`:''}${canWrite?`<button class="btn pink" data-sa="addsel" style="justify-self:start">＋ 고른 ${ds.length}일에 세션 한 번에 잡기</button>`:''}<button class="btn" data-sa="selclear" style="justify-self:start">고르기 풀기</button>`})():`${nx?`<div class="hint">다음 세션 <span class="pill dd">${ddText(nx.date)}</span> ${esc(nx.title||'')}</div>`:''}<h3>${fmtDay(schDay)}</h3>${dayEv.length?dayEv.map(x=>sessCard(x,false)).join(''):`<p class="hint" style="margin:0">이 날은 잡힌 세션이 없어요.</p>`}${canWrite?`<button class="btn" data-sa="addday" style="justify-self:start">＋ 이 날 세션 잡기</button>`:''}`}</div></div>`;
+      <div class="dside">${schSel.size>1?(()=>{const ds=[...schSel].sort();const had=ds.filter(x=>byDay[x]&&byDay[x].length).length;return `<h3>${ds.length}일 골랐어요</h3><div class="dchips">${ds.map(x=>`<span class="dchip">${fmtDay(x)}<button data-sa="seldel" data-d="${x}" aria-label="${fmtDay(x)} 빼기">✕</button></span>`).join('')}</div>${had?`<p class="hint" style="margin:0">이 중 ${had}일에는 이미 세션이 있어요.</p>`:''}${canWrite?`<button class="btn pink" data-sa="addsel" style="justify-self:start">＋ 고른 ${ds.length}일에 새 세션 한 번에 잡기</button>`:''}${canWrite&&coll.sessions.size?`<div class="addto"><b>또는 기존 세션에 날짜 더하기</b><select id="addtoSel" aria-label="기존 세션"><option value="">시나리오 고르기…</option>${scnGroups().map(g=>`<option value="${esc(g.key)}">${esc(g.title)}${g.label?' · '+esc(g.label):''} (${g.ss.length}회)</option>`).join('')}</select><button class="btn" data-sa="addto">＋ 고른 ${ds.length}일을 이 세션에 더하기</button></div>`:''}<button class="btn" data-sa="selclear" style="justify-self:start">고르기 풀기</button>`})():`${nx?`<div class="hint">다음 세션 <span class="pill dd">${ddText(nx.date)}</span> ${esc(nx.title||'')}</div>`:''}<h3>${fmtDay(schDay)}</h3>${dayEv.length?dayEv.map(x=>sessCard(x,false)+roomBtn(x)).join(''):`<p class="hint" style="margin:0">이 날은 잡힌 세션이 없어요.</p>`}${canWrite?`<button class="btn" data-sa="addday" style="justify-self:start">＋ 이 날 세션 잡기</button>`:''}`}</div></div>`;
   }
   else if(schTab==='list'){
     const all=[...coll.sessions.values()];const t=todayStr();const q=schFilter.trim().toLowerCase();const f=all.filter(x=>!q||[x.title,x.round,x.rule,x.gm,(x.pcs||[]).map(p=>p.name+' '+p.pl).join(' ')].join(' ').toLowerCase().includes(q));
     const up=f.filter(x=>!x.date||x.date>=t).filter(x=>x.status!=='done').sort((a,b)=>((a.date||'9')+(a.time||'')).localeCompare((b.date||'9')+(b.time||'')));
     const past=f.filter(x=>!up.includes(x)).sort((a,b)=>((b.date||'')+(b.time||'')).localeCompare((a.date||'')+(a.time||'')));
     body.innerHTML=`<div class="lst"><input type="search" id="schq" value="${esc(schFilter)}" placeholder="시나리오·캐릭터·PL·GM 찾기" aria-label="일정 찾기" style="max-width:340px"><h4>다가오는 세션 · ${up.length}</h4>${up.length?up.map(x=>sessCard(x,true)).join(''):'<p class="hint" style="margin:0">없어요.</p>'}<h4>지난 세션 · ${past.length}</h4>${past.map(x=>sessCard(x,true)).join('')||'<p class="hint" style="margin:0">없어요.</p>'}</div>`;
+    const qi0=null;
     const qi=$('#schq');qi.oninput=()=>{schFilter=qi.value;const p=qi.selectionStart;renderSch();const n=$('#schq');n.focus();n.setSelectionRange(p,p)};
   }
   else if(schTab==='chars'){
@@ -1861,6 +1873,7 @@ function renderSch(){
       if(scnEdit&&scnEdit===g.key)return scnForm(g,rows.filter(o=>o.title===g.title));
       const done=ss.length&&ss.every(x=>x.status==='done'||x.status==='cancel')&&ss.some(x=>x.status==='done');const pcs=new Map();ss.forEach(x=>(x.pcs||[]).forEach(p=>{const n=p.char&&charById(p.char)?charById(p.char).name:p.name;if(n)pcs.set(n,Object.assign({},p,{name:n,char:p.char}))}));const a=ss.find(x=>x.author);const r=ss.find(x=>x.rule);
       return `<div class="scrow"><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><b style="flex:1">${esc(name)}${g.label?` <span class="pill" style="font-weight:400">${esc(g.label)}</span>`:''}</b>${r?`<span class="pill">${esc(r.rule)}</span>`:''}<span class="pill ${done?'st-done':'st-live'}">${done?'통과':'진행 중'}</span>${canWrite?`<button class="btn sm" data-sa="scnedit" data-k="${esc(g.key)}">✎ 고치기</button>`:''}</div><div class="mt" style="font:11.5px var(--pixel);color:var(--ink2)">${a?'작가·배포 '+esc(a.author)+' · ':''}${ss.find(x=>x.gm)?'GM '+esc(ss.find(x=>x.gm).gm)+' · ':''}세션 ${ss.length}회 · ${fmtDay(ss[0].date)}${ss.length>1?' ~ '+fmtDay(ss[ss.length-1].date):''}</div><div class="pcs">${[...pcs.values()].map(p=>pcChip(p)+(p.res?`<span class="pill" style="margin-right:4px">${esc(p.res)}</span>`:'')).join('')}</div><div class="pcs">${ss.map(x=>`<button class="btn sm" data-sid="${x.id}">${esc(x.round||fmtDay(x.date))}</button>`).join('')}</div></div>`}).join(''):'<p class="hint" style="margin:0">세션을 잡으면 시나리오별로 모여요.</p>'}</div>`;
+    syncSave();
   }
 }
 /* scenario groups: same title, split into play-throughs by label (run) or by the set of characters */
@@ -1942,6 +1955,13 @@ $('#schbody').addEventListener('click',async e=>{
   else if(k==='today'){const d=new Date();schYM=[d.getFullYear(),d.getMonth()];schDay=todayStr();renderSch()}
   else if(k==='addday')newSession(schDay);
   else if(k==='addsel')newSession([...schSel].sort());
+  else if(k==='addto'){const sel=$('#addtoSel');const g=sel&&scnGroups().find(r=>r.key===sel.value);if(!g){toast('더할 시나리오를 골라 주세요');return}
+    const have=new Set(g.ss.map(x=>x.date));const ds=[...schSel].sort().filter(d=>!have.has(d));if(!ds.length){toast('고른 날은 이미 모두 이 세션에 있어요');return}
+    const last=g.ss[g.ss.length-1];let unit='',mx=0;for(const x of g.ss){const m=/(\d+)\s*([^\d\s]*)\s*$/.exec(x.round||'');if(m){mx=Math.max(mx,+m[1]);unit=unit||m[2]}}
+    const pre=((last.round||'').replace(/(\d+)\s*([^\d\s]*)\s*$/,'').trim());const t=todayStr();
+    const b2=busy('세션 더하는 중');try{const all=[...g.ss.map(x=>x.date),...ds].sort();
+      for(const d of ds){const o={title:last.title||g.title,run:last.run||'',round:mx?((pre?pre+' ':'')+(mx+1+ds.indexOf(d))+unit).slice(0,40):'',rule:last.rule||'',date:d,time:last.time||'',end:last.end||'',status:d<t?'done':'plan',gm:last.gm||'',place:last.place||'',author:last.author||'',color:last.color||SCOL[0],pcs:(last.pcs||[]).map(p=>Object.assign({},p,{res:''})),todo:[],memo:'',logId:'',createdAt:now(),updatedAt:now()};await S.cAdd('sessions',o)}
+      b2.done();toast(`${g.title}에 ${ds.length}일을 더했어요`);schSel=new Set([ds[0]]);schDay=ds[0];schMulti=false;renderSch()}catch(err){b2.done();toast('더하지 못했어요: '+errText(err))}}
   else if(k==='selclear'){schSel=new Set([schDay]);schMulti=false;renderSch()}
   else if(k==='seldel'){schSel.delete(b.dataset.d);if(schSel.size<2)schSel=new Set([schDay]);renderSch()}
   else if(k==='multi'){schMulti=!schMulti;if(schMulti)schSel=new Set([schDay]);renderSch()}
@@ -1974,6 +1994,7 @@ $('#schbody').addEventListener('pointermove',e=>{if(!dayDrag)return;const el=doc
 addEventListener('pointerup',()=>{if(dayDrag){dayDrag=null;renderSch()}});
 $('#schbody').addEventListener('change',e=>{const t=e.target;if(t.matches('[data-scol-x]')){readSessForm();schDraft.color=t.value;renderSch()}else if(t.matches('[data-ccol-x]')){readCharForm();charDraft.color=t.value;renderSch()}});
 $('#schbody').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('.scard')){e.preventDefault();e.target.click()}});
+$('#schbody').addEventListener('input',()=>syncSave());$('#schbody').addEventListener('change',()=>setTimeout(syncSave,0));
 $('#schbody').addEventListener('submit',async e=>{e.preventDefault();
   if(e.target.id==='scnform'){const F=e.target;const rows=scnGroups();const g=rows.find(r=>r.key===F.dataset.k);if(!g){scnEdit=null;renderSch();return}const sib=rows.filter(r=>r.title===g.title);
     const v=n=>(F.elements[n].value||'').trim();const title=v('title');if(!title){$('#scnerr').textContent='시나리오명을 적어 주세요';return}
