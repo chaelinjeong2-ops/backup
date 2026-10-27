@@ -289,6 +289,28 @@ body.diner .btn.pink{background:linear-gradient(#7fe0d5,#4fc2b6);color:#123d39;b
 body.diner .task{background:linear-gradient(180deg,#5fcfc3,#43b3a7);border-top:4px solid #e4404f;box-shadow:inset 0 2px 0 rgba(255,255,255,.5)}
 body.diner .task .btn{border-radius:20px}
 body.diner #note{background:#fff7d6}
+/* today popup from the clock + quote widget */
+#clock{cursor:pointer;border-radius:4px;padding:0 3px}#clock:hover{background:var(--sel)}#moodt{cursor:pointer;font-size:11.5px}
+#traypop{position:fixed;right:8px;bottom:calc(52px + env(safe-area-inset-bottom,0px));z-index:120;width:min(340px,calc(100vw - 16px));max-height:min(78vh,620px)}
+#traypop .bd{display:grid;gap:10px;overflow:auto;padding:10px 12px 12px}
+#traypop h5{margin:0 0 5px;font:12px var(--pixel);color:var(--ink2)}
+#traypop .tpc{font:12px var(--pixel);text-align:center;background:var(--sunk);border-radius:6px;padding:6px;box-shadow:0 0 0 1px var(--lo)}
+#traypop .moods{display:flex;flex-wrap:wrap;gap:4px}#traypop .moods .btn{padding:2px 7px;font-size:12px}
+.qbox{padding:8px 10px 10px;background:var(--face)}.wg.qt .qbox{min-height:70px}
+#traypop .qbox{border-radius:6px;box-shadow:0 0 0 1px var(--lo)}
+.qtx{font:15px/1.55 var(--cute);color:var(--ink);word-break:keep-all}
+.qby{font:11.5px var(--pixel);color:var(--ink2);margin-top:5px}.qfile{text-decoration:underline dotted;cursor:pointer}
+.wg.qt{display:flex;flex-direction:column;min-width:180px}.wg.qt .tb{cursor:move}
+.wg.on.qt{outline:1px dashed var(--edge);outline-offset:3px}
+/* frame + timer widgets */
+.wg.frm{display:flex;flex-direction:column;min-width:150px;min-height:150px}.wg.frm .tb{cursor:move}
+.wg.frm .fimg{flex:1;min-height:0;position:relative;background:var(--sunk) center/contain no-repeat;display:grid;place-items:center;text-align:center;font:12px var(--pixel);color:var(--ink3);cursor:zoom-in;transition:background-image .3s}
+.wg.frm .fnav{position:absolute;top:50%;margin-top:-12px;width:24px;height:24px;border-radius:50%;border:0;background:rgba(255,255,255,.85);box-shadow:0 0 0 1px var(--edge);cursor:pointer;font-size:10px;opacity:0;transition:opacity .15s}.wg.frm:hover .fnav{opacity:1}.wg.frm .fnav.l{left:6px}.wg.frm .fnav.r{right:6px}
+.wg.frm .fcap{display:flex;gap:6px;align-items:baseline;padding:5px 9px 6px;background:var(--face);font:12px var(--cute);border-top:1px solid var(--lo);min-height:26px}.wg.frm .fcap b{font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.wg.frm .fcap small{font:11px var(--pixel);color:var(--ink2);white-space:nowrap}.wg.frm .fcap i{margin-left:auto;font:10.5px var(--pixel);font-style:normal;color:var(--ink3)}
+.wg.tmr{width:236px}.wg.tmr .tb{cursor:move}.wg.tmr .tbd{padding:9px 10px 10px;background:var(--face);text-align:center}
+.wg.tmr .lcd{font:30px/1.1 var(--pixel);letter-spacing:.05em;color:var(--ink);font-variant-numeric:tabular-nums;background:color-mix(in srgb,var(--t3) 35%,var(--sunk));border-radius:5px;padding:7px 4px;box-shadow:inset 2px 2px 0 var(--lo),inset -1px -1px 0 #fff}
+.wg.tmr .trow{display:flex;gap:4px;justify-content:center;margin-top:7px}.wg.tmr small{display:block;margin-top:5px;font:11px var(--pixel);color:var(--ink2)}
+.wg.on.frm,.wg.on.tmr{outline:1px dashed var(--edge);outline-offset:3px}
 /* big scheduler calendar follows the calendar design */
 .mcal.sk-paper{background:#fff}.mcal.sk-paper .mhead{position:relative;background:var(--t1);border-radius:12px 12px 4px 4px;padding:20px 10px 9px;box-shadow:0 4px 0 -1px #f3eef8,0 4px 0 0 #e3d9ee}.mcal.sk-paper .mhead::before{content:"";position:absolute;left:18px;right:18px;top:5px;height:11px;background:radial-gradient(circle at 5.5px 5.5px,#8d849c 0 2.8px,#fff 3.3px 5px,transparent 5.5px) 0 0/22px 11px repeat-x}.mcal.sk-paper .mhead b{color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.12)}
 .mcal.sk-paper .mday{background:#fff;box-shadow:0 0 0 1px #ece4f2}.mcal.sk-paper .mday.td{box-shadow:0 0 0 2px var(--t1)}.mcal.sk-paper .mday.td .dn{background:var(--t1);color:#fff;border-radius:50%;width:22px;height:22px;display:grid;place-items:center}
@@ -571,7 +593,7 @@ body.xp #note{border-radius:0}
 </section>
 <section class="win galw raised fw" id="galw" data-w="gal" hidden aria-label="이미지 보관함"><i class="rz" data-d="n"></i><i class="rz" data-d="s"></i><i class="rz" data-d="e"></i><i class="rz" data-d="w"></i><i class="rz" data-d="ne"></i><i class="rz" data-d="nw"></i><i class="rz" data-d="se"></i><i class="rz" data-d="sw"></i>
   <div class="tb"><div class="ti"><span id="galico"></span><span>이미지 보관함.exe</span></div><button class="wb" id="galmin" title="최소화" aria-label="최소화">_</button><button class="wb" id="galmax" title="최대화" aria-label="최대화">□</button><button class="wb x" id="galclose" title="닫기" aria-label="닫기">×</button></div>
-  <div class="menu"><button class="btn pink" id="galup">＋ 이미지 올리기</button><button class="btn" id="gallink">＋ 백업 링크</button><span class="sp"></span><select id="galsort" aria-label="정렬" style="width:auto"><option value="new">최근 올린 순</option><option value="old">처음 올린 순</option><option value="dnew">받은 날 최신순</option><option value="dold">받은 날 오래된 순</option><option value="name">이름 순</option></select><select id="galgrp" aria-label="묶음" style="width:auto"></select><input type="search" class="q" id="galq" placeholder="이름·작가·태그 찾기" aria-label="이미지 찾기"></div>
+  <div class="menu"><button class="btn pink" id="galup">＋ 이미지 올리기</button><button class="btn" id="gallink">＋ 백업 링크</button><span class="sp"></span><select id="galsort" aria-label="정렬" style="width:auto"><option value="new">최근 올린 순</option><option value="old">처음 올린 순</option><option value="artist">작가순</option><option value="dnew">받은 날 최신순</option><option value="dold">받은 날 오래된 순</option><option value="name">이름 순</option></select><select id="galgrp" aria-label="묶음" style="width:auto"></select><input type="search" class="q" id="galq" placeholder="이름·작가·태그 찾기" aria-label="이미지 찾기"></div>
   <div class="galbody" id="galbody"></div>
 </section>
 <input type="file" id="galin" accept="image/png,image/jpeg,image/gif,image/webp" multiple hidden>
@@ -603,7 +625,7 @@ body.xp #note{border-radius:0}
 <footer class="task">
   <button class="btn start" id="startb" aria-expanded="false"><svg width="14" height="14" viewBox="0 0 8 8" shape-rendering="crispEdges" aria-hidden="true"><rect x="0" y="0" width="4" height="4" fill="#ffb6d5"/><rect x="4" y="0" width="4" height="4" fill="#9fe0cc"/><rect x="0" y="4" width="4" height="4" fill="#a9d6ff"/><rect x="4" y="4" width="4" height="4" fill="#ffe9a3"/></svg>시작</button>
   <div class="tasks" id="tasks"></div>
-  <div class="tray sunken"><span id="minictr" hidden></span><span class="use" id="use"></span><span class="meter" title="저장 공간"><i id="meter" style="width:0"></i></span><span id="clock">--:--</span></div>
+  <div class="tray sunken"><span id="minictr" hidden></span><span class="use" id="use"></span><span class="meter" title="저장 공간"><i id="meter" style="width:0"></i></span><span id="moodt" title="오늘 기분"></span><span id="clock" role="button" tabindex="0" title="눌러서 오늘·기분·효과음">--:--</span></div>
 </footer>
 
 <input type="file" id="filein" accept=".html,.htm,text/html" multiple hidden>
@@ -932,8 +954,10 @@ async function restoreAll(meta,ents,fileMap){
     for(const id in meta.assets||{}){const a=meta.assets[id];const data=byName.get(a.path);if(!data)continue;try{const blob=new Blob([data],{type:a.type});if(memory||!assets){const nid='mem:'+Math.random().toString(36).slice(2);wgObj.set(nid,URL.createObjectURL(blob));assetMap[id]=nid}else{const r=await assets.upload(blob,{type:a.type});assetMap[id]=r.id}}catch(e){}}
     b.set(.3);for(const d of meta.folders||[]){const ex=folderList().find(x=>x.name===d.name);if(ex){folderMap[d.id]=ex.id;if(d.color)await S.updFolder(ex.id,{color:d.color})}else folderMap[d.id]=await S.addFolder({name:d.name,color:d.color||'',createdAt:d.createdAt||now()})}
     b.set(.45);for(const l of meta.links||[]){const {id,...rest}=l;linkMap[id]=await S.addLink(rest)}
-    b.set(.6);for(const c of meta.chars||[]){const {id,...rest}=c;if(rest.img)rest.img=assetMap[rest.img]||'';charMap[id]=await S.cAdd('chars',rest)}
-    b.set(.75);for(const x of meta.sessions||[]){const {id,...rest}=x;rest.pcs=(rest.pcs||[]).map(p=>Object.assign({},p,{char:charMap[p.char]||''}));rest.logId=fileMap[rest.logId]||'';await S.cAdd('sessions',rest)}
+    b.set(.6);let upC=0,upS=0;for(const c of meta.chars||[]){const {id,...rest}=c;if(rest.img)rest.img=assetMap[rest.img]||'';const nm=(rest.name||'').trim();const ex=nm&&[...coll.chars.values()].find(x=>(x.name||'').trim()===nm);
+      if(ex){for(const k in rest)if(rest[k]===''||rest[k]==null||(Array.isArray(rest[k])&&!rest[k].length))delete rest[k];delete rest.createdAt;rest.updatedAt=now();await S.cUpd('chars',ex.id,rest);charMap[id]=ex.id;upC++}else charMap[id]=await S.cAdd('chars',rest)}
+    b.set(.75);for(const x of meta.sessions||[]){const {id,...rest}=x;rest.pcs=(rest.pcs||[]).map(p=>Object.assign({},p,{char:charMap[p.char]||(p.name&&[...coll.chars.values()].find(c=>(c.name||'').trim()===p.name.trim())||{}).id||''}));rest.logId=fileMap[rest.logId]||'';
+      const tt=(rest.title||'').trim();const pn=new Set((rest.pcs||[]).map(p=>(p.name||'').trim()).filter(Boolean));const same=y=>{const yn=(y.pcs||[]).map(p=>(p.name||'').trim()).filter(Boolean);return !pn.size||!yn.length||yn.some(n=>pn.has(n))};const ex=tt&&[...coll.sessions.values()].find(y=>(y.title||'').trim()===tt&&(y.date||'')===(rest.date||'')&&same(y));if(ex){for(const k in rest)if(k!=='pcs'&&(rest[k]===''||rest[k]==null||(Array.isArray(rest[k])&&!rest[k].length)))delete rest[k];delete rest.createdAt;rest.updatedAt=now();await S.cUpd('sessions',ex.id,rest);upS++}else await S.cAdd('sessions',rest)}
     b.set(.8);for(const x of meta.images||[]){const {id,...rest}=x;if(rest.asset){if(!assetMap[rest.asset])continue;rest.asset=assetMap[rest.asset]}await S.cAdd('images',rest)}
     b.set(.85);for(const w of meta.widgets||[]){const {id,...rest}=w;if(rest.asset){if(!assetMap[rest.asset])continue;rest.asset=assetMap[rest.asset]}await S.addWidget(rest)}
     if(meta.look){const L=Object.assign(defLook(),meta.look);if(L.wallImg)L.wallImg=assetMap[L.wallImg]||'';
@@ -941,7 +965,7 @@ async function restoreAll(meta,ents,fileMap){
       for(const key of ['iconOver','iconCells']){const o={};for(const k in L[key]||{}){const nk=rk(k);if(nk)o[nk]=L[key][k]}L[key]=o}
       if(L.wallImg&&L.wallImg.startsWith('mem:')){wallObj=wgObj.get(L.wallImg)}
       look=L;applyLook();saveLook()}
-    b.done();toast(`전체 백업을 되살렸어요 · 이미지 ${(meta.images||[]).length} · 일정 ${(meta.sessions||[]).length} · 캐릭터 ${(meta.chars||[]).length} · 위젯 ${(meta.widgets||[]).length}`);render();
+    b.done();toast(meta.kind==='chars'?`캐릭터 ${(meta.chars||[]).length}명(덮어쓴 것 ${upC}) · 세션 ${(meta.sessions||[]).length}개(덮어쓴 것 ${upS})를 불러왔어요`:`전체 백업을 되살렸어요 · 이미지 ${(meta.images||[]).length} · 일정 ${(meta.sessions||[]).length} · 캐릭터 ${(meta.chars||[]).length} · 위젯 ${(meta.widgets||[]).length}${upC||upS?` · 이름이 같아 덮어쓴 것 ${upC+upS}`:''}`);render();
   }catch(e){b.done();toast('일부를 되살리지 못했어요: '+errText(e))}
 }
 /* ---------- interactions: side ---------- */
@@ -1171,7 +1195,7 @@ document.addEventListener('click',e=>{if(!sm.hidden&&!e.target.closest('#smenu')
 sm.addEventListener('click',e=>{const b=e.target.closest('[data-s]');if(!b)return;sm.hidden=true;sb.setAttribute('aria-pressed','false');const k=b.dataset.s;
   if(k==='up')pick();else if(k==='zipin'){if(canWrite)$('#zipfile').click();else toast('이 화면에서는 가져올 수 없어요')}else if(k==='zipout')zipAll();else if(k==='share')shareDialog();else if(k==='trash'){view.where='trash';sel.clear();showWin('main');render()}else if(k==='deco')openDeco();else if(k==='desk')showDesktop();else if(k==='box')showWin('main');else if(k==='arc')openArc();else if(k==='sch')openSched();else if(k==='gal')openGal()});
 addEventListener('keydown',e=>{if(e.key==='Escape'){if(!sm.hidden){sm.hidden=true;return}if(!$('#decow').hidden){closeDeco();return}if(!docw.hidden&&docMode==='view'){closeDoc()}}});
-function tick(){const d=new Date();$('#clock').textContent=look.clock24?String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'):(d.getHours()<12?'AM ':'PM ')+((d.getHours()%12)||12)+':'+String(d.getMinutes()).padStart(2,'0')}
+function tick(){const mt=$('#moodt');if(mt)mt.textContent=look.mood||'';const d=new Date();$('#clock').textContent=look.clock24?String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'):(d.getHours()<12?'AM ':'PM ')+((d.getHours()%12)||12)+':'+String(d.getMinutes()).padStart(2,'0')}
 setInterval(tick,15000);
 matchMedia('(max-width:980px)').addEventListener('change',()=>renderProps());
 
@@ -1415,7 +1439,7 @@ function renderDeco(){
    <div><h4>창 모양</h4><div class="seg"><button class="btn" data-sq="0" aria-pressed="${!look.square}">둥글게</button><button class="btn" data-sq="1" aria-pressed="${!!look.square}">각지게</button></div></div>
    <div><h4>창 테두리 무늬</h4><div class="chips">${FRAMES.map(([k,t])=>`<button class="chip" data-frame="${k}" aria-pressed="${(look.frame||'')===k}"><span class="pv" style="background:var(--face);${k?`border:8px solid transparent;border-image:${frameImg(k,T)} 8 round`:'box-shadow:inset 0 0 0 2px var(--edge)'}"></span><span>${t}</span></button>`).join('')}</div><p class="hint" style="margin:6px 0 0">무늬 색은 테마 색을 따라가요. 리본은 창 제목 앞에 리본이 달려요.</p></div>
    <div><h4>시작 메뉴 이름</h4><input type="text" data-txt="band" value="${esc(look.band)}" maxlength="18" style="max-width:240px"></div>`;
-  else if(decoTab==='wg'){const n=widgets.size;p.innerHTML=`<div><h4>바탕화면에 붙이기</h4><div class="seg"><button class="btn pink" data-wadd="photo">🖼 사진 창</button><button class="btn" data-wadd="sticker">✿ 스티커</button><button class="btn" data-wadd="clock">⏰ 시계</button><button class="btn" data-wadd="cal">📅 달력</button><button class="btn" data-wadd="dice">🎲 주사위</button>${window.__music?'<button class="btn" data-wadd="music">🎵 뮤직 플레이어</button>':''}</div>
+  else if(decoTab==='wg'){const n=widgets.size;p.innerHTML=`<div><h4>바탕화면에 붙이기</h4><div class="seg"><button class="btn pink" data-wadd="photo">🖼 사진 창</button><button class="btn" data-wadd="sticker">✿ 스티커</button><button class="btn" data-wadd="clock">⏰ 시계</button><button class="btn" data-wadd="cal">📅 달력</button><button class="btn" data-wadd="quote">✦ 명대사</button><button class="btn" data-wadd="frame">🖼 액자</button><button class="btn" data-wadd="timer">⏱ 세션 타이머</button><button class="btn" data-wadd="dice">🎲 주사위</button>${window.__music?'<button class="btn" data-wadd="music">🎵 뮤직 플레이어</button>':''}</div>
    <p class="hint" style="margin:8px 0 0">시계·달력 디자인은 아래에서 고르거나, 붙인 위젯을 오른쪽 클릭해서 하나씩 바꿀 수 있어요.</p>
    <p class="hint" style="margin:4px 0 0">붙인 것은 끌어서 옮기고, 모서리를 끌어 크기를 바꿔요. 스티커는 누르면 돌리기·지우기 버튼이 나와요. 오른쪽 클릭하면 앞/뒤 순서도 바꿀 수 있어요.</p></div>
    <div><h4>시계 디자인</h4><div class="seg">${CLKS.map(([k,t])=>`<button class="btn sm" data-clks="${k}" aria-pressed="${(look.clockSk||'lcd')===k}">${t}</button>`).join('')}</div>
@@ -1538,8 +1562,8 @@ function showCtx(x,y,k,wid){wgCtx=wid||null;
     if((look.iconOver||{})[k])h+=`<button data-c="reset">원래 아이콘으로</button>`;
     if(k.startsWith('l:'))h+=`<hr><button data-c="unpin">바탕화면에서 빼기</button>`;
     if(k.startsWith('d:'))h+=`<hr><button data-c="unstar">바탕화면에서 빼기 (즐겨찾기 해제)</button><button data-c="trash">휴지통으로</button>`;
-  }else if(wgCtx){const w=widgets.get(wgCtx);h=`<button data-c="wfront">맨 앞으로</button><button data-c="wback">맨 뒤로</button>`+(w&&w.type==='sticker'?`<hr><button data-c="wbig">크게</button><button data-c="wsmall">작게</button><button data-c="wrot">살짝 돌리기</button><button data-c="wflip">좌우 뒤집기</button>`:'')+(w&&w.type==='photo'?`<button data-c="wtitle">제목 바꾸기…</button>`:'')+(w&&(w.type==='clock'||w.type==='cal')?'<hr>'+(w.type==='clock'?CLKS:CALS).map(([k,t])=>`<button data-c="wsk:${k}">${(w.sk||(w.type==='clock'?'lcd':'win'))===k?'✓ ':''}${t}</button>`).join(''):'')+`<hr><button data-c="wdel">떼어 내기</button>`}
-  else h=`<button data-c="arrange">아이콘 자동 정렬</button><button data-c="newlink">새 링크 바로가기…</button><hr><button data-c="addphoto">🖼 사진 창 붙이기</button><button data-c="addsticker">✿ 스티커 붙이기</button><button data-c="addclock">⏰ 시계</button><button data-c="addcal">📅 달력</button><button data-c="adddice">🎲 주사위</button>${window.__music?'<button data-c="addmusic">🎵 뮤직 플레이어</button>':''}<hr><button data-c="deco">꾸미기…</button>`;
+  }else if(wgCtx){const w=widgets.get(wgCtx);h=`<button data-c="wfront">맨 앞으로</button><button data-c="wback">맨 뒤로</button>`+(w&&w.type==='sticker'?`<hr><button data-c="wbig">크게</button><button data-c="wsmall">작게</button><button data-c="wrot">살짝 돌리기</button><button data-c="wflip">좌우 뒤집기</button>`:'')+(w&&(w.type==='photo'||w.type==='frame')?`<button data-c="wtitle">제목 바꾸기…</button>`:'')+(w&&w.type==='frame'?'<hr><button data-c="wfart:">'+(!w.artist?'✓ ':'')+'모든 작가</button>'+[...new Set([...coll.images.values()].map(x=>(x.artist||'').trim()).filter(Boolean))].slice(0,12).map(a=>`<button data-c="wfart:${esc(a)}">${w.artist===a?'✓ ':''}© ${esc(a)}</button>`).join(''):'')+(w&&(w.type==='clock'||w.type==='cal')?'<hr>'+(w.type==='clock'?CLKS:CALS).map(([k,t])=>`<button data-c="wsk:${k}">${(w.sk||(w.type==='clock'?'lcd':'win'))===k?'✓ ':''}${t}</button>`).join(''):'')+`<hr><button data-c="wdel">떼어 내기</button>`}
+  else h=`<button data-c="arrange">아이콘 자동 정렬</button><button data-c="newlink">새 링크 바로가기…</button><hr><button data-c="addphoto">🖼 사진 창 붙이기</button><button data-c="addsticker">✿ 스티커 붙이기</button><button data-c="addquote">✦ 명대사</button><button data-c="addframe">🖼 액자</button><button data-c="addtimer">⏱ 세션 타이머</button><button data-c="addclock">⏰ 시계</button><button data-c="addcal">📅 달력</button><button data-c="adddice">🎲 주사위</button>${window.__music?'<button data-c="addmusic">🎵 뮤직 플레이어</button>':''}<hr><button data-c="deco">꾸미기…</button>`;
   ctx.innerHTML=h;ctx.dataset.k=k||'';ctx.hidden=false;const r=ctx.getBoundingClientRect();ctx.style.left=Math.min(x,innerWidth-r.width-6)+'px';ctx.style.top=Math.min(y,innerHeight-r.height-50)+'px';
 }
 document.addEventListener('pointerdown',e=>{if(!ctx.hidden&&!e.target.closest('#ctx'))ctx.hidden=true});
@@ -1555,12 +1579,13 @@ ctx.addEventListener('click',async e=>{const b=e.target.closest('[data-c]');if(!
   else if(c==='arrange'){look.iconCells={};saveLook();renderDesktop()}
   else if(c==='newlink'){openArc();arcEdit='new';renderArc()}
   else if(c==='deco')openDeco()
-  else if(c==='addphoto')addWidget('photo');else if(c==='addsticker')addWidget('sticker');else if(c==='addclock')addWidget('clock');else if(c==='addcal')addWidget('cal');else if(c==='adddice')addWidget('dice');else if(c==='addmusic')addWidget('music');
+  else if(c==='addphoto')addWidget('photo');else if(c==='addsticker')addWidget('sticker');else if(c==='addclock')addWidget('clock');else if(c==='addcal')addWidget('cal');else if(c==='adddice')addWidget('dice');else if(c==='addquote')addWidget('quote');else if(c==='addframe')addWidget('frame');else if(c==='addtimer')addWidget('timer');else if(c==='addmusic')addWidget('music');
   else if(c.startsWith('w')&&wgCtx){const w=widgets.get(wgCtx);if(!w)return;const zs=[...widgets.values()].map(x=>x.z||0);
     if(c==='wfront')await S.updWidget(w.id,{z:Math.max(0,...zs)+1});else if(c==='wback')await S.updWidget(w.id,{z:Math.min(0,...zs)-1});
     else if(c==='wbig')await S.updWidget(w.id,{size:Math.min(360,Math.round((w.size||96)*1.25))});else if(c==='wsmall')await S.updWidget(w.id,{size:Math.max(32,Math.round((w.size||96)*.8))});
     else if(c==='wrot')await S.updWidget(w.id,{rot:(((w.rot||0)+15+180)%360)-180});else if(c==='wflip')await S.updWidget(w.id,{flip:!w.flip});
     else if(c==='wtitle'){const r=await dialog('제목 바꾸기',`<input type="text" value="${esc(w.title||'')}" maxlength="40" aria-label="제목">`,'바꾸기');if(r&&r.text!=null)await S.updWidget(w.id,{title:r.text.trim().slice(0,40)})}
+    else if(c.startsWith('wfart:')){frameIdx[w.id]=0;await S.updWidget(w.id,{artist:c.slice(6)})}
     else if(c.startsWith('wsk:')){await S.updWidget(w.id,{sk:c.slice(4)});if(w.type==='cal'){look.calSk=c.slice(4);saveLook();if(isOpen('sch'))renderSch()}}
     else if(c==='wdel')await delWidget(w)}});
 function dialog(title,html,okText){return new Promise(res=>{const m=document.createElement('div');m.className='modal';m.innerHTML=`<div class="win raised" role="dialog" aria-label="${esc(title)}" style="width:min(420px,100%)"><div class="tb"><div class="ti"><span>${esc(title)}</span></div></div><div class="bd">${html}<div class="act"><button class="btn" data-x="0">취소</button><button class="btn pink" data-x="1">${esc(okText||'확인')}</button></div></div></div>`;
@@ -1600,6 +1625,52 @@ function clockInner(sk){const d=new Date(),c=clockText();const h=look.clock24?St
   if(sk==='neon')return `<div class="ck-neon"><b>${c.t}</b><small>${c.d}</small></div>`;
   if(sk==='memo')return `<div class="ck-memo"><b>${h}:${mi}${look.clock24?'':` <span style="font-size:.55em">${ap}</span>`}</b><small>${c.d} ♡</small></div>`;
   return `<div class="lcd">${c.t}</div><small>${c.d}</small>`}
+$('#clock').addEventListener('click',()=>trayPop());$('#clock').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();trayPop()}});$('#moodt').addEventListener('click',()=>trayPop());
+/* ---------- today's line: a random line picked from the saved logs ---------- */
+const QK='logbox-quote';let quoteBusy=null;
+function quoteToday(){try{const q=JSON.parse(localStorage.getItem(QK)||'null');const d=new Date();const t=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();return q&&q.day===t?q:null}catch(e){return null}}
+async function pickQuote(force){if(!force){const q=quoteToday();if(q)return q}if(quoteBusy)return quoteBusy;
+  quoteBusy=(async()=>{const fs=[...files.values()].filter(f=>!f.trashed&&f.asset);if(!fs.length)return null;
+    const pool=fs.sort(()=>Math.random()-.5);const ok=m=>m.name&&!m.sys&&!m.info&&!m.roll&&m.text&&m.text.trim().length>=4&&m.text.trim().length<=90&&!/^[\s.…ㅋㅎㅠㅜ!?~]+$/.test(m.text)&&!/<=|^\d*[db]\d/i.test(m.text)&&(m.text.match(/[가-힣A-Za-z]/g)||[]).length>=5;
+    for(const f of pool.slice(0,6)){try{const tx=await getText(f);if(!isLogText(tx,f.script))continue;const pl=parseLog(f.asset,tx);if(!pl)continue;const c=pl.msgs.filter(ok);if(!c.length)continue;const m=c[Math.floor(Math.random()*c.length)];
+      const d=new Date();const q={day:d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(),t:m.text.trim(),n:m.name,fid:f.id,fn:f.name,ch:m.ch||''};try{localStorage.setItem(QK,JSON.stringify(q))}catch(e){}return q}catch(e){}}
+    return null})();
+  try{return await quoteBusy}finally{quoteBusy=null}}
+function quoteHTML(q){return q?`<div class="qtx">“${esc(q.t)}”</div><div class="qby">— ${esc(q.n)} · <span data-wx="qopen" data-fid="${esc(q.fid)}" class="qfile">${esc(q.fn)}</span></div>`:(files.size?'<div class="qby">대사 고르는 중…</div>':'<div class="qby">보관함에 코코포리아·VOID 로그를 올리면 대사 한 줄을 골라 와요.</div>')}
+let qT=0;function wantQuotes(){clearTimeout(qT);qT=setTimeout(()=>{if(document.querySelector('[data-qt]')&&!quoteToday())fillQuotes(false)},800)}
+async function fillQuotes(force){const els=document.querySelectorAll('[data-qt]');const pop=$('#trayq');if(!els.length&&!pop)return;const q0=!force&&quoteToday();
+  if(!q0){els.forEach(e=>e.innerHTML='<div class="qby">대사 고르는 중…</div>');if(pop)pop.innerHTML='<div class="qby">대사 고르는 중…</div>'}
+  const q=q0||await pickQuote(force);if(!q&&!force&&files.size===0){}const h=quoteHTML(q);document.querySelectorAll('[data-qt]').forEach(e=>e.innerHTML=h);const p2=$('#trayq');if(p2)p2.innerHTML=h}
+const MOODS=['(≧▽≦)','(*´▽`*)','(｀・ω・´)','(￣▽￣)','(´・ω・`)','(´；ω；`)','(>_<)','(・_・;)','(=ↀωↀ=)','(-_-)zzZ','♡(˘▽˘)♡','(╬ Ò﹏Ó)'];
+function trayPop(){let p=$('#traypop');if(p){p.remove();return}
+  p=document.createElement('div');p.id='traypop';p.className='win raised';p.setAttribute('role','dialog');p.setAttribute('aria-label','오늘');
+  const d=new Date();const vc=miniCount().replace(/<\/?b>/g,'');
+  p.innerHTML=`<div class="tb"><div class="ti">${pix('heart',14)}<span>${d.getMonth()+1}월 ${d.getDate()}일 ${'일월화수목금토'[d.getDay()]}요일</span></div><button class="wb x" data-tp="close" aria-label="닫기">×</button></div><div class="bd">
+   <div class="tpc">♡ 보관함을 연 횟수 · ${vc}</div>
+   <div><h5>오늘 기분</h5><div class="moods">${MOODS.map(m=>`<button class="btn sm" data-mood="${esc(m)}" aria-pressed="${look.mood===m}">${esc(m)}</button>`).join('')}<button class="btn sm" data-mood="" aria-pressed="${!look.mood}">없음</button></div></div>
+   <div><h5>효과음</h5><div class="moods">${SFXP.map(([k,t])=>`<button class="btn sm" data-tsfx="${k}" aria-pressed="${(look.sfx||'off')===k}">${k==='off'?'🔇 ':'♪ '}${t}</button>`).join('')}</div><input type="range" min="0" max="100" value="${look.sfxVol??45}" data-tvol="1" aria-label="효과음 크기" style="width:100%;accent-color:var(--edge)"></div>
+   <div><h5 style="display:flex;align-items:center">✦ 오늘의 명대사<button class="btn sm" data-tp="qnext" style="margin-left:auto">↻ 다른 대사</button></h5><div id="trayq" class="qbox"></div></div></div>`;
+  document.body.appendChild(p);fillQuotes(false);
+  p.addEventListener('click',async e=>{const b=e.target.closest('button,[data-wx]');if(!b)return;
+    if(b.dataset.tp==='close'){p.remove();return}
+    if(b.dataset.tp==='qnext'){fillQuotes(true);return}
+    if(b.dataset.wx==='qopen'){const f=files.get(b.dataset.fid);if(f){p.remove();openDoc(f.id)}return}
+    if(b.dataset.mood!==undefined){look.mood=b.dataset.mood;saveLook();applyLook();p.querySelectorAll('[data-mood]').forEach(x=>x.setAttribute('aria-pressed',x===b));return}
+    if(b.dataset.tsfx){look.sfx=b.dataset.tsfx;saveLook();p.querySelectorAll('[data-tsfx]').forEach(x=>x.setAttribute('aria-pressed',x===b));sfx('notify');return}});
+  p.addEventListener('input',e=>{if(e.target.dataset.tvol){look.sfxVol=+e.target.value;saveLook();clearTimeout(e.target._t);e.target._t=setTimeout(()=>sfx('notify'),150)}})}
+document.addEventListener('pointerdown',e=>{const p=$('#traypop');if(p&&!e.target.closest('#traypop')&&!e.target.closest('#clock,#moodt'))p.remove()});
+addEventListener('keydown',e=>{if(e.key==='Escape'){const p=$('#traypop');if(p)p.remove()}});
+/* photo frame slideshow + session timer widgets */
+const frameIdx={};
+function frameList(w){return galSorted([...coll.images.values()].filter(x=>showable(x)&&(!w.artist||(x.artist||'').trim()===w.artist)))}
+const tmrMs=w=>(w.acc||0)+(w.run&&w.t0?Date.now()-w.t0:0);
+const tmrFmt=ms=>{const s2=Math.floor(ms/1000);return [Math.floor(s2/3600),Math.floor(s2/60)%60,s2%60].map(n=>String(n).padStart(2,'0')).join(':')};
+function tmrSub(w,ms){if(!w.run&&!ms)return '세션을 시작하면 ▶ 를 눌러요';const n=nextSession();const brk=w.brk?` · ${w.brk}분마다 휴식 알림`:'';return (w.run?'진행 중':'멈춤')+brk}
+const tmrRang={};
+setInterval(()=>{for(const w of widgets.values()){if(w.type!=='timer'||!w.run)continue;const ms=tmrMs(w);const e=document.querySelector(`[data-tmr="${w.id}"]`);if(e)e.textContent=tmrFmt(ms);
+  if(w.brk){const k=Math.floor(ms/(w.brk*60000));if(k>0&&tmrRang[w.id]!==k){if(tmrRang[w.id]!==undefined){sfx('notify');setTimeout(()=>sfx('notify'),500);toast(`☕ ${w.brk*k}분 지났어요 · 잠깐 쉬어 가요`)}tmrRang[w.id]=k}}}},1000);
+function frameShow(w){const el=document.querySelector(`#widgets [data-wg="${w.id}"]`);if(!el)return;const L=frameList(w);if(!L.length)return;const i=(((frameIdx[w.id]||0)%L.length)+L.length)%L.length;const x=L[i];const im=el.querySelector('.fimg');if(!im)return;im.style.backgroundImage=`url('${imgSrc(x)}')`;im.dataset.gid=x.id;const c=el.querySelector('.fcap');if(c)c.innerHTML=`<b>${esc(x.name||'이미지')}</b><small>${esc(credit(x)||'')}</small><i>${i+1}/${L.length}</i>`}
+setInterval(()=>{for(const w of widgets.values()){if(w.type!=='frame')continue;const el=document.querySelector(`#widgets [data-wg="${w.id}"]`);if(!el||el.matches(':hover')||wgBusy)continue;frameIdx[w.id]=(frameIdx[w.id]||0)+1;frameShow(w)}},8000);
 function renderWidgets(){
   const box=$('#widgets');if(!box)return;const A=wgArea();
   const list=[...widgets.values()].sort((a,b)=>(a.z||0)-(b.z||0));
@@ -1609,10 +1680,15 @@ function renderWidgets(){
       return `<div class="wg stk${on}" data-wg="${w.id}" data-drag="1" style="${st};width:${sz}px;height:${sz}px;--sz:${sz}px"><div class="art" style="transform:rotate(${w.rot||0}deg) scaleX(${w.flip?-1:1})">${art}</div><div class="wtools raised"><button data-wx="rotl" title="왼쪽으로 돌리기">↺</button><button data-wx="rotr" title="오른쪽으로 돌리기">↻</button><button data-wx="flip" title="뒤집기">⇋</button><button data-wx="front" title="맨 앞으로">▲</button><button data-wx="del" title="떼어 내기">✕</button></div><i class="wrz" data-rz="1"></i></div>`}
     if(w.type==='clock'){const sk=w.sk||'lcd';return `<div class="wg clk${sk==='lcd'?' raised':' skx'}${on}" data-wg="${w.id}" data-drag="1" data-clkw="${sk}" style="${st}">${clockInner(sk)}</div>`}
     if(w.type==='cal'){const c=calHTML(calOff[w.id]||0);const nx=nextSession();return `<div class="wg cal win raised${w.sk&&w.sk!=='win'?' sk-'+w.sk:''}${on}" data-wg="${w.id}" style="${st}"><div class="tb" data-drag="1"><div class="ti">${pix('calendar',14)}<span>${c.title}</span></div><span class="cnav"><button data-wx="mprev" aria-label="지난달">◀</button><button data-wx="mnext" aria-label="다음 달">▶</button></span><button class="wb x" data-wx="del" title="떼어 내기" aria-label="떼어 내기">×</button></div><div class="cg">${c.grid}</div><div class="nx" data-wx="nx">${nx?`<span class="pill dd">${ddText(nx.date)}</span> ${esc(nx.title||'세션')}${nx.round?' · '+esc(nx.round):''}`:'다가오는 세션이 없어요 · 눌러서 잡기'}</div></div>`}
+    if(w.type==='frame'){const L=frameList(w);const i=L.length?((frameIdx[w.id]||0)%L.length+L.length)%L.length:0;const x=L[i];return `<div class="wg frm win raised${on}" data-wg="${w.id}" style="${st};width:${w.w||240}px;height:${w.h||250}px"><div class="tb" data-drag="1"><div class="ti">${pix('camera',14)}<span>${esc(w.title||'액자')}</span></div><button class="wb x" data-wx="del" title="떼어 내기" aria-label="떼어 내기">×</button></div><div class="fimg"${x?` data-wx="fopen" data-gid="${x.id}" style="background-image:url('${esc(imgSrc(x))}')"`:''}>${x?'':'<span>사진첩에 이미지를 올리면<br>여기서 넘겨 볼 수 있어요</span>'}${L.length>1?'<button class="fnav l" data-wx="fprev" aria-label="이전">◀</button><button class="fnav r" data-wx="fnext" aria-label="다음">▶</button>':''}</div><div class="fcap">${x?`<b>${esc(x.name||'이미지')}</b><small>${esc(credit(x)||'')}</small>`:''}${L.length?`<i>${i+1}/${L.length}</i>`:''}</div><i class="wrz" data-rz="1"></i></div>`}
+    if(w.type==='timer'){const ms=tmrMs(w);return `<div class="wg tmr win raised${on}" data-wg="${w.id}" style="${st}"><div class="tb" data-drag="1"><div class="ti">${pix('star',14)}<span>세션 타이머</span></div><button class="wb x" data-wx="del" title="떼어 내기" aria-label="떼어 내기">×</button></div><div class="tbd"><div class="lcd" data-tmr="${w.id}">${tmrFmt(ms)}</div><div class="trow"><button class="btn sm${w.run?'':' pink'}" data-wx="tgo">${w.run?'❚❚ 멈춤':'▶ 시작'}</button><button class="btn sm" data-wx="treset">↺ 처음</button><button class="btn sm" data-wx="tbrk" title="휴식 알림 간격">☕ ${w.brk?w.brk+'분':'끔'}</button></div><small data-tmrs="${w.id}">${tmrSub(w,ms)}</small></div></div>`}
+    if(w.type==='quote')return `<div class="wg qt win raised${on}" data-wg="${w.id}" style="${st};width:${w.w||260}px"><div class="tb" data-drag="1"><div class="ti">${pix('sparkle',14)}<span>오늘의 명대사</span></div><button class="wb" data-wx="qnext" title="다른 대사" aria-label="다른 대사">↻</button><button class="wb x" data-wx="del" title="떼어 내기" aria-label="떼어 내기">×</button></div><div class="qbox" data-qt="1">${quoteHTML(quoteToday())}</div><i class="wrz" data-rz="1"></i></div>`;
     if(w.type==='music')return window.__music?window.__music.html(w,on,st):'';
     if(w.type==='dice'){const d=diceSt[w.id]||{};return `<div class="wg dice win raised${on}" data-wg="${w.id}" style="${st}"><div class="tb" data-drag="1"><div class="ti">${pix('dice',14)}<span>주사위</span></div><button class="wb x" data-wx="del" title="떼어 내기" aria-label="떼어 내기">×</button></div><div class="db"><div class="res" data-dres="1">${d.html||'<span style="font-size:15px">굴려 보세요</span>'}</div><div class="dp">${['1d100','1d20','2d6','1d6','3d6'].map(x=>`<button class="btn sm" data-wx="roll" data-ex="${x}">${x}</button>`).join('')}</div><div class="dr"><input type="text" data-dex="1" value="${esc(d.ex||'1d100')}" aria-label="식" placeholder="2d6+1"><input type="text" data-dsk="1" value="${esc(d.sk||'')}" aria-label="기능치" placeholder="기능치" inputmode="numeric" style="width:64px"><button class="btn sm pink" data-wx="roll">굴림</button></div><div class="hist">${esc((d.hist||[]).join(' · '))}</div></div></div>`}
     return ''}).join('');
+  if(box.querySelector('[data-qt]'))wantQuotes();
 }
+setTimeout(()=>{if(document.querySelector('[data-qt]')&&!quoteToday())fillQuotes(false)},2500);
 setInterval(()=>{document.querySelectorAll('[data-clkw]').forEach(e=>{const h=clockInner(e.dataset.clkw);if(e._h!==h){e._h=h;const tl=e.querySelector('.wtools');e.innerHTML=h}})},10000);
 async function delWidget(w,quiet){if(!quiet)sfx('trash');if(w.type==='music'&&window.__music)window.__music.remove(w.id);if(w.asset&&!w.asset.startsWith('mem:')&&![...widgets.values()].some(x=>x.id!==w.id&&x.asset===w.asset)&&![...coll.images.values()].some(x=>x.asset===w.asset))dropAsset(w.asset);await S.delWidget(w.id);if(wgSel===w.id)wgSel=null;if(!quiet)toast('떼어 냈어요')}
 function spot(w,h){const A=wgArea();const n=widgets.size;return{x:Math.max(10,Math.round(A.w/2-w/2+((n*37)%160)-80)),y:Math.max(10,Math.round(A.h/2-h/2+((n*29)%120)-60))}}
@@ -1623,6 +1699,9 @@ async function addWidget(type){
   if(type==='sticker'){stickerPicker();return}
   if(type==='clock'){const p=spot(170,80);await S.addWidget({type:'clock',sk:look.clockSk||'lcd',x:p.x,y:p.y,z:nextZ(),createdAt:now()});toast('시계를 붙였어요')}
   if(type==='music'&&window.__music){const p=spot(270,420);await S.addWidget({type:'music',title:'뮤직 플레이어',tracks:[],vol:70,x:p.x,y:p.y,z:nextZ(),createdAt:now()});toast('뮤직 플레이어를 놓았어요 · 유튜브 주소를 넣어 보세요');return}
+  if(type==='frame'){const n=[...coll.images.values()].filter(showable).length;const p=spot(240,250);await S.addWidget({type:'frame',w:240,h:250,x:p.x,y:p.y,z:nextZ(),createdAt:now()});toast(n?'액자를 붙였어요 · 8초마다 넘어가요':'액자를 붙였어요 · 사진첩에 이미지를 올려 주세요');return}
+  if(type==='timer'){const p=spot(230,130);await S.addWidget({type:'timer',run:false,acc:0,t0:0,brk:50,x:p.x,y:p.y,z:nextZ(),createdAt:now()});toast('세션 타이머를 붙였어요');return}
+  if(type==='quote'){const p=spot(260,120);await S.addWidget({type:'quote',w:260,x:p.x,y:p.y,z:nextZ(),createdAt:now()});toast('명대사를 붙였어요 · ↻로 다른 대사');return}
   if(type==='dice'){const p=spot(210,230);await S.addWidget({type:'dice',x:p.x,y:p.y,z:nextZ(),createdAt:now()});toast('주사위를 놓았어요');return}
   if(type==='cal'){const p=spot(218,250);await S.addWidget({type:'cal',sk:look.calSk||'win',x:p.x,y:p.y,z:nextZ(),createdAt:now()});toast('달력을 붙였어요')}
 }
@@ -1665,7 +1744,8 @@ function stickerPicker(){
     const p=o.mode==='mv'?{x:o.el.offsetLeft,y:o.el.offsetTop}:(widgets.get(o.id).type==='sticker'?{size:o.el.offsetWidth}:{w:o.el.offsetWidth,h:o.el.offsetHeight});
     Object.assign(widgets.get(o.id),p);wgBusy=false;try{await S.updWidget(o.id,p)}catch(err){toast('위치를 저장하지 못했어요')}};
   box.addEventListener('pointerup',end);box.addEventListener('pointercancel',end);
-  box.addEventListener('click',async e=>{const t=e.target.closest('[data-wx]');if(!t)return;const el=t.closest('.wg');const w=widgets.get(el.dataset.wg);if(!w)return;const k=t.dataset.wx;if(!canWrite&&!['mprev','mnext','day','nx','roll','muplay','muprev','munext','mupick'].includes(k))return;
+  box.addEventListener('click',async e=>{const t=e.target.closest('[data-wx]');if(!t)return;const el=t.closest('.wg');const w=widgets.get(el.dataset.wg);if(!w)return;const k=t.dataset.wx;if(k==='qnext'){fillQuotes(true);return}if(k==='fprev'||k==='fnext'){frameIdx[w.id]=(frameIdx[w.id]||0)+(k==='fnext'?1:-1);frameShow(w);return}if(k==='fopen'){if(e.target.closest('.fnav'))return;openView(t.dataset.gid);return}
+    if(k==='tgo'||k==='treset'||k==='tbrk'){if(!canWrite)return;let p;if(k==='tgo')p=w.run?{run:false,acc:tmrMs(w),t0:0}:{run:true,t0:Date.now(),acc:w.acc||0};else if(k==='treset'){p={run:false,acc:0,t0:0};delete tmrRang[w.id]}else{const L=[0,30,50,60,90];p={brk:L[(L.indexOf(w.brk||0)+1)%L.length]}}Object.assign(w,p);await S.updWidget(w.id,p);renderWidgets();return}if(k==='qopen'){const f=files.get(t.dataset.fid);if(f)openDoc(f.id);return}if(!canWrite&&!['mprev','mnext','day','nx','roll','muplay','muprev','munext','mupick','mumenu','qnext','qopen','fprev','fnext','fopen'].includes(k))return;
     if(k==='mprev'||k==='mnext'){calOff[w.id]=(calOff[w.id]||0)+(k==='mnext'?1:-1);renderWidgets();return}
     if(k==='day'){openSched(t.dataset.day);return}
     if(k==='nx'){const nx=nextSession();if(nx){openSched(nx.date);schEdit=nx.id;schDraft=null;renderSch()}else{openSched(todayStr());newSession(todayStr())}return}
@@ -1772,7 +1852,7 @@ function renderSch(){
   }
   else if(schTab==='chars'){
     const cs=[...coll.chars.values()].sort((a,b)=>(a.name||'').localeCompare(b.name||'','ko'));const cnt=id=>{const c=coll.chars.get(id);return [...coll.sessions.values()].filter(x=>(x.pcs||[]).some(p=>p.char===id||(c&&p.name===c.name))).length};
-    body.innerHTML=`<div class="lst"><div style="display:flex;gap:8px;align-items:center"><h4 style="flex:1">캐릭터 도감 · ${cs.length}</h4>${canWrite?'<button class="btn pink" data-sa="newchar">＋ 캐릭터</button>':''}</div>${cs.length?`<div class="cgrid">${cs.map(c=>`<button class="ccard" data-cid="${c.id}" style="--c:${esc(c.color||'#c9b6ff')}"><span class="av" style="${c.img?`background-image:url('${esc(blobUrl(c.img))}')`:''}">${c.img?'':esc((c.name||'?').slice(0,1))}</span><b>${esc(c.name)}</b><span class="mt">${esc(c.rule||'')}${c.pl?' · PL '+esc(c.pl):''}</span><span class="mt"><span class="pill">${(CSTAT.find(x=>x[0]===c.status)||CSTAT[0])[1]}</span> 세션 ${cnt(c.id)}회</span><span class="ds">${esc(c.desc||'')}</span></button>`).join('')}</div>`:`<div class="empty"><span class="art">${pix('cat',48)}</span><b>아직 등록한 캐릭터가 없어요</b><span>탐사자·PC를 등록해 두면 세션을 잡을 때 골라 넣을 수 있고,<br>캐릭터마다 다녀온 세션과 생환·로스트 기록이 모여요.</span>${canWrite?'<button class="btn pink" data-sa="newchar">＋ 첫 캐릭터 등록</button>':''}</div>`}</div>`;
+    body.innerHTML=`<div class="lst"><div style="display:flex;gap:8px;align-items:center"><h4 style="flex:1">캐릭터 도감 · ${cs.length}</h4>${canWrite?'<button class="btn pink" data-sa="newchar">＋ 캐릭터</button>':''}</div>${cs.length?`<div class="cgrid">${cs.map(c=>`<button class="ccard" data-cid="${c.id}" style="--c:${esc(c.color||'#c9b6ff')}"><span class="av" style="${c.img?`background-image:url('${esc(blobUrl(c.img))}')`:(()=>{const m=/^#?([0-9a-f]{6})$/i.exec(c.color||'');if(!m)return '';const n=parseInt(m[1],16);return ((n>>16)*299+((n>>8)&255)*587+(n&255)*114)/1000<150?'color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.25)':''})()}">${c.img?'':esc((c.name||'?').slice(0,1))}</span><b>${esc(c.name)}</b><span class="mt">${esc(c.rule||'')}${c.pl?' · PL '+esc(c.pl):''}</span><span class="mt"><span class="pill">${(CSTAT.find(x=>x[0]===c.status)||CSTAT[0])[1]}</span> 세션 ${cnt(c.id)}회</span><span class="ds">${esc(c.desc||'')}</span></button>`).join('')}</div>`:`<div class="empty"><span class="art">${pix('cat',48)}</span><b>아직 등록한 캐릭터가 없어요</b><span>탐사자·PC를 등록해 두면 세션을 잡을 때 골라 넣을 수 있고,<br>캐릭터마다 다녀온 세션과 생환·로스트 기록이 모여요.</span>${canWrite?'<button class="btn pink" data-sa="newchar">＋ 첫 캐릭터 등록</button>':''}</div>`}</div>`;
   }
   else{
     const groups=new Map();for(const x of coll.sessions.values()){const k=(x.title||'(시나리오명 없음)').trim();if(!groups.has(k))groups.set(k,[]);groups.get(k).push(x)}
@@ -1910,7 +1990,7 @@ async function closeGal(){if(galEdit&&!(await askDiscard()))return;galEdit=null;
 const galList=()=>galSorted(galList0());
 const galList0=()=>{const q=galQ.trim().toLowerCase();return [...coll.images.values()].filter(x=>(!galGrp||(x.group||'')===galGrp)&&(!q||[x.name,x.artist,x.group,(x.tags||[]).join(' '),x.memo].join(' ').toLowerCase().includes(q)))};
 const gDay=x=>x.date||(x.createdAt||'').slice(0,10);
-function galSorted(list){const by={new:(a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''),old:(a,b)=>(a.createdAt||'').localeCompare(b.createdAt||''),dnew:(a,b)=>(gDay(b)+(b.createdAt||'')).localeCompare(gDay(a)+(a.createdAt||'')),dold:(a,b)=>(gDay(a)+(a.createdAt||'')).localeCompare(gDay(b)+(b.createdAt||'')),name:(a,b)=>(a.name||'').localeCompare(b.name||'','ko',{numeric:true})};return list.sort(by[galSort]||by.new)}
+function galSorted(list){const by={new:(a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''),old:(a,b)=>(a.createdAt||'').localeCompare(b.createdAt||''),dnew:(a,b)=>(gDay(b)+(b.createdAt||'')).localeCompare(gDay(a)+(a.createdAt||'')),dold:(a,b)=>(gDay(a)+(a.createdAt||'')).localeCompare(gDay(b)+(b.createdAt||'')),name:(a,b)=>(a.name||'').localeCompare(b.name||'','ko',{numeric:true}),artist:(a,b)=>((a.artist||'').trim()?0:1)-((b.artist||'').trim()?0:1)||(a.artist||'').trim().localeCompare((b.artist||'').trim(),'ko')||(gDay(b)+(b.createdAt||'')).localeCompare(gDay(a)+(a.createdAt||''))};return list.sort(by[galSort]||by.new)}
 const credit=x=>{const k=(SRCK.find(s2=>s2[0]===x.kind)||[])[1];return [k,x.artist?'© '+x.artist:''].filter(Boolean).join(' · ')};
 function renderGal(){
   $('#galico').innerHTML=pix('camera',16);$('#galup').hidden=!canWrite;$('#gallink').hidden=!canWrite;
@@ -1926,7 +2006,7 @@ function renderGal(){
     <div class="ops"><a class="btn sm pink" href="${esc(x.url)}" target="_blank" rel="noopener noreferrer">열기 ↗</a>${canWrite?`<button class="btn sm" data-g="edit" data-id="${x.id}">고치기</button><button class="btn sm" data-g="ldel" data-id="${x.id}">지우기</button>`:''}</div>
     ${galConfirm==='l:'+x.id?`<div class="ask" style="grid-column:1/-1">‘${esc(x.name)}’ 링크를 지울까요? (원래 사이트는 그대로예요)<div style="display:flex;gap:6px"><button class="btn sm danger" data-g="ldelyes" data-id="${x.id}">지우기</button><button class="btn sm" data-g="lno">취소</button></div></div>`:''}</div>`;
   body.innerHTML=!list.length?`<div class="empty"><b>찾는 이미지가 없어요</b></div>`:
-   (imgs.length?(galSort==='dnew'||galSort==='dold'?(()=>{const m=new Map();for(const x of imgs){const k=gDay(x).slice(0,7)||'날짜 없음';if(!m.has(k))m.set(k,[]);m.get(k).push(x)}return [...m].map(([k,xs])=>`<section class="grp"><h4 style="margin:0 0 8px;font:12px var(--pixel);color:var(--ink2)">${k==='날짜 없음'?k:`${k.slice(0,4)}년 ${+k.slice(5,7)}월`} · ${xs.length}</h4><div class="ggrid">${xs.map(gcard).join('')}</div></section>`).join('')})():`<section class="grp"><h4 style="margin:0 0 8px;font:12px var(--pixel);color:var(--ink2)">이미지 · ${imgs.length}</h4><div class="ggrid">${imgs.map(x=>`<button class="gcard" data-gid="${x.id}"><span class="th" style="background-image:url('${esc(imgSrc(x))}')"></span><span class="cap"><b>${esc(x.name||'이미지')}</b>${credit(x)?`<span class="cr">${esc(credit(x))}</span>`:''}</span></button>`).join('')}</div></section>`):'')+
+   (imgs.length?(galSort==='artist'?(()=>{const m=new Map();for(const x of imgs){const k=(x.artist||'').trim()||'작가 미상';if(!m.has(k))m.set(k,[]);m.get(k).push(x)}return [...m].map(([k,xs])=>{const u=xs.map(x=>x.artistUrl).find(Boolean);return `<section class="grp"><h4 style="margin:0 0 8px;font:12px var(--pixel);color:var(--ink2);display:flex;gap:6px;align-items:center">${k==='작가 미상'?'작가 미상':'© '+esc(k)} · ${xs.length}장${u?`<a href="${esc(u)}" target="_blank" rel="noopener noreferrer" style="color:var(--edge);font-size:11px">작가 페이지 ↗</a>`:''}</h4><div class="ggrid">${xs.map(gcard).join('')}</div></section>`}).join('')})():galSort==='dnew'||galSort==='dold'?(()=>{const m=new Map();for(const x of imgs){const k=gDay(x).slice(0,7)||'날짜 없음';if(!m.has(k))m.set(k,[]);m.get(k).push(x)}return [...m].map(([k,xs])=>`<section class="grp"><h4 style="margin:0 0 8px;font:12px var(--pixel);color:var(--ink2)">${k==='날짜 없음'?k:`${k.slice(0,4)}년 ${+k.slice(5,7)}월`} · ${xs.length}</h4><div class="ggrid">${xs.map(gcard).join('')}</div></section>`).join('')})():`<section class="grp"><h4 style="margin:0 0 8px;font:12px var(--pixel);color:var(--ink2)">이미지 · ${imgs.length}</h4><div class="ggrid">${imgs.map(x=>`<button class="gcard" data-gid="${x.id}"><span class="th" style="background-image:url('${esc(imgSrc(x))}')"></span><span class="cap"><b>${esc(x.name||'이미지')}</b>${credit(x)?`<span class="cr">${esc(credit(x))}</span>`:''}</span></button>`).join('')}</div></section>`):'')+
    (lks.length?`<section class="grp"><h4 style="margin:0 0 8px;font:12px var(--pixel);color:var(--ink2)">외부 백업 링크 · ${lks.length}</h4><div class="links">${lks.map(lcard).join('')}</div></section>`:'');
 }
 $('#galgrp').onchange=e=>{galGrp=e.target.value;renderGal()};
@@ -2397,35 +2477,45 @@ if(window.__standalone){let seen=null;try{seen=localStorage.getItem('logbox-welc
 const L=window.__lb;if(!L)return;
 const css=document.createElement('style');css.textContent=`
 #ytlayer{position:fixed;inset:0;z-index:4;pointer-events:none}
-.ythost{position:fixed;pointer-events:auto;overflow:hidden;border-radius:4px;background:#000}
+.ythost{position:fixed;pointer-events:auto;overflow:hidden;border-radius:3px;background:#000}
 .ythost iframe{width:100%;height:100%;display:block;border:0}
 body.dragging .ythost{pointer-events:none}
-.wg.mus{width:270px;display:flex;flex-direction:column}
-.wg.mus .tb{cursor:move}
-.wg.mus .mb{background:var(--face);padding:8px;display:grid;gap:6px}
-.wg.mus .ytslot{height:143px;border-radius:4px;background:#000 center/40px no-repeat;display:grid;place-items:center;color:#777;font:11px var(--pixel)}
-.wg.mus .lcd{background:#1d2a24;color:#9fffc4;border-radius:5px;padding:6px 8px;font:13px/1.35 var(--pixel);box-shadow:inset 2px 2px 0 #0b120f;overflow:hidden}
-.wg.mus .mq{white-space:nowrap;overflow:hidden}
+.wg.mus{width:214px;display:flex;flex-direction:column;align-items:center;gap:6px;filter:drop-shadow(4px 5px 0 color-mix(in srgb,var(--edge) 28%,transparent))}
+.wg.mus .dev{position:relative;width:214px;padding:14px 14px 18px;border-radius:28px;background:linear-gradient(160deg,#fff 0%,var(--face) 55%,var(--face2));box-shadow:inset 0 0 0 2px #fff,inset 0 -4px 0 color-mix(in srgb,var(--lo) 45%,transparent),0 0 0 2px var(--edge);cursor:grab}
+.wg.mus .mx{position:absolute;right:8px;top:6px;width:18px;height:18px;border-radius:50%;border:0;background:var(--face);box-shadow:0 0 0 1px var(--edge);font:10px/1 var(--pixel);color:var(--ink2);cursor:pointer;opacity:0;transition:opacity .15s}
+.wg.mus:hover .mx,.wg.mus.on .mx{opacity:1}
+.wg.mus .scr{position:relative;border-radius:9px;background:linear-gradient(#fbfdff,#eef3fa);box-shadow:inset 0 0 0 2px #cfd9e8,0 0 0 2px var(--edge);padding:0 0 6px;overflow:hidden;cursor:default}
+.wg.mus .sbar{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:2px 7px;background:linear-gradient(#eef2f8,#d3dceb);font:10px var(--pixel);color:#4a5a78;border-bottom:1px solid #b8c4d6}
+.wg.mus .ytslot{height:100px;margin:5px 6px 4px;border-radius:3px;background:linear-gradient(135deg,color-mix(in srgb,var(--t1) 60%,#fff),color-mix(in srgb,var(--t2) 60%,#fff));display:grid;place-items:center;color:var(--ink2);font:10.5px/1.4 var(--pixel);text-align:center;box-shadow:0 0 0 1px #c9d4e4}
+.wg.mus .mq{margin:0 7px;white-space:nowrap;overflow:hidden;font:12px var(--cute);color:#24324a}
 .wg.mus .mq span{display:inline-block;padding-left:100%;animation:mqs 12s linear infinite}
 .wg.mus .mq.still span{padding-left:0;animation:none}
 @keyframes mqs{to{transform:translateX(-100%)}}
-.wg.mus .tm{display:flex;justify-content:space-between;font:11px var(--pixel);color:#6fdc9a;margin-top:2px}
-.wg.mus .eq{display:flex;gap:2px;align-items:flex-end;height:14px}
-.wg.mus .eq i{width:4px;background:#9fffc4;height:3px}
-.wg.mus.playing .eq i{animation:eqs .8s ease-in-out infinite alternate}
-.wg.mus .eq i:nth-child(2){animation-delay:.2s}.wg.mus .eq i:nth-child(3){animation-delay:.4s}.wg.mus .eq i:nth-child(4){animation-delay:.1s}.wg.mus .eq i:nth-child(5){animation-delay:.3s}
-@keyframes eqs{from{height:3px}to{height:14px}}
-.wg.mus .ctl{display:flex;gap:4px;align-items:center}
-.wg.mus .ctl .btn{padding:3px 8px}
-.wg.mus input[type=range]{flex:1;min-width:0;accent-color:var(--edge)}
-.wg.mus .pl{max-height:130px;overflow:auto;display:grid;gap:2px;background:var(--sunk);border-radius:5px;padding:4px;box-shadow:inset 1px 1px 0 var(--lo)}
+.wg.mus .sub{margin:0 7px;font:10px var(--pixel);color:#7a8aa8}
+.wg.mus .pb{margin:5px 7px 0;height:7px;border-radius:4px;background:#dfe6f0;box-shadow:inset 0 0 0 1px #b8c4d6;overflow:hidden;cursor:pointer}
+.wg.mus .pb i{display:block;height:100%;width:0;background:linear-gradient(color-mix(in srgb,var(--acc) 70%,#fff),var(--acc));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--edge) 40%,transparent)}
+.wg.mus .tm{display:flex;justify-content:space-between;margin:2px 7px 0;font:9.5px var(--pixel);color:#7a8aa8}
+.wg.mus .eq{display:inline-flex;gap:1px;align-items:flex-end;height:9px}.wg.mus .eq i{width:2px;background:var(--acc);height:2px}
+.wg.mus.playing .eq i{animation:eqs .8s ease-in-out infinite alternate}.wg.mus .eq i:nth-child(2){animation-delay:.2s}.wg.mus .eq i:nth-child(3){animation-delay:.4s}.wg.mus .eq i:nth-child(4){animation-delay:.1s}
+@keyframes eqs{from{height:2px}to{height:9px}}
+.wg.mus .volov{position:absolute;left:12px;right:12px;bottom:26px;background:rgba(255,255,255,.94);border-radius:6px;box-shadow:0 0 0 1px #b8c4d6;padding:4px 7px;font:10px var(--pixel);color:#4a5a78;display:flex;gap:6px;align-items:center;opacity:0;transition:opacity .2s;pointer-events:none}
+.wg.mus .volov.show{opacity:1}.wg.mus .volov b{flex:1;height:6px;border-radius:3px;background:#dfe6f0;overflow:hidden}.wg.mus .volov b i{display:block;height:100%;background:var(--acc)}
+.wg.mus .wheel{position:relative;width:150px;height:150px;margin:16px auto 0;border-radius:50%;background:linear-gradient(160deg,#fff,var(--face2));box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--lo) 60%,#fff),0 0 0 2px var(--edge);touch-action:none;cursor:ns-resize}
+.wg.mus .wheel button{position:absolute;border:0;background:none;cursor:pointer;font:10px var(--pixel);color:var(--ink2);padding:4px}
+.wg.mus .wheel button:hover{color:var(--ink)}
+.wg.mus .w-menu{left:50%;top:6px;transform:translateX(-50%);letter-spacing:.08em}.wg.mus .w-prev{left:6px;top:50%;transform:translateY(-50%)}.wg.mus .w-next{right:6px;top:50%;transform:translateY(-50%)}.wg.mus .w-pp{left:50%;bottom:6px;transform:translateX(-50%)}
+.wg.mus .wheel .w-c{left:50%;top:50%;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;background:linear-gradient(160deg,color-mix(in srgb,var(--acc) 35%,#fff),var(--acc));box-shadow:0 0 0 2px var(--edge),inset 0 2px 0 #fff8;padding:0}
+.wg.mus .wheel .w-c:active{transform:scale(.96)}
+.wg.mus .drawer{width:206px;background:var(--face);border-radius:10px;box-shadow:0 0 0 2px var(--edge);padding:7px;display:grid;gap:5px}
+.wg.mus .drawer[hidden]{display:none}
+.wg.mus .ctl{display:flex;gap:4px;align-items:center;font:10.5px var(--pixel);color:var(--ink2)}
+.wg.mus .ctl .btn{padding:2px 7px}
+.wg.mus .pl{max-height:140px;overflow:auto;display:grid;gap:2px;background:var(--sunk);border-radius:5px;padding:4px;box-shadow:inset 1px 1px 0 var(--lo)}
 .wg.mus .tr{display:flex;gap:6px;align-items:center;padding:3px 5px;border-radius:4px;font:12px var(--cute);cursor:pointer}
-.wg.mus .tr:hover{background:var(--face2)}
-.wg.mus .tr.cur{background:var(--sel)}
+.wg.mus .tr:hover{background:var(--face2)}.wg.mus .tr.cur{background:var(--sel)}
 .wg.mus .tr span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .wg.mus .tr button{border:0;background:none;cursor:pointer;font:11px var(--pixel);color:var(--ink3);padding:0 2px}
-.wg.mus .add{display:flex;gap:4px}
-.wg.mus .add input{min-width:0;flex:1;font-size:12px}
+.wg.mus .add{display:flex;gap:4px}.wg.mus .add input{min-width:0;flex:1;font-size:12px}
 @media (prefers-reduced-motion:reduce){.wg.mus .mq span,.wg.mus.playing .eq i{animation:none}}`;
 document.head.appendChild(css);
 const layer=document.createElement('div');layer.id='ytlayer';document.body.appendChild(layer);
@@ -2436,20 +2526,33 @@ let apiP=null;
 function api(){if(window.YT&&YT.Player)return Promise.resolve();if(!apiP)apiP=new Promise((res,rej)=>{const prev=window.onYouTubeIframeAPIReady;window.onYouTubeIframeAPIReady=()=>{if(prev)try{prev()}catch(e){}res()};const s=document.createElement('script');s.src='https://www.youtube.com/iframe_api';s.onerror=()=>{apiP=null;rej(new Error('yt'))};document.head.appendChild(s)});return apiP}
 const W=id=>L.widgets().get(id);
 function st(id){let p=P.get(id);if(!p){const h=document.createElement('div');h.className='ythost';h.hidden=true;h.innerHTML=`<div id="yt-${id}"></div>`;layer.appendChild(h);p={host:h,player:null,ready:false,i:-1,playing:false};P.set(id,p)}return p}
-function html(w,on,style){const tr=w.tracks||[];const p=P.get(w.id);const cur=p?p.i:-1;const t=tr[cur]||tr[0];const playing=p&&p.playing;
-  return `<div class="wg mus win raised${on}${playing?' playing':''}" data-wg="${w.id}" style="${style}"><div class="tb" data-drag="1"><div class="ti">${L.pix('music',14)}<span>${esc(w.title||'뮤직 플레이어')}</span></div><button class="wb x" data-wx="del" title="떼어 내기" aria-label="떼어 내기">×</button></div>
-   <div class="mb"><div class="ytslot" data-ytslot="${w.id}">${p&&p.player?'':'▶ 곡을 고르면 여기에 영상이 나와요'}</div>
-   <div class="lcd"><div class="mq${t&&(t.name||'').length>22?'':' still'}"><span data-mut="1">${t?esc((cur>=0?'♪ ':'')+(t.name||'유튜브 곡')):'유튜브 주소를 넣어 주세요'}</span></div><div class="tm"><span data-mutime="1">--:-- / --:--</span><span class="eq"><i></i><i></i><i></i><i></i><i></i></span></div></div>
-   <div class="ctl"><button class="btn sm" data-wx="muprev" aria-label="이전 곡">⏮</button><button class="btn sm pink" data-wx="muplay" aria-label="재생 또는 일시 정지">${playing?'⏸':'▶'}</button><button class="btn sm" data-wx="munext" aria-label="다음 곡">⏭</button><input type="range" min="0" max="1000" value="0" data-museek="1" aria-label="재생 위치"></div>
-   <div class="ctl"><span style="font:11px var(--pixel)">🔈</span><input type="range" min="0" max="100" value="${w.vol??70}" data-muvol="1" aria-label="소리 크기"><button class="btn sm" data-wx="muloop" aria-pressed="${!!w.loop}" title="한 곡 반복">🔁</button><button class="btn sm" data-wx="muall" aria-pressed="${w.repeatAll!==false}" title="목록 반복">🔂</button></div>
-   <div class="pl">${tr.length?tr.map((x,i)=>`<div class="tr${i===cur?' cur':''}" data-wx="mupick" data-i="${i}">♪<span>${esc(x.name||'유튜브 곡')}</span>${L.canWrite()?`<button data-wx="mudel" data-i="${i}" aria-label="빼기">✕</button>`:''}</div>`).join(''):'<div class="tr" style="cursor:default"><span>아래에 유튜브 주소를 붙여 넣어 주세요</span></div>'}</div>
-   ${L.canWrite()?`<div class="add"><input type="text" data-muurl="1" placeholder="유튜브 주소 붙여 넣기" aria-label="유튜브 주소"><button class="btn sm" data-wx="muadd">추가</button></div>`:''}</div></div>`}
+const openD=new Set();
+function html(w,on,style){const tr=w.tracks||[];const p=P.get(w.id);const cur=p?p.i:-1;const t=tr[cur]||tr[0];const playing=p&&p.playing;const op=openD.has(w.id);const nm=t?(t.name||'유튜브 곡'):'';
+  return `<div class="wg mus${on}${playing?' playing':''}" data-wg="${w.id}" style="${style}"><div class="dev" data-drag="1"><button class="mx" data-wx="del" title="떼어 내기" aria-label="떼어 내기">×</button>
+   <div class="scr"><div class="sbar"><span data-must="1">${playing?'▶ Now Playing':p&&p.player?'❚❚ Paused':'♪ '+esc(w.title||'Music')}</span><span>${tr.length?`${cur>=0?cur+1:1}/${tr.length}`:'0/0'} <span class="eq"><i></i><i></i><i></i><i></i></span></span></div>
+    <div class="ytslot" data-ytslot="${w.id}">${p&&p.player?'':tr.length?'▶ 가운데 버튼을 누르면<br>재생해요':'MENU를 눌러<br>유튜브 주소를 넣어 주세요'}</div>
+    <div class="mq${nm.length>16?'':' still'}"><span data-mut="1">${t?esc(nm):'곡이 없어요'}</span></div><div class="sub">${esc(w.title||'뮤직 플레이어')}</div>
+    <div class="pb" data-museekbar="1"><i data-mupos="1"></i></div><div class="tm"><span data-mutime="1">--:--</span><span data-murem="1">--:--</span></div>
+    <div class="volov" data-muvolov="1">🔈<b><i style="width:${w.vol??70}%"></i></b><span>${w.vol??70}</span></div></div>
+   <div class="wheel" data-muwheel="1" title="휠을 돌리면 소리 크기"><button class="w-menu" data-wx="mumenu" aria-label="곡 목록">MENU</button><button class="w-prev" data-wx="muprev" aria-label="이전 곡">◀◀</button><button class="w-next" data-wx="munext" aria-label="다음 곡">▶▶</button><button class="w-pp" data-wx="muplay" aria-label="재생 또는 일시 정지">▶❚❚</button><button class="w-c" data-wx="muplay" aria-label="재생 또는 일시 정지"></button></div></div>
+   <div class="drawer"${op?'':' hidden'}><div class="ctl">곡 목록 · ${tr.length}<span style="flex:1"></span><button class="btn sm" data-wx="muloop" aria-pressed="${!!w.loop}" title="한 곡 반복">🔂</button><button class="btn sm" data-wx="muall" aria-pressed="${w.repeatAll!==false}" title="목록 반복">🔁</button></div>
+    <div class="pl">${tr.length?tr.map((x,i)=>`<div class="tr${i===cur?' cur':''}" data-wx="mupick" data-i="${i}">♪<span>${esc(x.name||'유튜브 곡')}</span>${L.canWrite()?`<button data-wx="mudel" data-i="${i}" aria-label="빼기">✕</button>`:''}</div>`).join(''):'<div class="tr" style="cursor:default"><span>아래에 유튜브 주소를 붙여 넣어 주세요</span></div>'}</div>
+    ${L.canWrite()?`<div class="add"><input type="text" data-muurl="1" placeholder="유튜브 주소 붙여 넣기" aria-label="유튜브 주소"><button class="btn sm" data-wx="muadd">추가</button></div>`:''}</div></div>`}
 function el(id){return document.querySelector(`.wg.mus[data-wg="${id}"]`)}
 function ui(id){const p=P.get(id),e=el(id),w=W(id);if(!p||!e||!w)return;const tr=w.tracks||[];
-  e.classList.toggle('playing',p.playing);const b=e.querySelector('[data-wx=muplay]');if(b)b.textContent=p.playing?'⏸':'▶';
-  const t=tr[p.i];const ti=e.querySelector('[data-mut]');if(ti&&t)ti.textContent='♪ '+(t.name||'유튜브 곡');
+  e.classList.toggle('playing',p.playing);const sb=e.querySelector('[data-must]');if(sb)sb.textContent=p.playing?'▶ Now Playing':p.player?'❚❚ Paused':'♪ '+(w.title||'Music');
+  const t=tr[p.i];const ti=e.querySelector('[data-mut]');if(ti&&t)ti.textContent=t.name||'유튜브 곡';
   e.querySelectorAll('.tr[data-i]').forEach(r=>r.classList.toggle('cur',+r.dataset.i===p.i));
-  if(p.player&&p.ready&&p.player.getDuration){const c=p.player.getCurrentTime()||0,d=p.player.getDuration()||0;const tm=e.querySelector('[data-mutime]');if(tm)tm.textContent=fmtT(c)+' / '+fmtT(d);const sk=e.querySelector('[data-museek]');if(sk&&document.activeElement!==sk&&d)sk.value=Math.round(c/d*1000)}}
+  if(p.player&&p.ready&&p.player.getDuration){const c=p.player.getCurrentTime()||0,d=p.player.getDuration()||0;const tm=e.querySelector('[data-mutime]');if(tm)tm.textContent=fmtT(c);const rm=e.querySelector('[data-murem]');if(rm)rm.textContent=d?'-'+fmtT(d-c):'--:--';const ps=e.querySelector('[data-mupos]');if(ps&&d)ps.style.width=(c/d*100).toFixed(1)+'%'}}
+function volShow(id,v){const e=el(id);if(!e)return;const o=e.querySelector('[data-muvolov]');if(!o)return;o.querySelector('i').style.width=v+'%';o.querySelector('span').textContent=v;o.classList.add('show');clearTimeout(o._t);o._t=setTimeout(()=>o.classList.remove('show'),1200)}
+function setVol(id,v){v=Math.max(0,Math.min(100,Math.round(v)));const w=W(id);if(!w)return;w.vol=v;const p=P.get(id);if(p&&p.ready)p.player.setVolume(v);volShow(id,v);clearTimeout(setVol['t'+id]);setVol['t'+id]=setTimeout(()=>{if(L.canWrite())L.S.updWidget(id,{vol:v})},500)}
+// turning the wheel changes the volume
+let wd=null;
+document.addEventListener('pointerdown',ev=>{const wh=ev.target.closest&&ev.target.closest('.wg.mus [data-muwheel]');if(!wh||ev.target.closest('button'))return;ev.stopPropagation();ev.preventDefault();const r=wh.getBoundingClientRect();const id=wh.closest('.wg').dataset.wg;wd={id,cx:r.left+r.width/2,cy:r.top+r.height/2,a:Math.atan2(ev.clientY-(r.top+r.height/2),ev.clientX-(r.left+r.width/2)),v:(W(id)||{}).vol??70};try{wh.setPointerCapture(ev.pointerId)}catch(e){}},true);
+document.addEventListener('pointermove',ev=>{if(!wd)return;const a=Math.atan2(ev.clientY-wd.cy,ev.clientX-wd.cx);let d=a-wd.a;if(d>Math.PI)d-=2*Math.PI;if(d<-Math.PI)d+=2*Math.PI;wd.a=a;wd.v+=d/(2*Math.PI)*60;setVol(wd.id,wd.v)});
+document.addEventListener('pointerup',()=>{wd=null});
+document.addEventListener('wheel',ev=>{const wh=ev.target.closest&&ev.target.closest('.wg.mus [data-muwheel]');if(!wh)return;ev.preventDefault();const id=wh.closest('.wg').dataset.wg;setVol(id,((W(id)||{}).vol??70)-Math.sign(ev.deltaY)*4)},{passive:false});
+document.addEventListener('click',ev=>{const b=ev.target.closest&&ev.target.closest('.wg.mus [data-museekbar]');if(!b)return;const id=b.closest('.wg').dataset.wg,p=P.get(id);if(!p||!p.ready)return;const r=b.getBoundingClientRect();const d=p.player.getDuration()||0;if(d)p.player.seekTo((ev.clientX-r.left)/r.width*d,true)});
 // keep each player sitting exactly on its widget's screen slot (the player is never moved in the DOM, so it never reloads)
 (function sync(){for(const [id,p] of P){const slot=document.querySelector(`[data-ytslot="${id}"]`);const w=W(id);if(!slot||!w||!p.player){p.host.hidden=true;continue}
   const r=slot.getBoundingClientRect();if(!r.width){p.host.hidden=true;continue}p.host.hidden=false;const z=+(slot.closest('.wg').style.zIndex||1);
@@ -2469,6 +2572,7 @@ async function state(id,ev){const p=P.get(id);if(!p)return;const S=YT.PlayerStat
   ui(id)}
 function err(id,ev){const c=ev.data;L.toast(c===101||c===150?'이 영상은 올린 사람이 다른 사이트 재생을 막아 두었어요 · 다음 곡으로 넘어가요':c===100?'영상을 찾을 수 없어요 (지워졌거나 비공개) · 다음 곡으로 넘어가요':'이 영상을 재생하지 못했어요 · 다음 곡으로 넘어가요');const w=W(id);if(w&&(w.tracks||[]).length>1)setTimeout(()=>step(id,1),800)}
 async function action(w,k,t,e){const p=st(w.id);
+  if(k==='mumenu'){openD.has(w.id)?openD.delete(w.id):openD.add(w.id);const d=e.querySelector('.drawer');if(d)d.hidden=!openD.has(w.id);return}
   if(k==='muplay'){if(p.player&&p.ready&&p.i>=0){p.playing?p.player.pauseVideo():p.player.playVideo()}else if((w.tracks||[]).length)play(w,0);else L.toast('먼저 유튜브 주소를 넣어 주세요')}
   else if(k==='muprev')step(w.id,-1);else if(k==='munext')step(w.id,1);
   else if(k==='mupick'){if(t.closest('button')&&t.tagName==='BUTTON')return;play(w,+t.dataset.i)}
