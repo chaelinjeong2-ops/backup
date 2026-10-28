@@ -298,7 +298,7 @@ body.diner #note{background:#fff7d6}
 #traypop .moods{display:flex;flex-wrap:wrap;gap:4px}#traypop .moods .btn{padding:2px 7px;font-size:12px}
 .qbox{padding:8px 10px 10px;background:var(--face)}.wg.qt .qbox{min-height:70px}
 #traypop .qbox{border-radius:6px;box-shadow:0 0 0 1px var(--lo)}
-.qtx{font:15px/1.55 var(--cute);color:var(--ink);word-break:keep-all}
+.qtx{font:15px/1.55 var(--cute);color:var(--ink);word-break:keep-all;cursor:pointer;border-radius:4px}.qtx:hover{background:var(--sel)}
 .qby{font:11.5px var(--pixel);color:var(--ink2);margin-top:5px}.qfile{text-decoration:underline dotted;cursor:pointer}
 .wg.qt{display:flex;flex-direction:column;min-width:180px}.wg.qt .tb{cursor:move}
 .wg.on.qt{outline:1px dashed var(--edge);outline-offset:3px}
@@ -1103,7 +1103,10 @@ function showView(){
   frame.setAttribute('sandbox','allow-scripts allow-popups allow-popups-to-escape-sandbox allow-modals');
   const coco=isLogText(docText,f.script);let sk0=coco?(f.skin||look.skin||'orig'):'orig';if(!SKINS.some(x=>x[0]===sk0))sk0='bubble';const pl=coco&&(sk0!=='orig'||logCache.has(f.asset)||VOIDRE.test(docText))?parseLog(f.asset,docText):(coco?{msgs:[],channels:[],lazy:1}:null);const sk=!pl||(!pl.lazy&&!pl.msgs.length)?'orig':sk0;
   skinOpt.me=f.me||'';
-  frame.srcdoc=sk==='orig'?docText:skinHTML(pl,sk,skinOpt);
+  const fc=docFocus&&docFocus.fid===f.id?docFocus:null;docFocus=null;
+  if(fc&&pl&&!pl.lazy)skinOpt.ch='';
+  if(fc){const fm=pl&&!pl.lazy&&fc.mi!=null?pl.msgs[fc.mi]:null;const okm=fm&&fm.text&&fm.text.trim()===fc.t;frame.srcdoc=sk==='orig'?docText.replace(/<\/body>(?![\s\S]*<\/body>)/i,'')+focusScript(fc.t,false):skinHTML(pl,sk,Object.assign({},skinOpt,{focus:okm?fm:null})).replace('</body>',focusScript(fc.t,!!okm)+'</body>')}
+  else frame.srcdoc=sk==='orig'?docText:skinHTML(pl,sk,skinOpt);
   dbar.innerHTML=`<span class="msg">${pl&&!pl.lazy?`대사 ${pl.lines.toLocaleString('ko-KR')}줄`:pl?'TRPG 로그':f.script?'스크립트가 있는 파일이에요 (뷰어 기능 그대로 작동)':'보기 모드'}</span>`+(pl?`<label class="opt" style="font-size:13px">보기<select id="skinSel" style="width:auto">${SKINS.map(([k,t])=>`<option value="${k}"${sk===k?' selected':''}>${t}</option>`).join('')}</select></label>${pl.lazy?`<label class="opt" style="font-size:13px">탭<select id="chanSel" style="width:auto"><option value="">모든 탭</option><option value="__load">탭 나눠 보기…</option></select></label>`:pl.channels.length>1?`<label class="opt" style="font-size:13px">탭<select id="chanSel" style="width:auto">${['',...pl.channels].map(c=>`<option value="${esc(c)}"${(pl.channels.includes(skinOpt.ch)?skinOpt.ch:'')===c?' selected':''}>${c?esc(c):'모든 탭'}</option>`).join('')}</select></label>`:''}${!pl.lazy&&(sk==='sms'||sk==='msgr')?`<label class="opt" style="font-size:13px">색<input type="color" id="skColIn" value="${skCol(sk)}" style="width:34px;height:26px;padding:0"></label>`:''}${!pl.lazy&&sk==='sms'?`<label class="opt" style="font-size:13px">내 캐릭터<select id="meSel" style="width:auto;max-width:150px"><option value="">(없음 · 모두 왼쪽)</option>${speakers(pl).slice(0,40).map(n=>`<option value="${esc(n)}"${f.me===n?' selected':''}>${esc(n)}</option>`).join('')}</select></label>`:''}${!pl.lazy&&pl.two&&sk!=='sms'&&sk!=='msgr'?`<select id="colSel" style="width:auto" aria-label="배치"><option value="two"${look.skinCols!=='one'?' selected':''}>메인｜잡담 나란히</option><option value="one"${look.skinCols==='one'?' selected':''}>한 줄로</option></select>`:''}<label class="opt" style="font-size:13px">글꼴<select id="fontSel" style="width:auto">${SKFONTS.map(([k,t])=>`<option value="${k}"${(look.skinFont||'auto')===k?' selected':''}>${t}</option>`).join('')}</select></label><select id="sizeSel" style="width:auto" aria-label="글자 크기">${SKSIZES.map(([k,t])=>`<option value="${k}"${(look.skinSize||'auto')===k?' selected':''}>${t}</option>`).join('')}</select>`:'')+(canWrite?`<button class="btn mint" data-d="edit"${f.script&&!VOIDRE.test(docText)?' disabled title="스크립트가 화면을 그리는 파일은 코드로 고쳐 주세요"':''}>✎ 화면에서 고치기</button><button class="btn" data-d="code">&lt;/&gt; 코드로 고치기</button>`:'')+`<button class="btn" data-d="dl">내려받기</button>`;
   dstat.innerHTML=`<span>${fmtSize(f.size)}</span><span>고친 날 ${fmtDate(f.updatedAt)}</span>${(f.tags||[]).length?`<span>${f.tags.map(esc).join(' · ')}</span>`:''}`;
 }
@@ -1642,10 +1645,17 @@ async function pickQuote(force){if(!force){const q=quoteToday();if(q)return q}if
   quoteBusy=(async()=>{const fs=[...files.values()].filter(f=>!f.trashed&&f.asset);if(!fs.length)return null;
     const pool=fs.sort(()=>Math.random()-.5);const ok=m=>m.name&&!m.sys&&!m.info&&!m.roll&&m.text&&m.text.trim().length>=4&&m.text.trim().length<=90&&!/^[\s.…ㅋㅎㅠㅜ!?~]+$/.test(m.text)&&!/<=|^\d*[db]\d/i.test(m.text)&&(m.text.match(/[가-힣A-Za-z]/g)||[]).length>=5;
     for(const f of pool.slice(0,6)){try{const tx=await getText(f);if(!isLogText(tx,f.script))continue;const pl=parseLog(f.asset,tx);if(!pl)continue;const c=pl.msgs.filter(ok);if(!c.length)continue;const m=c[Math.floor(Math.random()*c.length)];
-      const d=new Date();const q={day:d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(),t:m.text.trim(),n:m.name,fid:f.id,fn:f.name,ch:m.ch||''};try{localStorage.setItem(QK,JSON.stringify(q))}catch(e){}return q}catch(e){}}
+      const d=new Date();const q={day:d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(),t:m.text.trim(),n:m.name,fid:f.id,fn:f.name,ch:m.ch||'',mi:pl.msgs.indexOf(m)};try{localStorage.setItem(QK,JSON.stringify(q))}catch(e){}return q}catch(e){}}
     return null})();
   try{return await quoteBusy}finally{quoteBusy=null}}
-function quoteHTML(q){return q?`<div class="qtx">“${esc(q.t)}”</div><div class="qby">— ${esc(q.n)} · <span data-wx="qopen" data-fid="${esc(q.fid)}" class="qfile">${esc(q.fn)}</span></div>`:(files.size?'<div class="qby">대사 고르는 중…</div>':'<div class="qby">보관함에 코코포리아·VOID 로그를 올리면 대사 한 줄을 골라 와요.</div>')}
+let docFocus=null;
+function openQuote(fid){const q=quoteToday();docFocus=q&&q.fid===fid?{fid,t:q.t,n:q.n,mi:q.mi}:null;if(docId===fid&&docMode==='view'){showView();showWin('doc')}else openDoc(fid)}
+// a tiny script dropped into the viewer: finds the line (by id, or by its text) and scrolls it into the middle with a glow
+function focusScript(t,useId){return `<style>.lbxfocus{outline:3px solid #ff6fa8!important;outline-offset:3px;border-radius:6px;animation:lbxglow 1.2s ease-in-out 3}@keyframes lbxglow{50%{box-shadow:0 0 0 8px rgba(255,111,168,.35);background:rgba(255,214,234,.6)}}</style><script>(()=>{const T=${JSON.stringify(t).replace(/</g,'\\u003c')};let el=null;
+function find(){${useId?"el=document.getElementById('lbxf');if(el)return el;":""}const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);const k=T.replace(/\\s+/g,' ').trim().slice(0,40);let n;while((n=w.nextNode())){if(n.nodeValue.replace(/\\s+/g,' ').includes(k)){let p=n.parentElement;while(p&&p!==document.body&&getComputedStyle(p).display==='inline')p=p.parentElement;const a=p&&p.closest('article,.r,.row,.l,.say,.cr,.nr,.memo,p,div');return a||p}}return null}
+function go(i){el=el||find();if(el){el.classList.add('lbxfocus');el.scrollIntoView({block:'center'})}if(i<4)setTimeout(()=>go(i+1),[150,400,900,1600][i])}
+if(document.readyState==='complete')setTimeout(()=>go(0),60);else addEventListener('load',()=>setTimeout(()=>go(0),60))})()<\/script>`}
+function quoteHTML(q){return q?`<div class="qtx" data-wx="qopen" data-fid="${esc(q.fid)}" title="눌러서 로그의 이 부분 보기">“${esc(q.t)}”</div><div class="qby">— ${esc(q.n)} · <span data-wx="qopen" data-fid="${esc(q.fid)}" class="qfile">${esc(q.fn)}</span></div>`:(files.size?'<div class="qby">대사 고르는 중…</div>':'<div class="qby">보관함에 코코포리아·VOID 로그를 올리면 대사 한 줄을 골라 와요.</div>')}
 let qT=0;function wantQuotes(){clearTimeout(qT);qT=setTimeout(()=>{if(document.querySelector('[data-qt]')&&!quoteToday())fillQuotes(false)},800)}
 async function fillQuotes(force){const els=document.querySelectorAll('[data-qt]');const pop=$('#trayq');if(!els.length&&!pop)return;const q0=!force&&quoteToday();
   if(!q0){els.forEach(e=>e.innerHTML='<div class="qby">대사 고르는 중…</div>');if(pop)pop.innerHTML='<div class="qby">대사 고르는 중…</div>'}
@@ -1663,7 +1673,7 @@ function trayPop(){let p=$('#traypop');if(p){p.remove();return}
   p.addEventListener('click',async e=>{const b=e.target.closest('button,[data-wx]');if(!b)return;
     if(b.dataset.tp==='close'){p.remove();return}
     if(b.dataset.tp==='qnext'){fillQuotes(true);return}
-    if(b.dataset.wx==='qopen'){const f=files.get(b.dataset.fid);if(f){p.remove();openDoc(f.id)}return}
+    if(b.dataset.wx==='qopen'){const f=files.get(b.dataset.fid);if(f){p.remove();openQuote(f.id)}return}
     if(b.dataset.mood!==undefined){look.mood=b.dataset.mood;saveLook();applyLook();p.querySelectorAll('[data-mood]').forEach(x=>x.setAttribute('aria-pressed',x===b));return}
     if(b.dataset.tsfx){look.sfx=b.dataset.tsfx;saveLook();p.querySelectorAll('[data-tsfx]').forEach(x=>x.setAttribute('aria-pressed',x===b));sfx('notify');return}});
   p.addEventListener('input',e=>{if(e.target.dataset.tvol){look.sfxVol=+e.target.value;saveLook();clearTimeout(e.target._t);e.target._t=setTimeout(()=>sfx('notify'),150)}})}
@@ -1754,7 +1764,7 @@ function stickerPicker(){
     Object.assign(widgets.get(o.id),p);wgBusy=false;try{await S.updWidget(o.id,p)}catch(err){toast('위치를 저장하지 못했어요')}};
   box.addEventListener('pointerup',end);box.addEventListener('pointercancel',end);
   box.addEventListener('click',async e=>{const t=e.target.closest('[data-wx]');if(!t)return;const el=t.closest('.wg');const w=widgets.get(el.dataset.wg);if(!w)return;const k=t.dataset.wx;if(k==='qnext'){fillQuotes(true);return}if(k==='fprev'||k==='fnext'){frameIdx[w.id]=(frameIdx[w.id]||0)+(k==='fnext'?1:-1);frameShow(w);return}if(k==='fopen'){if(e.target.closest('.fnav'))return;openView(t.dataset.gid);return}
-    if(k==='tgo'||k==='treset'||k==='tbrk'){if(!canWrite)return;let p;if(k==='tgo')p=w.run?{run:false,acc:tmrMs(w),t0:0}:{run:true,t0:Date.now(),acc:w.acc||0};else if(k==='treset'){p={run:false,acc:0,t0:0};delete tmrRang[w.id]}else{const L=[0,30,50,60,90];p={brk:L[(L.indexOf(w.brk||0)+1)%L.length]}}Object.assign(w,p);await S.updWidget(w.id,p);renderWidgets();return}if(k==='qopen'){const f=files.get(t.dataset.fid);if(f)openDoc(f.id);return}if(!canWrite&&!['mprev','mnext','day','nx','roll','muplay','muprev','munext','mupick','mumenu','qnext','qopen','fprev','fnext','fopen'].includes(k))return;
+    if(k==='tgo'||k==='treset'||k==='tbrk'){if(!canWrite)return;let p;if(k==='tgo')p=w.run?{run:false,acc:tmrMs(w),t0:0}:{run:true,t0:Date.now(),acc:w.acc||0};else if(k==='treset'){p={run:false,acc:0,t0:0};delete tmrRang[w.id]}else{const L=[0,30,50,60,90];p={brk:L[(L.indexOf(w.brk||0)+1)%L.length]}}Object.assign(w,p);await S.updWidget(w.id,p);renderWidgets();return}if(k==='qopen'){const f=files.get(t.dataset.fid);if(f)openQuote(f.id);return}if(!canWrite&&!['mprev','mnext','day','nx','roll','muplay','muprev','munext','mupick','mumenu','qnext','qopen','fprev','fnext','fopen'].includes(k))return;
     if(k==='mprev'||k==='mnext'){calOff[w.id]=(calOff[w.id]||0)+(k==='mnext'?1:-1);renderWidgets();return}
     if(k==='day'){openSched(t.dataset.day);return}
     if(k==='nx'){const nx=nextSession();if(nx){openSched(nx.date);schEdit=nx.id;schDraft=null;renderSch()}else{openSched(todayStr());newSession(todayStr())}return}
@@ -2503,6 +2513,7 @@ main{max-width:980px;margin:14px auto 40px;padding:0 10px}
     row=m=>m.sys?`<div class="l sy">!! ${E(m.text)}</div>`:`<div class="l"><span class="p">${isNarr(m)?'&gt;':E(m.name)+'&gt;'}</span> ${E(m.text)}${m.roll?`\n   <span class="ro ${rollCls(m)}">[ROLL] ${E(m.roll)}</span>`:''}</div>`;
     chap=m=>`<div class="l cp">:: ${E(m.sub)} / ${E(m.text)} ::</div>`;
   }
+  if(o.focus){const r1=row;row=m=>m===o.focus?r1(m).replace(/^<div/,'<div id="lbxf"'):r1(m)}
   if(o.edit){const r0=row,c0=chap,tg=(h,m)=>m.k?h.replace(/^<div/,`<div data-k="${m.k}" data-ch="${E(m.ch||'')}"`):h;row=m=>tg(r0(m),m);chap=m=>tg(c0(m),m)}
   // 긴 로그도 가볍게: 챕터(또는 300줄)마다 묶어서 화면 밖은 그리지 않아요
   let body='',buf='',n=0;const flush=()=>{if(buf)body+=`<section class="cv" style="contain-intrinsic-size:auto ${Math.max(400,n*38)}px">${buf}</section>`;buf='';n=0};
@@ -2513,6 +2524,7 @@ main{max-width:980px;margin:14px auto 40px;padding:0 10px}
   else{for(const m of msgs){if(m.chap){flush();buf=chap(m);n=2;continue}buf+=row(m);if(++n>=300&&!(m.cont))flush()}flush()}
   if(sk==='terminal')body+=`<div class="l p">C:\\LOGS&gt; _</div>`;
   const pre=o._pre||'';delete o._pre;const post=o._post||'';delete o._post;const ff=SKFF[look.skinFont],fs=+look.skinSize||0;if(ff||fs)css+=`\nmain{${ff?`font-family:${ff}!important;`:''}${fs?`font-size:${fs}px!important;`:''}}${ff&&sk==='diary'?'.tx,.nr{line-height:1.75}.r{margin:8px 0}':''}${fs&&sk==='diary'?'.tx,.nr{line-height:1.75}':''}${ff&&!fs&&sk==='diary'?'main{font-size:16.5px!important}':''}`;
+  if(o.focus)body=body.replace(/<section class="cv"([^>]*)>((?:(?!<\/section>)[\s\S])*?id="lbxf")/,'<section class="cv" style="content-visibility:visible">$2');
   return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${E(pl.title)}</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Gaegu:wght@400;700&family=Gowun+Batang&family=Gowun+Dodum&family=Jua&display=swap"><style>${css}\n.cv{content-visibility:auto}\n${avCss}</style></head><body>${pre}<main${two?' class="two"':''}>${top}${body}${post}</main></body></html>`;
 }
 
