@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aseprite → PSD 변환기</title>
+<style>
+  :root {
+    --bg: #f4f2ee; --panel: #ffffff; --ink: #1f1d1a; --muted: #6f6a62;
+    --line: #e2ddd4; --accent: #e5533d; --accent-ink: #ffffff; --ok: #2f8f5b; --err: #c0392b;
+    --check-a: #e9e6e0; --check-b: #f7f5f1;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #17161a; --panel: #222127; --ink: #eceae6; --muted: #9c978f;
+      --line: #34323a; --accent: #ff6b52; --accent-ink: #1a1112; --ok: #4fc584; --err: #ff7a6b;
+      --check-a: #2c2b31; --check-b: #35343b;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+    font-size: 15px; line-height: 1.55; word-break: keep-all;
+  }
+  main { max-width: 760px; margin: 0 auto; padding: 40px 20px 60px; }
+  h1 { font-size: 26px; margin: 0 0 4px; letter-spacing: -0.02em; display: flex; align-items: center; gap: 10px; }
+  h1 .px { display: inline-grid; grid-template-columns: repeat(3, 6px); gap: 1px; }
+  h1 .px i { width: 6px; height: 6px; background: var(--accent); }
+  h1 .px i:nth-child(2), h1 .px i:nth-child(4), h1 .px i:nth-child(9) { background: transparent; }
+  .sub { color: var(--muted); margin: 0 0 28px; }
+
+  #drop {
+    display: block; width: 100%;
+    border: 2px dashed var(--line); border-radius: 14px; background: var(--panel);
+    padding: 36px 20px; text-align: center; cursor: pointer; transition: border-color .15s, background .15s;
+  }
+  #drop:hover, #drop.over { border-color: var(--accent); }
+  #drop strong { display: block; font-size: 17px; margin-bottom: 4px; }
+  #drop span { color: var(--muted); font-size: 14px; }
+  #file { display: none; }
+
+  .opts {
+    margin-top: 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+    padding: 18px 20px; display: grid; gap: 16px;
+  }
+  .opt-title { font-weight: 600; margin-bottom: 6px; font-size: 14px; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .seg { position: relative; display: inline-block; }
+  .seg input { position: absolute; opacity: 0; pointer-events: none; }
+  .seg span {
+    display: inline-block; padding: 6px 12px; border: 1px solid var(--line); border-radius: 8px;
+    cursor: pointer; font-size: 14px; user-select: none;
+  }
+  .seg input:checked + span { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .seg input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+  #frameNo {
+    width: 64px; padding: 5px 8px; border: 1px solid var(--line); border-radius: 8px;
+    background: var(--bg); color: var(--ink); font: inherit; font-size: 14px;
+  }
+  .hint { color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+  #results { margin-top: 20px; display: grid; gap: 12px; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+    padding: 14px; display: grid; grid-template-columns: 96px 1fr auto; gap: 14px; align-items: center;
+  }
+  .thumb {
+    width: 96px; height: 96px; border-radius: 8px; display: grid; place-items: center; overflow: hidden;
+    background-color: var(--check-b);
+    background-image: linear-gradient(45deg, var(--check-a) 25%, transparent 25%, transparent 75%, var(--check-a) 75%),
+                      linear-gradient(45deg, var(--check-a) 25%, transparent 25%, transparent 75%, var(--check-a) 75%);
+    background-size: 12px 12px; background-position: 0 0, 6px 6px;
+  }
+  .thumb canvas { image-rendering: pixelated; image-rendering: crisp-edges; max-width: 96px; max-height: 96px; }
+  .name { font-weight: 600; word-break: break-all; }
+  .meta { color: var(--muted); font-size: 13px; }
+  .status { font-size: 13px; margin-top: 2px; }
+  .status.err { color: var(--err); }
+  .status.ok { color: var(--ok); }
+  .btn {
+    appearance: none; border: 0; border-radius: 10px; padding: 9px 14px; font: inherit; font-size: 14px; font-weight: 600;
+    background: var(--accent); color: var(--accent-ink); cursor: pointer; text-decoration: none; white-space: nowrap;
+  }
+  .btn[aria-disabled="true"] { opacity: .4; pointer-events: none; }
+  .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+  #bulk { display: none; justify-content: space-between; align-items: center; margin-top: 4px; }
+  #bulk.show { display: flex; }
+
+  .notes { margin-top: 28px; color: var(--muted); font-size: 13.5px; }
+  .notes h2 { font-size: 14px; color: var(--ink); margin: 0 0 6px; }
+  .notes ul { margin: 0 0 16px; padding-left: 18px; }
+  .notes li { margin: 3px 0; }
+  @media (max-width: 520px) {
+    .card { grid-template-columns: 72px 1fr; }
+    .thumb { width: 72px; height: 72px; }
+    .thumb canvas { max-width: 72px; max-height: 72px; }
+    .card .btn { grid-column: 1 / -1; text-align: center; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1><span class="px"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>Aseprite → PSD 변환기</h1>
+  <p class="sub">레이어·그룹·블렌드 모드를 살려서 PSD로 바꿔요. 모든 처리는 이 브라우저 안에서만 이뤄지고, 파일은 어디에도 업로드되지 않아요.</p>
+
+  <label id="drop" for="file">
+    <strong>.aseprite / .ase 파일을 여기에 끌어다 놓으세요</strong>
+    <span>또는 클릭해서 고르기 · 여러 개 한 번에 가능</span>
+  </label>
+  <input id="file" type="file" accept=".ase,.aseprite" multiple>
+
+  <section class="opts">
+    <div>
+      <div class="opt-title">확대 배율</div>
+      <div class="row" id="scaleRow">
+        <label class="seg"><input type="radio" name="scale" value="1" checked><span>원본</span></label>
+        <label class="seg"><input type="radio" name="scale" value="2"><span>2×</span></label>
+        <label class="seg"><input type="radio" name="scale" value="3"><span>3×</span></label>
+        <label class="seg"><input type="radio" name="scale" value="4"><span>4×</span></label>
+        <label class="seg"><input type="radio" name="scale" value="6"><span>6×</span></label>
+        <label class="seg"><input type="radio" name="scale" value="8"><span>8×</span></label>
+      </div>
+      <div class="hint">픽셀이 뭉개지지 않게 최근접(nearest-neighbor) 방식으로 확대해요.</div>
+    </div>
+    <div>
+      <div class="opt-title">애니메이션 프레임</div>
+      <div class="row">
+        <label class="seg"><input type="radio" name="fmode" value="groups" checked><span>PSD 하나에 프레임별 그룹</span></label>
+        <label class="seg"><input type="radio" name="fmode" value="split"><span>프레임마다 PSD (ZIP)</span></label>
+        <label class="seg"><input type="radio" name="fmode" value="one"><span>특정 프레임만</span></label>
+        <input id="frameNo" type="number" min="1" value="1" aria-label="프레임 번호">
+      </div>
+      <div class="hint">프레임이 하나뿐인 파일은 어떤 걸 골라도 평범한 PSD 하나로 나와요.</div>
+    </div>
+  </section>
+
+  <div id="bulk">
+    <span class="meta" id="bulkInfo"></span>
+    <a class="btn ghost" id="bulkBtn" href="#">모두 ZIP으로 받기</a>
+  </div>
+  <div id="results"></div>
+
+  <div class="notes">
+    <h2>옮겨지는 것</h2>
+    <ul>
+      <li>레이어 이름(한글 포함), 순서, 표시/숨김, 불투명도</li>
+      <li>그룹(폴더) 구조와 그룹 불투명도</li>
+      <li>블렌드 모드: 곱하기, 스크린, 오버레이, 어둡게/밝게, 닷지/번, 하드/소프트 라이트, 차이, 제외, 색조·채도·색상·광도, 더하기, 빼기, 나누기</li>
+      <li>타일맵 레이어 → 일반 픽셀 레이어로 펼쳐서 저장</li>
+    </ul>
+    <h2>달라지는 것</h2>
+    <ul>
+      <li>인덱스(팔레트)·그레이스케일 모드 파일은 RGB로 바뀌어요. 색은 같지만 팔레트 정보는 남지 않아요.</li>
+      <li>셀(cel) 불투명도는 픽셀에 미리 적용돼요.</li>
+      <li>태그, 프레임 길이, 슬라이스, 셀 z-인덱스는 PSD에 담을 곳이 없어 빠져요.</li>
+    </ul>
+  </div>
+</main>
+
+<script>
+"use strict";
+
+/* ================= Aseprite 파서 ================= */
+
+async function inflateZlib(u8, expected) {
+  // DecompressionStream('deflate') = zlib 래퍼 포함. 끝부분 오류가 나도 받은 데이터는 살린다.
+  const parts = []; let total = 0;
+  try {
+    const stream = new Blob([u8]).stream().pipeThrough(new DecompressionStream("deflate"));
+    const reader = stream.getReader();
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      parts.push(value); total += value.length;
+    }
+  } catch (e) {
+    if (total < expected) throw new Error("압축 데이터를 풀 수 없어요");
+  }
+  const out = new Uint8Array(total); let o = 0;
+  for (const p of parts) { out.set(p, o); o += p.length; }
+  return out;
+}
+
+const ASE_BLEND = ["norm","mul ","scrn","over","dark","lite","div ","idiv","hLit","sLit","diff","smud","hue ","sat ","colr","lum ","lddg","fsub","fdiv"];
+
+async function parseAseprite(buf) {
+  const dv = new DataView(buf), u8 = new Uint8Array(buf);
+  if (buf.byteLength < 128 || dv.getUint16(4, true) !== 0xA5E0) throw new Error("Aseprite 파일이 아니에요");
+  const nFrames = dv.getUint16(6, true), W = dv.getUint16(8, true), H = dv.getUint16(10, true);
+  const depth = dv.getUint16(12, true), hflags = dv.getUint32(14, true), transIdx = u8[28];
+  const bpp = depth === 32 ? 4 : depth === 16 ? 2 : 1;
+  const td = new TextDecoder("utf-8");
+  const readStr = p => { const n = dv.getUint16(p, true); return { s: td.decode(u8.subarray(p + 2, p + 2 + n)), end: p + 2 + n }; };
+
+  const layers = [], frames = [], tilesets = {};
+  let palette = [], hasNewPalette = false;
+  let pos = 128;
+
+  for (let f = 0; f < nFrames; f++) {
+    const fstart = pos, fsize = dv.getUint32(pos, true);
+    if (dv.getUint16(pos + 4, true) !== 0xF1FA) throw new Error("프레임 데이터가 손상됐어요");
+    const oldN = dv.getUint16(pos + 6, true), dur = dv.getUint16(pos + 8, true), newN = dv.getUint32(pos + 12, true);
+    const nChunks = newN !== 0 ? newN : oldN;
+    const cels = [];
+    let p = pos + 16;
+    for (let c = 0; c < nChunks; c++) {
+      const csize = dv.getUint32(p, true), ctype = dv.getUint16(p + 4, true), d = p + 6, end = p + csize;
+      if (csize < 6 || end > fstart + fsize) break;
+      if (ctype === 0x2004) { // Layer
+        const lflags = dv.getUint16(d, true), ltype = dv.getUint16(d + 2, true), level = dv.getUint16(d + 4, true);
+        const blend = dv.getUint16(d + 10, true), opacity = u8[d + 12];
+        const nm = readStr(d + 16);
+        const tilesetIndex = ltype === 2 ? dv.getUint32(nm.end, true) : -1;
+        layers.push({ flags: lflags, type: ltype, level, blend, opacity, name: nm.s, tilesetIndex });
+      } else if (ctype === 0x2005) { // Cel
+        const li = dv.getUint16(d, true), x = dv.getInt16(d + 2, true), y = dv.getInt16(d + 4, true);
+        const op = u8[d + 6], ct = dv.getUint16(d + 7, true);
+        const cel = { li, x, y, opacity: op, kind: ct };
+        if (ct === 0) {
+          cel.w = dv.getUint16(d + 16, true); cel.h = dv.getUint16(d + 18, true);
+          cel.raw = u8.slice(d + 20, end);
+        } else if (ct === 1) {
+          cel.link = dv.getUint16(d + 16, true);
+        } else if (ct === 2) {
+          cel.w = dv.getUint16(d + 16, true); cel.h = dv.getUint16(d + 18, true);
+          cel.raw = await inflateZlib(u8.subarray(d + 20, end), cel.w * cel.h * bpp);
+        } else if (ct === 3) {
+          cel.w = dv.getUint16(d + 16, true); cel.h = dv.getUint16(d + 18, true);
+          cel.bits = dv.getUint16(d + 20, true);
+          cel.idMask = dv.getUint32(d + 22, true); cel.xMask = dv.getUint32(d + 26, true);
+          cel.yMask = dv.getUint32(d + 30, true); cel.dMask = dv.getUint32(d + 34, true);
+          cel.raw = await inflateZlib(u8.subarray(d + 48, end), cel.w * cel.h * (cel.bits / 8));
+        }
+        cels[li] = cel;
+      } else if (ctype === 0x2019) { // Palette
+        const size = dv.getUint32(d, true), first = dv.getUint32(d + 4, true), last = dv.getUint32(d + 8, true);
+        if (!hasNewPalette) palette = []; hasNewPalette = true;
+        palette.length = Math.max(palette.length, size);
+        let q = d + 20;
+        for (let i = first; i <= last; i++) {
+          const ef = dv.getUint16(q, true);
+          palette[i] = [u8[q + 2], u8[q + 3], u8[q + 4], u8[q + 5]];
+          q += 6;
+          if (ef & 1) q += 2 + dv.getUint16(q, true);
+        }
+      } else if ((ctype === 0x0004 || ctype === 0x0011) && !hasNewPalette) { // 옛 팔레트
+        const k = ctype === 0x0011 ? 255 / 63 : 1;
+        const packets = dv.getUint16(d, true); let q = d + 2, idx = 0;
+        for (let pk = 0; pk < packets; pk++) {
+          idx += u8[q]; let n = u8[q + 1] || 256; q += 2;
+          for (let i = 0; i < n; i++, idx++, q += 3)
+            palette[idx] = [Math.round(u8[q] * k), Math.round(u8[q + 1] * k), Math.round(u8[q + 2] * k), 255];
+        }
+      } else if (ctype === 0x2023) { // Tileset
+        const id = dv.getUint32(d, true), tflags = dv.getUint32(d + 4, true), n = dv.getUint32(d + 8, true);
+        const tw = dv.getUint16(d + 12, true), th = dv.getUint16(d + 14, true);
+        let q = readStr(d + 32).end;
+        if (tflags & 1) q += 8;
+        const ts = { n, tw, th, raw: null };
+        if (tflags & 2) {
+          const len = dv.getUint32(q, true);
+          ts.raw = await inflateZlib(u8.subarray(q + 4, q + 4 + len), tw * th * n * bpp);
+        }
+        tilesets[id] = ts;
+      }
+      p = end;
+    }
+    frames.push({ duration: dur, cels });
+    pos = fstart + fsize;
+  }
+  return { W, H, depth, bpp, hflags, transIdx, layers, frames, tilesets, palette };
+}
+
+function rawToRGBA(doc, raw, count, isBg) {
+  const out = new Uint8ClampedArray(count * 4);
+  if (doc.depth === 32) {
+    out.set(raw.subarray(0, count * 4));
+  } else if (doc.depth === 16) {
+    for (let i = 0; i < count; i++) {
+      const v = raw[i * 2], a = raw[i * 2 + 1];
+      out[i * 4] = out[i * 4 + 1] = out[i * 4 + 2] = v; out[i * 4 + 3] = a;
+    }
+  } else {
+    const pal = doc.palette;
+    for (let i = 0; i < count; i++) {
+      const idx = raw[i];
+      if (!isBg && idx === doc.transIdx) continue;
+      const c = pal[idx]; if (!c) continue;
+      out[i * 4] = c[0]; out[i * 4 + 1] = c[1]; out[i * 4 + 2] = c[2]; out[i * 4 + 3] = c[3];
+    }
+  }
+  return out;
+}
+
+// 각 프레임의 레이어별 이미지 {x,y,w,h,rgba}
+function resolveFrames(doc) {
+  const tsCache = {};
+  const tileRGBA = idx => {
+    if (!(idx in tsCache)) {
+      const ts = doc.tilesets[idx];
+      tsCache[idx] = ts && ts.raw ? { ...ts, rgba: rawToRGBA(doc, ts.raw, ts.tw * ts.th * ts.n, false) } : null;
+    }
+    return tsCache[idx];
+  };
+  const result = [];
+  for (let f = 0; f < doc.frames.length; f++) {
+    const imgs = [];
+    for (let li = 0; li < doc.layers.length; li++) {
+      const L = doc.layers[li];
+      if (L.type === 1) continue;
+      let cel = doc.frames[f].cels[li];
+      let guard = 0;
+      while (cel && cel.kind === 1 && guard++ < 1000) cel = doc.frames[cel.link] && doc.frames[cel.link].cels[li];
+      if (!cel || !cel.raw) continue;
+      let img;
+      if (cel.kind === 3) {
+        const ts = tileRGBA(L.tilesetIndex);
+        if (!ts) continue;
+        const { tw, th } = ts, w = cel.w * tw, h = cel.h * th, rgba = new Uint8ClampedArray(w * h * 4);
+        const dvc = new DataView(cel.raw.buffer, cel.raw.byteOffset, cel.raw.byteLength), B = cel.bits / 8;
+        for (let ty = 0; ty < cel.h; ty++) for (let tx = 0; tx < cel.w; tx++) {
+          const o = (ty * cel.w + tx) * B;
+          const v = B === 4 ? dvc.getUint32(o, true) : B === 2 ? dvc.getUint16(o, true) : cel.raw[o];
+          const id = (v & cel.idMask) >>> 0;
+          if (id === 0 || id >= ts.n) continue;
+          const xf = (v & cel.xMask) !== 0, yf = (v & cel.yMask) !== 0, df = (v & cel.dMask) !== 0 && tw === th;
+          for (let py = 0; py < th; py++) for (let px = 0; px < tw; px++) {
+            let u = px, t = py;
+            if (yf) t = th - 1 - t;
+            if (xf) u = tw - 1 - u;
+            if (df) { const s = u; u = t; t = s; }
+            const si = ((id * th + t) * tw + u) * 4, di = ((ty * th + py) * w + tx * tw + px) * 4;
+            rgba[di] = ts.rgba[si]; rgba[di + 1] = ts.rgba[si + 1]; rgba[di + 2] = ts.rgba[si + 2]; rgba[di + 3] = ts.rgba[si + 3];
+          }
+        }
+        img = { x: cel.x, y: cel.y, w, h, rgba };
+      } else {
+        img = { x: cel.x, y: cel.y, w: cel.w, h: cel.h, rgba: rawToRGBA(doc, cel.raw, cel.w * cel.h, (L.flags & 8) !== 0) };
+      }
+      if (cel.opacity < 255) {
+        const k = cel.opacity / 255, a = img.rgba;
+        for (let i = 3; i < a.length; i += 4) a[i] = Math.round(a[i] * k);
+      }
+      imgs[li] = img;
+    }
+    result.push(imgs);
+  }
+  return result;
+}
+
+// 캔버스 밖으로 나간 부분 자르기 + 확대
+function prepImage(img, W, H, s) {
+  if (!img) return null;
+  const x0 = Math.max(0, img.x), y0 = Math.max(0, img.y);
+  const x1 = Math.min(W, img.x + img.w), y1 = Math.min(H, img.y + img.h);
+  if (x1 <= x0 || y1 <= y0) return null;
+  const cw = x1 - x0, ch = y1 - y0, ow = cw * s, oh = ch * s;
+  const out = new Uint8ClampedArray(ow * oh * 4);
+  const src = new Uint32Array(img.rgba.buffer, img.rgba.byteOffset, img.w * img.h);
+  const dst = new Uint32Array(out.buffer);
+  for (let y = 0; y < oh; y++) {
+    const sy = y0 - img.y + Math.floor(y / s);
+    for (let x = 0; x < ow; x++) dst[y * ow + x] = src[sy * img.w + (x0 - img.x) + Math.floor(x / s)];
+  }
+  return { x: x0 * s, y: y0 * s, w: ow, h: oh, rgba: out };
+}
+
+function buildTree(layers) {
+  const root = { children: [] }, stack = [root];
+  layers.forEach((L, i) => {
+    const node = { ...L, index: i, children: [] };
+    stack.length = Math.min(stack.length, L.level + 1);
+    stack[stack.length - 1].children.push(node);
+    if (L.type === 1) stack.push(node);
+  });
+  return root.children;
+}
+
+/* ================= PSD 작성기 ================= */
+
+class Bytes {
+  constructor(n = 1 << 16) { this.buf = new Uint8Array(n); this.n = 0; }
+  ensure(k) {
+    if (this.n + k <= this.buf.length) return;
+    const nb = new Uint8Array(Math.max(this.buf.length * 2, this.n + k)); nb.set(this.buf.subarray(0, this.n)); this.buf = nb;
+  }
+  u8(v) { this.ensure(1); this.buf[this.n++] = v & 255; }
+  u16(v) { this.ensure(2); this.buf[this.n++] = (v >> 8) & 255; this.buf[this.n++] = v & 255; }
+  u32(v) { this.ensure(4); v >>>= 0; this.buf[this.n++] = v >>> 24; this.buf[this.n++] = (v >>> 16) & 255; this.buf[this.n++] = (v >>> 8) & 255; this.buf[this.n++] = v & 255; }
+  str(s) { for (let i = 0; i < s.length; i++) this.u8(s.charCodeAt(i)); }
+  bytes(a) { this.ensure(a.length); this.buf.set(a, this.n); this.n += a.length; }
+  setU32(at, v) { v >>>= 0; this.buf[at] = v >>> 24; this.buf[at + 1] = (v >>> 16) & 255; this.buf[at + 2] = (v >>> 8) & 255; this.buf[at + 3] = v & 255; }
+  pad(m) { while (this.n % m) this.u8(0); }
+  out() { return this.buf.slice(0, this.n); }
+}
+
+function packBitsRow(row, out) { // out: Bytes, 반환값: 쓴 바이트 수
+  const start = out.n, n = row.length; let i = 0;
+  while (i < n) {
+    let j = i;
+    while (j + 1 < n && row[j + 1] === row[i] && j - i < 127) j++;
+    const run = j - i + 1;
+    if (run >= 2) { out.u8(1 - run); out.u8(row[i]); i = j + 1; continue; }
+    const s = i; i++;
+    while (i < n && i - s < 128) {
+      if (i + 1 < n && row[i] === row[i + 1]) break;
+      i++;
+    }
+    out.u8(i - s - 1);
+    for (let k = s; k < i; k++) out.u8(row[k]);
+  }
+  return out.n - start;
+}
+
+// 채널 하나를 RLE로 인코딩: [rowCounts..., data...]
+function encodeChannel(rgba, w, h, ch) {
+  const counts = new Uint16Array(h), data = new Bytes(w * h + h * 2 + 16), row = new Uint8Array(w);
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) row[x] = rgba[(y * w + x) * 4 + ch];
+    counts[y] = packBitsRow(row, data);
+  }
+  return { counts, data: data.out() };
+}
+
+function layerChannelData(img) {
+  // 채널 순서: 알파(-1), R(0), G(1), B(2)
+  const ids = [-1, 0, 1, 2], comp = [3, 0, 1, 2];
+  if (!img || !img.w || !img.h) return ids.map(id => ({ id, bytes: new Uint8Array([0, 0]) }));
+  return ids.map((id, k) => {
+    const { counts, data } = encodeChannel(img.rgba, img.w, img.h, comp[k]);
+    const b = new Bytes(2 + counts.length * 2 + data.length);
+    b.u16(1); for (const c of counts) b.u16(c); b.bytes(data);
+    return { id, bytes: b.out() };
+  });
+}
+
+function writeName(b, name) {
+  // 파스칼 문자열(ASCII 대체) + luni(유니코드 원래 이름)
+  let ascii = name.replace(/[^\x20-\x7e]/g, "_").slice(0, 255);
+  b.u8(ascii.length); b.str(ascii);
+  while ((ascii.length + 1) % 4) { b.u8(0); ascii += " "; }
+  b.str("8BIM"); b.str("luni");
+  const lenAt = b.n; b.u32(0);
+  const st = b.n;
+  b.u32(name.length);
+  for (let i = 0; i < name.length; i++) b.u16(name.charCodeAt(i));
+  b.pad(4);
+  b.setU32(lenAt, b.n - st);
+}
+
+function writePSD(W, H, records, composite) {
+  // records: 아래→위 순서. {name, opacity, visible, blend, img} 또는 {group:true,...} / {divider:true}
+  const chans = records.map(r => (r.group || r.divider) ? layerChannelData(null) : layerChannelData(r.img));
+  const b = new Bytes(1 << 20);
+  b.str("8BPS"); b.u16(1); b.bytes(new Uint8Array(6)); b.u16(4); b.u32(H); b.u32(W); b.u16(8); b.u16(3);
+  b.u32(0); // color mode data
+  b.u32(0); // image resources
+
+  const lmAt = b.n; b.u32(0);
+  const liAt = b.n; b.u32(0);
+  b.u16((-records.length) & 0xffff);
+  records.forEach((r, i) => {
+    const img = (r.group || r.divider) ? null : r.img;
+    if (img) { b.u32(img.y); b.u32(img.x); b.u32(img.y + img.h); b.u32(img.x + img.w); }
+    else { b.u32(0); b.u32(0); b.u32(0); b.u32(0); }
+    b.u16(4);
+    for (const c of chans[i]) { b.u16(c.id & 0xffff); b.u32(c.bytes.length); }
+    b.str("8BIM");
+    b.str(r.divider ? "norm" : (r.blend || "norm"));
+    b.u8(r.divider ? 255 : r.opacity);
+    b.u8(0);
+    let fl = (r.visible === false) ? 0x02 : 0;
+    if (r.group || r.divider) fl |= 0x18;
+    b.u8(fl); b.u8(0);
+    const exAt = b.n; b.u32(0); const exSt = b.n;
+    b.u32(0); // layer mask
+    b.u32(0); // blending ranges
+    writeName(b, r.divider ? "</Layer group>" : r.name);
+    if (r.group || r.divider) {
+      b.str("8BIM"); b.str("lsct"); b.u32(12);
+      b.u32(r.divider ? 3 : (r.open ? 1 : 2));
+      b.str("8BIM"); b.str(r.divider ? "norm" : (r.blend || "pass"));
+    }
+    b.setU32(exAt, b.n - exSt);
+  });
+  chans.forEach(cs => cs.forEach(c => b.bytes(c.bytes)));
+  b.pad(2);
+  b.setU32(liAt, b.n - liAt - 4);
+  b.u32(0); // global layer mask
+  b.setU32(lmAt, b.n - lmAt - 4);
+
+  // 합성 이미지 (RLE, R G B A)
+  b.u16(1);
+  const enc = [0, 1, 2, 3].map(ch => encodeChannel(composite, W, H, ch));
+  enc.forEach(e => { for (const c of e.counts) b.u16(c); });
+  enc.forEach(e => b.bytes(e.data));
+  return b.out();
+}
+
+/* ================= 합성 (미리보기 + PSD 합성 이미지) ================= */
+
+function compositeOver(dst, W, img, opacity) {
+  const k = opacity / 255;
+  for (let y = 0; y < img.h; y++) for (let x = 0; x < img.w; x++) {
+    const si = (y * img.w + x) * 4, sa = img.rgba[si + 3] / 255 * k;
+    if (sa <= 0) continue;
+    const di = ((img.y + y) * W + img.x + x) * 4, da = dst[di + 3] / 255;
+    const oa = sa + da * (1 - sa);
+    for (let c = 0; c < 3; c++) dst[di + c] = (img.rgba[si + c] * sa + dst[di + c] * da * (1 - sa)) / oa;
+    dst[di + 3] = oa * 255;
+  }
+}
+
+function compositeNodes(nodes, imgs, W, H) {
+  const dst = new Uint8ClampedArray(W * H * 4);
+  for (const n of nodes) {
+    if (!n.visible) continue;
+    if (n.group) {
+      const sub = compositeNodes(n.children, imgs, W, H);
+      compositeOver(dst, W, { x: 0, y: 0, w: W, h: H, rgba: sub }, n.opacity);
+    } else if (imgs[n.index]) {
+      compositeOver(dst, W, imgs[n.index], n.opacity);
+    }
+  }
+  return dst;
+}
+
+/* ================= 변환 ================= */
+
+function layerProps(doc, L) {
+  const isGroup = L.type === 1;
+  let opacity = 255;
+  if (isGroup ? (doc.hflags & 2) : (doc.hflags & 1)) opacity = L.opacity;
+  let blend = ASE_BLEND[L.blend] || "norm";
+  if (isGroup) blend = (doc.hflags & 2) && L.blend ? blend : "pass";
+  return { name: L.name || "Layer", visible: (L.flags & 1) !== 0, opacity, blend, group: isGroup };
+}
+
+function decorate(doc, nodes) {
+  return nodes.map(n => ({ ...n, ...layerProps(doc, n), children: decorate(doc, n.children) }));
+}
+
+function emitRecords(nodes, imgs, out) {
+  for (const n of nodes) {
+    if (n.group) {
+      out.push({ divider: true });
+      emitRecords(n.children, imgs, out);
+      out.push({ group: true, open: true, name: n.name, visible: n.visible, opacity: n.opacity, blend: n.blend });
+    } else {
+      out.push({ name: n.name, visible: n.visible, opacity: n.opacity, blend: n.blend, img: imgs[n.index] || null });
+    }
+  }
+}
+
+function frameImages(doc, resolved, f, s) {
+  return resolved[f].map(img => prepImage(img, doc.W, doc.H, s));
+}
+
+function convert(doc, opts) {
+  const s = opts.scale, W = doc.W * s, H = doc.H * s;
+  const tree = decorate(doc, buildTree(doc.layers));
+  const resolved = doc._resolved || (doc._resolved = resolveFrames(doc));
+  const nF = doc.frames.length;
+  const makeOne = f => {
+    const imgs = frameImages(doc, resolved, f, s), recs = [];
+    emitRecords(tree, imgs, recs);
+    return writePSD(W, H, recs, compositeNodes(tree, imgs, W, H));
+  };
+  if (nF === 1 || opts.mode === "one") {
+    const f = nF === 1 ? 0 : Math.min(Math.max(1, opts.frame), nF) - 1;
+    return { kind: "psd", frame: f, files: [{ name: null, data: makeOne(f) }] };
+  }
+  if (opts.mode === "split") {
+    const files = [];
+    for (let f = 0; f < nF; f++) files.push({ name: `_f${String(f + 1).padStart(3, "0")}.psd`, data: makeOne(f) });
+    return { kind: "zip", files };
+  }
+  // 프레임별 그룹 (위쪽이 1프레임)
+  const recs = []; let comp0 = null;
+  for (let f = nF - 1; f >= 0; f--) {
+    const imgs = frameImages(doc, resolved, f, s);
+    if (f === 0) comp0 = compositeNodes(tree, imgs, W, H);
+    recs.push({ divider: true });
+    emitRecords(tree, imgs, recs);
+    recs.push({ group: true, open: f === 0, name: `Frame ${f + 1}`, visible: f === 0, opacity: 255, blend: "pass" });
+  }
+  return { kind: "psd", frame: 0, files: [{ name: null, data: writePSD(W, H, recs, comp0) }] };
+}
+
+/* ================= ZIP (무압축) ================= */
+
+const CRC_T = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+function crc32(u8) { let c = 0xFFFFFFFF; for (let i = 0; i < u8.length; i++) c = CRC_T[(c ^ u8[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+
+function makeZip(entries) {
+  const enc = new TextEncoder(), parts = [], central = []; let offset = 0;
+  const d = new Date();
+  const dtime = (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1);
+  const ddate = ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate();
+  for (const e of entries) {
+    const name = enc.encode(e.name), crc = crc32(e.data), size = e.data.length;
+    const h = new DataView(new ArrayBuffer(30));
+    h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint16(8, 0, true);
+    h.setUint16(10, dtime, true); h.setUint16(12, ddate, true); h.setUint32(14, crc, true);
+    h.setUint32(18, size, true); h.setUint32(22, size, true); h.setUint16(26, name.length, true); h.setUint16(28, 0, true);
+    parts.push(new Uint8Array(h.buffer), name, e.data);
+    const c = new DataView(new ArrayBuffer(46));
+    c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x0800, true);
+    c.setUint16(10, 0, true); c.setUint16(12, dtime, true); c.setUint16(14, ddate, true); c.setUint32(16, crc, true);
+    c.setUint32(20, size, true); c.setUint32(24, size, true); c.setUint16(28, name.length, true);
+    c.setUint32(42, offset, true);
+    central.push(new Uint8Array(c.buffer), name);
+    offset += 30 + name.length + size;
+  }
+  const cdSize = central.reduce((a, p) => a + p.length, 0);
+  const end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true); end.setUint16(8, entries.length, true); end.setUint16(10, entries.length, true);
+  end.setUint32(12, cdSize, true); end.setUint32(16, offset, true);
+  return new Blob([...parts, ...central, new Uint8Array(end.buffer)], { type: "application/zip" });
+}
+
+/* ================= UI ================= */
+
+if (typeof document !== "undefined") {
+  const $ = s => document.querySelector(s);
+  const items = []; // {file, base, doc, error, out, card, url}
+  let bulkUrl = null;
+
+  const getOpts = () => ({
+    scale: +document.querySelector('input[name="scale"]:checked').value,
+    mode: document.querySelector('input[name="fmode"]:checked').value,
+    frame: Math.max(1, parseInt($("#frameNo").value, 10) || 1),
+  });
+  const fmtSize = n => n < 1024 * 1024 ? (n / 1024).toFixed(1) + " KB" : (n / 1024 / 1024).toFixed(2) + " MB";
+  const modeName = d => d === 32 ? "RGBA" : d === 16 ? "그레이스케일" : "인덱스";
+
+  function makeCard(it) {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `<div class="thumb"></div><div><div class="name"></div><div class="meta"></div><div class="status">읽는 중…</div></div><a class="btn" aria-disabled="true">PSD 받기</a>`;
+    card.querySelector(".name").textContent = it.file.name;
+    $("#results").appendChild(card);
+    return card;
+  }
+
+  function render(it) {
+    const c = it.card, st = c.querySelector(".status"), btn = c.querySelector(".btn");
+    if (it.url) { URL.revokeObjectURL(it.url); it.url = null; }
+    if (it.error) { st.className = "status err"; st.textContent = it.error; btn.setAttribute("aria-disabled", "true"); return; }
+    const opts = getOpts(), d = it.doc;
+    c.querySelector(".meta").textContent =
+      `${d.W}×${d.H} · 프레임 ${d.frames.length} · 레이어 ${d.layers.filter(l => l.type !== 1).length} · ${modeName(d.depth)}`;
+    try {
+      const out = convert(d, opts);
+      it.out = out;
+      let blob, fname;
+      if (out.kind === "zip") {
+        blob = makeZip(out.files.map(f => ({ name: it.base + f.name, data: f.data })));
+        fname = it.base + "_frames.zip";
+        btn.textContent = "ZIP 받기";
+      } else {
+        blob = new Blob([out.files[0].data], { type: "image/vnd.adobe.photoshop" });
+        fname = it.base + (opts.mode === "one" && d.frames.length > 1 ? `_f${String(out.frame + 1).padStart(3, "0")}` : "") + ".psd";
+        btn.textContent = "PSD 받기";
+      }
+      it.url = URL.createObjectURL(blob);
+      btn.href = it.url; btn.download = fname; btn.removeAttribute("aria-disabled");
+      st.className = "status ok"; st.textContent = `${fname} · ${fmtSize(blob.size)}`;
+      // 미리보기
+      const pf = out.kind === "psd" ? out.frame : 0;
+      const tree = decorate(d, buildTree(d.layers));
+      const comp = compositeNodes(tree, frameImages(d, d._resolved, pf, 1), d.W, d.H);
+      const cv = document.createElement("canvas"); cv.width = d.W; cv.height = d.H;
+      cv.getContext("2d").putImageData(new ImageData(comp, d.W, d.H), 0, 0);
+      const k = Math.max(1, Math.floor(96 / Math.max(d.W, d.H)));
+      cv.style.width = Math.min(96, d.W * k) + "px"; cv.style.height = "auto";
+      const th = c.querySelector(".thumb"); th.innerHTML = ""; th.appendChild(cv);
+    } catch (e) {
+      console.error(e);
+      st.className = "status err"; st.textContent = "변환 실패: " + e.message;
+      btn.setAttribute("aria-disabled", "true");
+    }
+  }
+
+  function renderBulk() {
+    const ok = items.filter(i => i.out);
+    if (bulkUrl) { URL.revokeObjectURL(bulkUrl); bulkUrl = null; }
+    if (ok.length < 2) { $("#bulk").classList.remove("show"); return; }
+    const entries = [];
+    for (const it of ok) {
+      const a = it.card.querySelector(".btn");
+      if (it.out.kind === "zip") it.out.files.forEach(f => entries.push({ name: `${it.base}/${it.base}${f.name}`, data: f.data }));
+      else entries.push({ name: a.download, data: it.out.files[0].data });
+    }
+    const blob = makeZip(entries);
+    bulkUrl = URL.createObjectURL(blob);
+    $("#bulkBtn").href = bulkUrl; $("#bulkBtn").download = "aseprite_psd.zip";
+    $("#bulkInfo").textContent = `파일 ${ok.length}개 · ${fmtSize(blob.size)}`;
+    $("#bulk").classList.add("show");
+  }
+
+  async function addFiles(list) {
+    const pending = [];
+    for (const file of list) {
+      const it = { file, base: file.name.replace(/\.(aseprite|ase)$/i, "") };
+      it.card = makeCard(it);
+      items.push(it);
+      pending.push((async () => {
+        try { it.doc = await parseAseprite(await file.arrayBuffer()); }
+        catch (e) { console.error(e); it.error = "읽기 실패: " + e.message; }
+        render(it);
+      })());
+    }
+    await Promise.all(pending);
+    renderBulk();
+  }
+
+  let timer = null;
+  const rerender = () => { clearTimeout(timer); timer = setTimeout(() => { items.forEach(it => it.doc && render(it)); renderBulk(); }, 150); };
+
+  $("#file").addEventListener("change", e => { addFiles([...e.target.files]); e.target.value = ""; });
+  const drop = $("#drop");
+  ["dragenter", "dragover"].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.add("over"); }));
+  ["dragleave", "drop"].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.remove("over"); }));
+  drop.addEventListener("drop", e => addFiles([...e.dataTransfer.files]));
+  window.addEventListener("dragover", e => e.preventDefault());
+  window.addEventListener("drop", e => { e.preventDefault(); if (e.target !== drop && !drop.contains(e.target)) addFiles([...e.dataTransfer.files]); });
+  document.querySelectorAll('input[name="scale"], input[name="fmode"]').forEach(el => el.addEventListener("change", rerender));
+  $("#frameNo").addEventListener("input", () => { document.querySelector('input[name="fmode"][value="one"]').checked = true; rerender(); });
+}
+
+if (typeof module !== "undefined") module.exports = { parseAseprite, convert, makeZip };
+</script>
+</body>
+</html>
