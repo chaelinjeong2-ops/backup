@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Aseprite → PSD 변환기</title>
+<title>Aseprite ⇄ PSD 변환기</title>
 <style>
   :root {
     --bg: #f4f2ee; --panel: #ffffff; --ink: #1f1d1a; --muted: #6f6a62;
@@ -41,7 +41,7 @@
   #file { display: none; }
 
   .opts {
-    margin-top: 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+    margin-top: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
     padding: 18px 20px; display: grid; gap: 16px;
   }
   .opt-title { font-weight: 600; margin-bottom: 6px; font-size: 14px; }
@@ -89,6 +89,9 @@
 
   .notes { margin-top: 28px; color: var(--muted); font-size: 13.5px; }
   .notes h2 { font-size: 14px; color: var(--ink); margin: 0 0 6px; }
+  .notes h2.big { font-size: 16px; margin: 4px 0 10px; padding-top: 10px; border-top: 1px solid var(--line); }
+  .notes h2.big:first-child { border-top: 0; padding-top: 0; }
+  .sec-title { font-size: 13px; font-weight: 700; color: var(--accent); letter-spacing: .02em; }
   .notes ul { margin: 0 0 16px; padding-left: 18px; }
   .notes li { margin: 3px 0; }
   @media (max-width: 520px) {
@@ -101,16 +104,17 @@
 </head>
 <body>
 <main>
-  <h1><span class="px"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>Aseprite → PSD 변환기</h1>
-  <p class="sub">레이어·그룹·블렌드 모드를 살려서 PSD로 바꿔요. 모든 처리는 이 브라우저 안에서만 이뤄지고, 파일은 어디에도 업로드되지 않아요.</p>
+  <h1><span class="px"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>Aseprite ⇄ PSD 변환기</h1>
+  <p class="sub">Aseprite 파일은 PSD로, PSD 파일은 Aseprite로 바꿔요. 레이어·그룹·블렌드 모드는 그대로 살려요. 모든 처리는 이 브라우저 안에서만 이뤄지고, 파일은 어디에도 업로드되지 않아요.</p>
 
   <label id="drop" for="file">
-    <strong>.aseprite / .ase 파일을 여기에 끌어다 놓으세요</strong>
-    <span>또는 클릭해서 고르기 · 여러 개 한 번에 가능</span>
+    <strong>.aseprite · .ase · .psd 파일을 여기에 끌어다 놓으세요</strong>
+    <span>또는 클릭해서 고르기 · 여러 개 한 번에 가능 · 종류는 자동으로 알아봐요</span>
   </label>
-  <input id="file" type="file" accept=".ase,.aseprite" multiple>
+  <input id="file" type="file" accept=".ase,.aseprite,.psd" multiple>
 
   <section class="opts">
+    <div class="sec-title">Aseprite → PSD</div>
     <div>
       <div class="opt-title">확대 배율</div>
       <div class="row" id="scaleRow">
@@ -134,6 +138,21 @@
       <div class="hint">프레임이 하나뿐인 파일은 어떤 걸 골라도 평범한 PSD 하나로 나와요.</div>
     </div>
   </section>
+  <section class="opts">
+    <div class="sec-title">PSD → Aseprite</div>
+    <div>
+      <div class="opt-title">축소 배율</div>
+      <div class="row">
+        <label class="seg"><input type="radio" name="down" value="1" checked><span>원본</span></label>
+        <label class="seg"><input type="radio" name="down" value="2"><span>1/2</span></label>
+        <label class="seg"><input type="radio" name="down" value="3"><span>1/3</span></label>
+        <label class="seg"><input type="radio" name="down" value="4"><span>1/4</span></label>
+        <label class="seg"><input type="radio" name="down" value="6"><span>1/6</span></label>
+        <label class="seg"><input type="radio" name="down" value="8"><span>1/8</span></label>
+      </div>
+      <div class="hint">도트를 크게 확대해서 그린 PSD라면 원래 픽셀 크기로 되돌릴 수 있어요. 최상위에 <b>Frame 1, Frame 2…</b> 그룹만 있으면(이 변환기로 만든 PSD) 애니메이션 프레임으로 되돌려요.</div>
+    </div>
+  </section>
 
   <div id="bulk">
     <span class="meta" id="bulkInfo"></span>
@@ -142,6 +161,7 @@
   <div id="results"></div>
 
   <div class="notes">
+    <h2 class="big">Aseprite → PSD</h2>
     <h2>옮겨지는 것</h2>
     <ul>
       <li>레이어 이름(한글 포함), 순서, 표시/숨김, 불투명도</li>
@@ -154,6 +174,19 @@
       <li>인덱스(팔레트)·그레이스케일 모드 파일은 RGB로 바뀌어요. 색은 같지만 팔레트 정보는 남지 않아요.</li>
       <li>셀(cel) 불투명도는 픽셀에 미리 적용돼요.</li>
       <li>태그, 프레임 길이, 슬라이스, 셀 z-인덱스는 PSD에 담을 곳이 없어 빠져요.</li>
+    </ul>
+    <h2 class="big">PSD → Aseprite</h2>
+    <h2>옮겨지는 것</h2>
+    <ul>
+      <li>레이어 이름(한글 포함), 순서, 표시/숨김, 불투명도, 그룹 구조</li>
+      <li>블렌드 모드 중 Aseprite에도 있는 것 (없는 모드는 '표준'으로)</li>
+      <li>텍스트 레이어는 보이는 모습 그대로 픽셀 레이어가 돼요.</li>
+    </ul>
+    <h2>달라지는 것</h2>
+    <ul>
+      <li>레이어 마스크와 클리핑 마스크는 Aseprite에 없는 기능이라 픽셀에 미리 적용돼요.</li>
+      <li>조정 레이어, 레이어 효과(그림자·테두리 등), 칠 불투명도는 빠져요.</li>
+      <li>8비트 RGB·그레이스케일 PSD만 돼요. 16/32비트, CMYK, PSB(대용량)는 지원하지 않아요.</li>
     </ul>
   </div>
 </main>
@@ -512,19 +545,21 @@ function compositeOver(dst, W, img, opacity) {
   }
 }
 
-function compositeNodes(nodes, imgs, W, H) {
+function compositeTree(nodes, W, H, getImg) {
   const dst = new Uint8ClampedArray(W * H * 4);
   for (const n of nodes) {
     if (!n.visible) continue;
     if (n.group) {
-      const sub = compositeNodes(n.children, imgs, W, H);
+      const sub = compositeTree(n.children, W, H, getImg);
       compositeOver(dst, W, { x: 0, y: 0, w: W, h: H, rgba: sub }, n.opacity);
-    } else if (imgs[n.index]) {
-      compositeOver(dst, W, imgs[n.index], n.opacity);
+    } else {
+      const img = getImg(n);
+      if (img) compositeOver(dst, W, img, n.opacity);
     }
   }
   return dst;
 }
+const compositeNodes = (nodes, imgs, W, H) => compositeTree(nodes, W, H, n => imgs[n.index]);
 
 /* ================= 변환 ================= */
 
@@ -620,16 +655,329 @@ function makeZip(entries) {
   return new Blob([...parts, ...central, new Uint8Array(end.buffer)], { type: "application/zip" });
 }
 
+/* ================= PSD 파서 ================= */
+
+function unpackBitsRow(src, sp, end, dst, dp, w) {
+  let o = dp; const lim = dp + w;
+  while (sp < end && o < lim) {
+    let n = src[sp++]; if (n > 127) n -= 256;
+    if (n >= 0) { for (let i = 0; i <= n && o < lim; i++) dst[o++] = src[sp++]; }
+    else if (n !== -128) { const v = src[sp++]; for (let i = 0; i < 1 - n && o < lim; i++) dst[o++] = v; }
+  }
+}
+
+async function decodeChannel(u8, dv, p, end, w, h) {
+  // p: 압축 방식 WORD 위치
+  const comp = dv.getUint16(p), out = new Uint8Array(w * h);
+  if (!w || !h) return out;
+  const d = p + 2;
+  if (comp === 0) {
+    out.set(u8.subarray(d, Math.min(end, d + w * h)));
+  } else if (comp === 1) {
+    let sp = d + h * 2;
+    for (let y = 0; y < h; y++) {
+      const n = dv.getUint16(d + y * 2);
+      unpackBitsRow(u8, sp, Math.min(sp + n, end), out, y * w, w);
+      sp += n;
+    }
+  } else if (comp === 2 || comp === 3) {
+    const raw = await inflateZlib(u8.subarray(d, end), w * h);
+    out.set(raw.subarray(0, w * h));
+    if (comp === 3) for (let y = 0; y < h; y++) for (let x = 1; x < w; x++) out[y * w + x] = (out[y * w + x] + out[y * w + x - 1]) & 255;
+  } else throw new Error("알 수 없는 압축 방식이에요");
+  return out;
+}
+
+async function parsePSD(buf) {
+  const dv = new DataView(buf), u8 = new Uint8Array(buf);
+  const str4 = p => String.fromCharCode(u8[p], u8[p + 1], u8[p + 2], u8[p + 3]);
+  if (str4(0) !== "8BPS") throw new Error("PSD 파일이 아니에요");
+  if (dv.getUint16(4) === 2) throw new Error("PSB(대용량 PSD)는 지원하지 않아요");
+  const nch = dv.getUint16(12), H = dv.getUint32(14), W = dv.getUint32(18), depth = dv.getUint16(22), mode = dv.getUint16(24);
+  if (depth !== 8) throw new Error(`${depth}비트 PSD는 지원하지 않아요. 8비트로 저장해 주세요`);
+  if (mode !== 3 && mode !== 1) throw new Error("RGB나 그레이스케일 PSD만 지원해요");
+  const gray = mode === 1;
+  let p = 26;
+  p += 4 + dv.getUint32(p); // color mode data
+  p += 4 + dv.getUint32(p); // image resources
+  const lmLen = dv.getUint32(p), lmStart = p + 4, imgDataPos = lmStart + lmLen;
+
+  const recs = [];
+  if (lmLen > 0 && dv.getUint32(lmStart) > 0) {
+    let q = lmStart + 4;
+    const count = Math.abs(dv.getInt16(q)); q += 2;
+    for (let i = 0; i < count; i++) {
+      const r = { top: dv.getInt32(q), left: dv.getInt32(q + 4), bottom: dv.getInt32(q + 8), right: dv.getInt32(q + 12), chans: [] };
+      q += 16;
+      const n = dv.getUint16(q); q += 2;
+      for (let c = 0; c < n; c++) { r.chans.push({ id: dv.getInt16(q), len: dv.getUint32(q + 2) }); q += 6; }
+      q += 4; r.blend = str4(q); q += 4;
+      r.opacity = u8[q]; r.clipping = u8[q + 1]; r.flags = u8[q + 2]; q += 4;
+      const exEnd = q + 4 + dv.getUint32(q); q += 4;
+      const maskLen = dv.getUint32(q);
+      if (maskLen >= 18) r.mask = { top: dv.getInt32(q + 4), left: dv.getInt32(q + 8), bottom: dv.getInt32(q + 12), right: dv.getInt32(q + 16), def: u8[q + 20], flags: u8[q + 21] };
+      q += 4 + maskLen;
+      q += 4 + dv.getUint32(q); // blending ranges
+      const nl = u8[q];
+      r.name = new TextDecoder("utf-8").decode(u8.subarray(q + 1, q + 1 + nl));
+      q += (nl + 4) & ~3;
+      while (q + 12 <= exEnd) {
+        let s = str4(q);
+        if (s !== "8BIM" && s !== "8B64") {
+          let k = 1; while (k < 4 && !["8BIM", "8B64"].includes(str4(q + k))) k++;
+          if (k === 4) break; q += k;
+        }
+        const key = str4(q + 4), len = dv.getUint32(q + 8), d = q + 12;
+        if (key === "luni") {
+          const cnt = dv.getUint32(d); let s2 = "";
+          for (let k = 0; k < cnt; k++) s2 += String.fromCharCode(dv.getUint16(d + 4 + k * 2));
+          r.name = s2.replace(/\0+$/, "");
+        } else if (key === "lsct" || key === "lsdk") {
+          r.sect = dv.getUint32(d);
+          if (len >= 12) r.sectBlend = str4(d + 8);
+        }
+        q = d + len;
+      }
+      q = exEnd;
+      recs.push(r);
+    }
+    // 채널 이미지 데이터
+    for (const r of recs) {
+      const w = Math.max(0, r.right - r.left), h = Math.max(0, r.bottom - r.top);
+      r.planes = {};
+      for (const c of r.chans) {
+        const start = q;
+        if (c.len >= 2) {
+          let cw = w, chh = h;
+          if (c.id === -2) { if (!r.mask) { q = start + c.len; continue; } cw = r.mask.right - r.mask.left; chh = r.mask.bottom - r.mask.top; }
+          if (c.id >= -2 && c.id <= 2) r.planes[c.id] = await decodeChannel(u8, dv, q, start + c.len, cw, chh);
+        }
+        q = start + c.len;
+      }
+    }
+  }
+
+  let tree;
+  if (recs.length) {
+    tree = buildPsdTree(recs, W, H, gray);
+  } else {
+    // 레이어가 없는 PSD: 합성 이미지를 한 장의 레이어로
+    const comp = dv.getUint16(imgDataPos), planes = [];
+    let q = imgDataPos + 2;
+    if (comp === 1) {
+      const counts = []; for (let i = 0; i < nch * H; i++) counts.push(dv.getUint16(q + i * 2));
+      q += nch * H * 2;
+      for (let c = 0; c < nch; c++) {
+        const out = new Uint8Array(W * H);
+        for (let y = 0; y < H; y++) { const n = counts[c * H + y]; unpackBitsRow(u8, q, q + n, out, y * W, W); q += n; }
+        planes.push(out);
+      }
+    } else if (comp === 0) {
+      for (let c = 0; c < nch; c++) { planes.push(u8.slice(q, q + W * H)); q += W * H; }
+    } else throw new Error("이 PSD의 합성 이미지 형식은 지원하지 않아요");
+    const rgba = new Uint8ClampedArray(W * H * 4);
+    const ci = gray ? [0, 0, 0] : [0, 1, 2], ai = gray ? 1 : 3;
+    for (let i = 0; i < W * H; i++) {
+      for (let k = 0; k < 3; k++) rgba[i * 4 + k] = planes[ci[k]][i];
+      rgba[i * 4 + 3] = planes[ai] ? planes[ai][i] : 255;
+    }
+    tree = [{ name: "Background", visible: true, opacity: 255, blend: 0, img: { x: 0, y: 0, w: W, h: H, rgba } }];
+  }
+  const count = ns => ns.reduce((a, n) => a + (n.group ? count(n.children) : 1), 0);
+  const groups = ns => ns.reduce((a, n) => a + (n.group ? 1 + groups(n.children) : 0), 0);
+  return { W, H, tree, nLayers: count(tree), nGroups: groups(tree) };
+}
+
+const PSD_TO_ASE = Object.fromEntries(ASE_BLEND.map((k, i) => [k, i]));
+
+function recImage(r, W, H, gray) {
+  const w = r.right - r.left, h = r.bottom - r.top;
+  if (w <= 0 || h <= 0) return null;
+  const P = r.planes, rgba = new Uint8ClampedArray(w * h * 4);
+  const R = P[0], G = gray ? P[0] : P[1], B = gray ? P[0] : P[2], A = P[-1];
+  for (let i = 0; i < w * h; i++) {
+    rgba[i * 4] = R ? R[i] : 0; rgba[i * 4 + 1] = G ? G[i] : 0; rgba[i * 4 + 2] = B ? B[i] : 0;
+    rgba[i * 4 + 3] = A ? A[i] : 255;
+  }
+  const m = r.mask, M = P[-2];
+  if (m && M && !(m.flags & 2)) {
+    const mw = m.right - m.left;
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const X = r.left + x - m.left, Y = r.top + y - m.top;
+      const mv = (X >= 0 && Y >= 0 && X < mw && Y < m.bottom - m.top) ? M[Y * mw + X] : m.def;
+      const i = (y * w + x) * 4 + 3; rgba[i] = rgba[i] * mv / 255;
+    }
+  }
+  return prepImage({ x: r.left, y: r.top, w, h, rgba }, W, H, 1);
+}
+
+function buildPsdTree(recs, W, H, gray) {
+  const root = { children: [] }, stack = [root];
+  for (const r of recs) { // 아래 → 위
+    if (r.sect === 3) { stack.push({ group: true, children: [] }); continue; }
+    const props = { name: r.name || "Layer", visible: !(r.flags & 2), opacity: r.opacity, clipping: r.clipping };
+    if (r.sect === 1 || r.sect === 2) {
+      const g = stack.length > 1 ? stack.pop() : { group: true, children: [] };
+      const bk = r.sectBlend || r.blend;
+      Object.assign(g, props, { blend: bk === "pass" ? 0 : (PSD_TO_ASE[bk] ?? 0) });
+      stack[stack.length - 1].children.push(g);
+    } else {
+      stack[stack.length - 1].children.push({ ...props, blend: PSD_TO_ASE[r.blend] ?? 0, img: recImage(r, W, H, gray) });
+    }
+  }
+  while (stack.length > 1) { const g = stack.pop(); Object.assign(g, { name: "Group", visible: true, opacity: 255, blend: 0 }); stack[stack.length - 1].children.push(g); }
+  bakeClipping(root.children);
+  return root.children;
+}
+
+// 클리핑 마스크: 아래 기준 레이어의 알파를 곱해서 굽는다
+function bakeClipping(nodes) {
+  let base = null;
+  for (const n of nodes) {
+    if (n.group) { bakeClipping(n.children); if (!n.clipping) base = null; continue; }
+    if (!n.clipping) { base = n; continue; }
+    if (!base) continue;
+    if (!base.visible) n.visible = false;
+    const img = n.img; if (!img) continue;
+    const b = base.img;
+    for (let y = 0; y < img.h; y++) for (let x = 0; x < img.w; x++) {
+      const X = img.x + x - (b ? b.x : 0), Y = img.y + y - (b ? b.y : 0);
+      const ba = b && X >= 0 && Y >= 0 && X < b.w && Y < b.h ? b.rgba[(Y * b.w + X) * 4 + 3] : 0;
+      const i = (y * img.w + x) * 4 + 3; img.rgba[i] = img.rgba[i] * ba / 255;
+    }
+  }
+}
+
+/* ================= Aseprite 작성기 ================= */
+
+class LE {
+  constructor(n = 1 << 16) { this.buf = new Uint8Array(n); this.n = 0; }
+  ensure(k) { if (this.n + k > this.buf.length) { const nb = new Uint8Array(Math.max(this.buf.length * 2, this.n + k)); nb.set(this.buf.subarray(0, this.n)); this.buf = nb; } }
+  u8(v) { this.ensure(1); this.buf[this.n++] = v & 255; }
+  u16(v) { this.ensure(2); this.buf[this.n++] = v & 255; this.buf[this.n++] = (v >> 8) & 255; }
+  u32(v) { this.ensure(4); v >>>= 0; this.buf[this.n++] = v & 255; this.buf[this.n++] = (v >>> 8) & 255; this.buf[this.n++] = (v >>> 16) & 255; this.buf[this.n++] = v >>> 24; }
+  zeros(k) { this.ensure(k); this.n += k; }
+  bytes(a) { this.ensure(a.length); this.buf.set(a, this.n); this.n += a.length; }
+  str(s) { const b = new TextEncoder().encode(s); this.u16(b.length); this.bytes(b); }
+  setU32(at, v) { v >>>= 0; this.buf[at] = v & 255; this.buf[at + 1] = (v >>> 8) & 255; this.buf[at + 2] = (v >>> 16) & 255; this.buf[at + 3] = v >>> 24; }
+  out() { return this.buf.slice(0, this.n); }
+}
+
+async function deflateZlib(u8) {
+  const s = new Blob([u8]).stream().pipeThrough(new CompressionStream("deflate"));
+  return new Uint8Array(await new Response(s).arrayBuffer());
+}
+
+function trimImg(img) {
+  if (!img) return null;
+  let x0 = img.w, y0 = img.h, x1 = -1, y1 = -1;
+  for (let y = 0; y < img.h; y++) for (let x = 0; x < img.w; x++)
+    if (img.rgba[(y * img.w + x) * 4 + 3]) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+  if (x1 < 0) return null;
+  const w = x1 - x0 + 1, h = y1 - y0 + 1, rgba = new Uint8ClampedArray(w * h * 4);
+  for (let y = 0; y < h; y++) rgba.set(img.rgba.subarray(((y0 + y) * img.w + x0) * 4, ((y0 + y) * img.w + x0 + w) * 4), y * w * 4);
+  return { x: img.x + x0, y: img.y + y0, w, h, rgba };
+}
+
+function downscaleImg(img, d) {
+  if (!img || d === 1) return img;
+  const nx0 = Math.floor(img.x / d), ny0 = Math.floor(img.y / d);
+  const nx1 = Math.ceil((img.x + img.w) / d), ny1 = Math.ceil((img.y + img.h) / d);
+  const w = nx1 - nx0, h = ny1 - ny0, rgba = new Uint8ClampedArray(w * h * 4), off = d >> 1;
+  for (let Y = 0; Y < h; Y++) {
+    const sy = (ny0 + Y) * d + off - img.y; if (sy < 0 || sy >= img.h) continue;
+    for (let X = 0; X < w; X++) {
+      const sx = (nx0 + X) * d + off - img.x; if (sx < 0 || sx >= img.w) continue;
+      const si = (sy * img.w + sx) * 4, di = (Y * w + X) * 4;
+      rgba[di] = img.rgba[si]; rgba[di + 1] = img.rgba[si + 1]; rgba[di + 2] = img.rgba[si + 2]; rgba[di + 3] = img.rgba[si + 3];
+    }
+  }
+  return { x: nx0, y: ny0, w, h, rgba };
+}
+
+function flattenTree(nodes, level, prefix, out) {
+  const seen = {};
+  for (const n of nodes) {
+    seen[n.name] = (seen[n.name] || 0) + 1;
+    const key = prefix + "/" + n.name + "#" + seen[n.name];
+    out.push({ key, node: n, level });
+    if (n.group) flattenTree(n.children, level + 1, key, out);
+  }
+  return out;
+}
+
+function detectFrameGroups(tree) {
+  if (tree.length < 2) return null;
+  const fs = [];
+  for (const n of tree) {
+    const m = n.group && /^frame\s*(\d+)$/i.exec(n.name.trim());
+    if (!m) return null;
+    fs.push({ num: +m[1], node: n });
+  }
+  return fs.sort((a, b) => a.num - b.num).map(f => f.node);
+}
+
+async function convertPsdToAse(doc, opts) {
+  const d = opts.down, W = Math.max(1, Math.ceil(doc.W / d)), H = Math.max(1, Math.ceil(doc.H / d));
+  const frameGroups = detectFrameGroups(doc.tree);
+  const sources = frameGroups ? frameGroups.map(g => g.children) : [doc.tree];
+  const layers = [], index = {}, frames = [];
+  sources.forEach((nodes, f) => {
+    const cels = [];
+    for (const e of flattenTree(nodes, 0, "", [])) {
+      let li = index[e.key];
+      if (li === undefined) {
+        if (f > 0 && e.node.group) continue;
+        li = layers.length; index[e.key] = li;
+        layers.push({ name: e.node.name, group: !!e.node.group, level: f > 0 ? 0 : e.level,
+                      visible: e.node.visible, opacity: e.node.opacity, blend: e.node.blend });
+      }
+      if (!e.node.group && e.node.img) {
+        const img = trimImg(downscaleImg(e.node.img, d));
+        if (img) cels.push({ li, img });
+      }
+    }
+    frames.push(cels);
+  });
+
+  const out = new LE(1 << 20);
+  out.zeros(128);
+  for (let f = 0; f < frames.length; f++) {
+    const chunks = [];
+    const chunk = (type, fill) => { const c = new LE(); c.u32(0); c.u16(type); fill(c); c.setU32(0, c.n); chunks.push(c.out()); };
+    if (f === 0) {
+      chunk(0x2019, c => { c.u32(2); c.u32(0); c.u32(1); c.zeros(8); c.u16(0); c.bytes([0, 0, 0, 255]); c.u16(0); c.bytes([255, 255, 255, 255]); });
+      for (const L of layers) chunk(0x2004, c => {
+        c.u16((L.visible ? 1 : 0) | 2); c.u16(L.group ? 1 : 0); c.u16(L.level); c.u16(0); c.u16(0);
+        c.u16(L.blend); c.u8(L.opacity); c.zeros(3); c.str(L.name);
+      });
+    }
+    for (const { li, img } of frames[f]) {
+      const z = await deflateZlib(new Uint8Array(img.rgba.buffer, img.rgba.byteOffset, img.rgba.length));
+      chunk(0x2005, c => { c.u16(li); c.u16(img.x); c.u16(img.y); c.u8(255); c.u16(2); c.u16(0); c.zeros(5); c.u16(img.w); c.u16(img.h); c.bytes(z); });
+    }
+    const size = 16 + chunks.reduce((a, c) => a + c.length, 0);
+    out.u32(size); out.u16(0xF1FA); out.u16(Math.min(chunks.length, 0xFFFF)); out.u16(100); out.zeros(2); out.u32(chunks.length);
+    chunks.forEach(c => out.bytes(c));
+  }
+  const h = new LE(128);
+  h.u32(out.n); h.u16(0xA5E0); h.u16(frames.length); h.u16(W); h.u16(H); h.u16(32); h.u32(3); h.u16(100);
+  h.u32(0); h.u32(0); h.u8(0); h.zeros(3); h.u16(2); h.u8(1); h.u8(1); h.u16(0); h.u16(0); h.u16(16); h.u16(16); h.zeros(84);
+  const bytes = out.out(); bytes.set(h.out(), 0);
+  const previewNodes = frameGroups ? frameGroups[0].children : doc.tree;
+  return { data: bytes, nFrames: frames.length, preview: { w: doc.W, h: doc.H, rgba: compositeTree(previewNodes, doc.W, doc.H, n => n.img) } };
+}
+
 /* ================= UI ================= */
 
 if (typeof document !== "undefined") {
   const $ = s => document.querySelector(s);
-  const items = []; // {file, base, doc, error, out, card, url}
+  const items = [];
   let bulkUrl = null;
 
+  const radio = n => document.querySelector(`input[name="${n}"]:checked`).value;
   const getOpts = () => ({
-    scale: +document.querySelector('input[name="scale"]:checked').value,
-    mode: document.querySelector('input[name="fmode"]:checked').value,
+    scale: +radio("scale"), mode: radio("fmode"), down: +radio("down"),
     frame: Math.max(1, parseInt($("#frameNo").value, 10) || 1),
   });
   const fmtSize = n => n < 1024 * 1024 ? (n / 1024).toFixed(1) + " KB" : (n / 1024 / 1024).toFixed(2) + " MB";
@@ -638,86 +986,109 @@ if (typeof document !== "undefined") {
   function makeCard(it) {
     const card = document.createElement("div");
     card.className = "card";
-    card.innerHTML = `<div class="thumb"></div><div><div class="name"></div><div class="meta"></div><div class="status">읽는 중…</div></div><a class="btn" aria-disabled="true">PSD 받기</a>`;
+    card.innerHTML = `<div class="thumb"></div><div><div class="name"></div><div class="meta"></div><div class="status">읽는 중…</div></div><a class="btn" aria-disabled="true">받기</a>`;
     card.querySelector(".name").textContent = it.file.name;
     $("#results").appendChild(card);
     return card;
   }
 
-  function render(it) {
+  function showPreview(it, p) {
+    const cv = document.createElement("canvas"); cv.width = p.w; cv.height = p.h;
+    cv.getContext("2d").putImageData(new ImageData(p.rgba, p.w, p.h), 0, 0);
+    const k = Math.max(1, Math.floor(96 / Math.max(p.w, p.h)));
+    cv.style.width = Math.min(96, p.w * k) + "px"; cv.style.height = "auto";
+    if (p.w > 96 || p.h > 96) cv.style.imageRendering = "auto";
+    const th = it.card.querySelector(".thumb"); th.innerHTML = ""; th.appendChild(cv);
+  }
+
+  // 결과: { blob, fname, label, entries:[{name,data}], preview }
+  async function buildAse(it, opts) {
+    const d = it.doc, out = convert(d, opts);
+    let blob, fname, entries;
+    if (out.kind === "zip") {
+      entries = out.files.map(f => ({ name: it.base + f.name, data: f.data }));
+      blob = makeZip(entries); fname = it.base + "_frames.zip";
+      entries = entries.map(e => ({ name: `${it.base}/${e.name}`, data: e.data }));
+    } else {
+      fname = it.base + (opts.mode === "one" && d.frames.length > 1 ? `_f${String(out.frame + 1).padStart(3, "0")}` : "") + ".psd";
+      blob = new Blob([out.files[0].data], { type: "image/vnd.adobe.photoshop" });
+      entries = [{ name: fname, data: out.files[0].data }];
+    }
+    const tree = decorate(d, buildTree(d.layers));
+    const pf = out.kind === "psd" ? out.frame : 0;
+    const preview = { w: d.W, h: d.H, rgba: compositeNodes(tree, frameImages(d, d._resolved, pf, 1), d.W, d.H) };
+    const meta = `${d.W}×${d.H} · 프레임 ${d.frames.length} · 레이어 ${d.layers.filter(l => l.type !== 1).length} · ${modeName(d.depth)}`;
+    return { blob, fname, entries, preview, meta, label: out.kind === "zip" ? "ZIP 받기" : "PSD 받기" };
+  }
+
+  async function buildPsd(it, opts) {
+    const d = it.doc, out = await convertPsdToAse(d, opts);
+    const fname = it.base + ".aseprite";
+    let meta = `${d.W}×${d.H} · 레이어 ${d.nLayers}` + (d.nGroups ? ` · 그룹 ${d.nGroups}` : "");
+    if (out.nFrames > 1) meta += ` · 프레임 ${out.nFrames}로 변환`;
+    if (opts.down > 1) meta += ` · → ${Math.ceil(d.W / opts.down)}×${Math.ceil(d.H / opts.down)}`;
+    return { blob: new Blob([out.data], { type: "application/octet-stream" }), fname, entries: [{ name: fname, data: out.data }],
+             preview: out.preview, meta, label: "Aseprite 받기" };
+  }
+
+  async function render(it) {
     const c = it.card, st = c.querySelector(".status"), btn = c.querySelector(".btn");
-    if (it.url) { URL.revokeObjectURL(it.url); it.url = null; }
+    const token = it.token = (it.token || 0) + 1;
     if (it.error) { st.className = "status err"; st.textContent = it.error; btn.setAttribute("aria-disabled", "true"); return; }
-    const opts = getOpts(), d = it.doc;
-    c.querySelector(".meta").textContent =
-      `${d.W}×${d.H} · 프레임 ${d.frames.length} · 레이어 ${d.layers.filter(l => l.type !== 1).length} · ${modeName(d.depth)}`;
+    st.className = "status"; st.textContent = "변환 중…"; btn.setAttribute("aria-disabled", "true");
     try {
-      const out = convert(d, opts);
-      it.out = out;
-      let blob, fname;
-      if (out.kind === "zip") {
-        blob = makeZip(out.files.map(f => ({ name: it.base + f.name, data: f.data })));
-        fname = it.base + "_frames.zip";
-        btn.textContent = "ZIP 받기";
-      } else {
-        blob = new Blob([out.files[0].data], { type: "image/vnd.adobe.photoshop" });
-        fname = it.base + (opts.mode === "one" && d.frames.length > 1 ? `_f${String(out.frame + 1).padStart(3, "0")}` : "") + ".psd";
-        btn.textContent = "PSD 받기";
-      }
-      it.url = URL.createObjectURL(blob);
-      btn.href = it.url; btn.download = fname; btn.removeAttribute("aria-disabled");
-      st.className = "status ok"; st.textContent = `${fname} · ${fmtSize(blob.size)}`;
-      // 미리보기
-      const pf = out.kind === "psd" ? out.frame : 0;
-      const tree = decorate(d, buildTree(d.layers));
-      const comp = compositeNodes(tree, frameImages(d, d._resolved, pf, 1), d.W, d.H);
-      const cv = document.createElement("canvas"); cv.width = d.W; cv.height = d.H;
-      cv.getContext("2d").putImageData(new ImageData(comp, d.W, d.H), 0, 0);
-      const k = Math.max(1, Math.floor(96 / Math.max(d.W, d.H)));
-      cv.style.width = Math.min(96, d.W * k) + "px"; cv.style.height = "auto";
-      const th = c.querySelector(".thumb"); th.innerHTML = ""; th.appendChild(cv);
+      const res = await (it.kind === "psd" ? buildPsd : buildAse)(it, getOpts());
+      if (token !== it.token) return;
+      if (it.url) URL.revokeObjectURL(it.url);
+      it.url = URL.createObjectURL(res.blob); it.res = res;
+      c.querySelector(".meta").textContent = res.meta;
+      btn.textContent = res.label; btn.href = it.url; btn.download = res.fname; btn.removeAttribute("aria-disabled");
+      st.className = "status ok"; st.textContent = `${res.fname} · ${fmtSize(res.blob.size)}`;
+      showPreview(it, res.preview);
     } catch (e) {
       console.error(e);
+      if (token !== it.token) return;
+      it.res = null;
       st.className = "status err"; st.textContent = "변환 실패: " + e.message;
-      btn.setAttribute("aria-disabled", "true");
     }
   }
 
   function renderBulk() {
-    const ok = items.filter(i => i.out);
+    const ok = items.filter(i => i.res);
     if (bulkUrl) { URL.revokeObjectURL(bulkUrl); bulkUrl = null; }
     if (ok.length < 2) { $("#bulk").classList.remove("show"); return; }
-    const entries = [];
-    for (const it of ok) {
-      const a = it.card.querySelector(".btn");
-      if (it.out.kind === "zip") it.out.files.forEach(f => entries.push({ name: `${it.base}/${it.base}${f.name}`, data: f.data }));
-      else entries.push({ name: a.download, data: it.out.files[0].data });
+    const used = new Set(), entries = [];
+    for (const it of ok) for (const e of it.res.entries) {
+      let name = e.name, k = 2;
+      while (used.has(name)) name = e.name.replace(/(\.[^.\/]+)$/, `_${k++}$1`);
+      used.add(name); entries.push({ name, data: e.data });
     }
     const blob = makeZip(entries);
     bulkUrl = URL.createObjectURL(blob);
-    $("#bulkBtn").href = bulkUrl; $("#bulkBtn").download = "aseprite_psd.zip";
+    $("#bulkBtn").href = bulkUrl; $("#bulkBtn").download = "converted.zip";
     $("#bulkInfo").textContent = `파일 ${ok.length}개 · ${fmtSize(blob.size)}`;
     $("#bulk").classList.add("show");
   }
 
   async function addFiles(list) {
-    const pending = [];
-    for (const file of list) {
-      const it = { file, base: file.name.replace(/\.(aseprite|ase)$/i, "") };
-      it.card = makeCard(it);
-      items.push(it);
-      pending.push((async () => {
-        try { it.doc = await parseAseprite(await file.arrayBuffer()); }
-        catch (e) { console.error(e); it.error = "읽기 실패: " + e.message; }
-        render(it);
-      })());
-    }
-    await Promise.all(pending);
+    await Promise.all([...list].map(async file => {
+      const it = { file, base: file.name.replace(/\.(aseprite|ase|psd)$/i, "") };
+      it.card = makeCard(it); items.push(it);
+      try {
+        const buf = await file.arrayBuffer(), sig = new Uint8Array(buf, 0, Math.min(4, buf.byteLength));
+        if (String.fromCharCode(...sig) === "8BPS") { it.kind = "psd"; it.doc = await parsePSD(buf); }
+        else { it.kind = "ase"; it.doc = await parseAseprite(buf); }
+      } catch (e) { console.error(e); it.error = "읽기 실패: " + e.message; }
+      await render(it);
+    }));
     renderBulk();
   }
 
   let timer = null;
-  const rerender = () => { clearTimeout(timer); timer = setTimeout(() => { items.forEach(it => it.doc && render(it)); renderBulk(); }, 150); };
+  const rerender = kind => {
+    clearTimeout(timer);
+    timer = setTimeout(async () => { await Promise.all(items.filter(it => it.doc && (!kind || it.kind === kind)).map(render)); renderBulk(); }, 150);
+  };
 
   $("#file").addEventListener("change", e => { addFiles([...e.target.files]); e.target.value = ""; });
   const drop = $("#drop");
@@ -726,11 +1097,12 @@ if (typeof document !== "undefined") {
   drop.addEventListener("drop", e => addFiles([...e.dataTransfer.files]));
   window.addEventListener("dragover", e => e.preventDefault());
   window.addEventListener("drop", e => { e.preventDefault(); if (e.target !== drop && !drop.contains(e.target)) addFiles([...e.dataTransfer.files]); });
-  document.querySelectorAll('input[name="scale"], input[name="fmode"]').forEach(el => el.addEventListener("change", rerender));
-  $("#frameNo").addEventListener("input", () => { document.querySelector('input[name="fmode"][value="one"]').checked = true; rerender(); });
+  document.querySelectorAll('input[name="scale"], input[name="fmode"]').forEach(el => el.addEventListener("change", () => rerender("ase")));
+  document.querySelectorAll('input[name="down"]').forEach(el => el.addEventListener("change", () => rerender("psd")));
+  $("#frameNo").addEventListener("input", () => { document.querySelector('input[name="fmode"][value="one"]').checked = true; rerender("ase"); });
 }
 
-if (typeof module !== "undefined") module.exports = { parseAseprite, convert, makeZip };
+if (typeof module !== "undefined") module.exports = { parseAseprite, convert, makeZip, parsePSD, convertPsdToAse };
 </script>
 </body>
 </html>
