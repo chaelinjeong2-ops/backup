@@ -106,7 +106,10 @@ h1, h2, h3 { margin: 0; }
 .banner .btn { height: 32px; }
 
 /* ───────── 레이아웃 ───────── */
-.layout { display: flex; flex-wrap: wrap; align-items: flex-start; min-height: calc(100vh - 61px); }
+/* 화면 높이에 '더해지는' 높이가 없게: body가 정확히 화면 높이를 채우고, 본문이 남은 자리를 차지
+   (예전엔 '화면 높이 − 상단바' 위에 배너가 더해져 늘 화면보다 길었고, 높이를 맞춰 늘어나는 미리보기 창에서 끝없이 커졌음) */
+body { min-height: 100vh; display: flex; flex-direction: column; }
+.layout { display: flex; flex-wrap: wrap; align-items: flex-start; flex: 1 0 auto; }
 .sidebar { flex: 1 1 230px; max-width: 290px; align-self: stretch; padding: 18px 14px; background: var(--surface); border-right: 1px solid var(--line); display: flex; flex-direction: column; gap: 14px; }
 [data-theme="pink"] .sidebar { background: transparent; border-right: 0; padding-right: 0; }
 [data-theme="pink"] .sidebar-inner { background: var(--surface); border-radius: 24px; padding: 14px 10px; }
@@ -287,7 +290,7 @@ body.dragging::after { content: '백업(.json)이나 원고(.txt, .pdf)를 놓�
 .no-labels .draft > *[data-k]::before { display: none; }
 .draft > * + * { margin-top: var(--pgap, 4px); }
 .draft > div { text-indent: var(--indent, 0); }
-.draft.tw { padding-bottom: 45vh; }
+.draft.tw { padding-bottom: min(45vh, 420px); }
 .draft > div:has(> br:only-child) { line-height: 1.1; font-size: .8em; }
 .draft > .flash { background: var(--soft); border-radius: 6px; }
 .line-hl { position: absolute; left: 24px; right: 24px; background: var(--soft); opacity: .6; border-radius: 8px; pointer-events: none; z-index: 0; transition: top .08s; }
@@ -1825,6 +1828,7 @@ function setVS(key, val) {
   var v = vset(); v[key] = val; applyViewVars();
   var out = $('[data-vs-out="' + key + '"]'); if (out) out.textContent = val + (key === 'fs' || key === 'pgap' ? 'px' : '');
   var ed = editorEl(); if (ed) ed.classList.toggle('tw', !!v.typewriter);
+  layoutStoryOverlaysSoon();
   if (key === 'lineHL' || key === 'typewriter') caretSoon();
   if (key === 'memos' && ui.view === 'read') renderMain();
   clearTimeout(saveTimer); saveTimer = setTimeout(saveNow, 500);
@@ -1847,12 +1851,8 @@ function mountEditor() {
   ed.innerHTML = sanitizeHtml(ep.draftHtml || '');
   if (!ed.textContent.trim() && !ed.querySelector('hr,li')) ed.innerHTML = '';
   ed.classList.toggle('tw', !!vset().typewriter);
-  if (window.ResizeObserver) {
-    if (storyRO) storyRO.disconnect();
-    // 크기 변화 알림 안에서 바로 배치를 바꾸면 'ResizeObserver loop' 경고가 나므로 다음 화면 갱신 때 처리
-    storyRO = new ResizeObserver(function () { cancelAnimationFrame(storyRaf); storyRaf = requestAnimationFrame(layoutStoryOverlays); });
-    storyRO.observe(ed);
-  }
+  // 줄거리 칸 위치는 ResizeObserver 없이, 원고가 바뀌는 순간들(입력·접기·글자 크기·창 크기·글꼴 로드)에 맞춤
+  layoutStoryOverlaysSoon();
   tagBlocks();
   updateWriteSide();
   updateToolState();
@@ -1947,7 +1947,10 @@ function foldedEnter() {
   return true;
 }
 /* 이야기 제목 밑 '줄거리' 입력칸: 원고 바깥(겹쳐 놓은 층)에 있어서 원고에는 섞이지 않음 */
-var storyRO = null, storyRaf = 0;
+var storyRaf = 0;
+function layoutStoryOverlaysSoon() { cancelAnimationFrame(storyRaf); storyRaf = requestAnimationFrame(layoutStoryOverlays); }
+window.addEventListener('resize', layoutStoryOverlaysSoon);
+if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', layoutStoryOverlaysSoon);
 function setStyleIfChanged(el, k, v) { if (el.style[k] !== v) el.style[k] = v; }
 /* 이야기 본문의 첫 줄 (페이지 표시·샷만 있는 줄·메모·구분선은 건너뜀) */
 function storyFirstText(head) {
