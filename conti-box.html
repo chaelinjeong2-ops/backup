@@ -273,8 +273,7 @@ body.dragging::after { content: '백업(.json)이나 원고(.txt, .pdf)를 놓�
 .draft blockquote { margin: 6px 0; padding: 4px 16px; border-left: 3px solid var(--line); color: var(--ink2); }
 [data-theme="pink"] .draft blockquote { border-left: 0; background: var(--bg); border-radius: 14px; }
 .draft ul, .draft ol { padding-left: 24px; }
-.draft hr { border: 0; border-top: 1px solid var(--line); margin: 18px 0; }
-[data-theme="pink"] .draft hr { border-top: 2px dotted var(--line); }
+
 .draft a { color: var(--soft-ink); text-decoration: underline; }
 .draft mark { padding: 0 2px; }
 /* 글 화면 레이아웃 (Typie 참고) */
@@ -351,10 +350,40 @@ body.dragging::after { content: '백업(.json)이나 원고(.txt, .pdf)를 놓�
 .draft > [data-k="story"]::before { content: '▾ 이야기'; background: var(--dark); color: var(--dark-ink); cursor: pointer; pointer-events: auto; top: .55em; font-size: 10px; }
 [data-theme="pink"] .draft > [data-k="story"]::before { background: var(--deco); color: #FFFFFF; }
 .draft > [data-k="story"][data-folded]::before { content: '▸ 이야기'; }
-.draft > [data-k="story"][data-nopeek]::after { content: '아직 내용이 없어요 · 제목 끝에서 Enter를 누르면 이어서 쓸 수 있어요'; display: block; font-family: var(--font-ui); font-size: 12px; font-weight: 400; color: var(--sub); margin-top: 4px; }
-.draft > [data-peek] { color: var(--ink2); }
-.draft > [data-peek]::after { content: '  ·  ' attr(data-hidn) '줄 더 있음'; font-family: var(--font-ui); font-size: 12px; font-style: normal; font-weight: 400; color: var(--sub); white-space: nowrap; }
-.draft > [data-peek][data-hidn="0"]::after { content: none; }
+/* 줄거리 칸 자리 (제목 밑에 겹쳐 놓은 층) */
+.draft > [data-k="story"] { margin-bottom: 52px; }
+.draft > [data-k="story"][data-folded] { margin-bottom: 76px; }
+.story-ov { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
+.sum-box { position: absolute; pointer-events: auto; display: flex; flex-direction: column; gap: 4px; }
+.sum-row { display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 10px; border-radius: 8px; background: var(--surface2); border: 1px solid var(--line2); }
+[data-theme="pink"] .sum-row { border-radius: 999px; background: var(--bg); border-color: transparent; }
+.sum-row:focus-within { border-color: var(--focus); }
+.sum-lbl { flex: none; font-family: var(--font-ui); font-size: 11px; font-weight: 700; color: var(--soft-ink); }
+.sum-in { flex: 1; min-width: 0; height: 30px; border: 0; outline: none; background: transparent; font-family: var(--font-text); font-size: 15px; color: var(--ink2); }
+.sum-in::placeholder { color: var(--sub); opacity: .75; font-size: 13px; }
+.sum-box.auto .sum-in::placeholder { font-size: 15px; font-style: italic; opacity: .8; }
+.sum-in, .story-sum { text-overflow: ellipsis; }
+.story-sum::placeholder { font-style: italic; color: var(--sub); }
+.sum-fold { padding-left: 4px; font-family: var(--font-text); font-size: 14px; color: var(--sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ol-sum { display: block; margin: -2px 6px 4px 36px; font-size: 12px; color: var(--sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.story-sum { width: 100%; height: 32px; border: 1px solid var(--line2); border-radius: 8px; padding: 0 10px; background: var(--surface2); font-family: var(--font-text); font-size: 14px; color: var(--ink2); }
+[data-theme="pink"] .story-sum { border-radius: 999px; }
+.r-sum { font-family: var(--font-text); font-size: .9em; color: var(--sub); margin: -2px 0 8px 44px; }
+
+/* 컷 구분선 */
+:root { --cut-default: #9AA3B2; }
+[data-theme="pink"] { --cut-default: #F4A7BB; }
+.draft > hr, .draft hr { border: 0; border-top: 2px var(--cut-style, solid) var(--cut-color, var(--cut-default)); margin: 14px 0; position: relative; overflow: visible; height: 0; }
+.draft > hr::before { content: '컷'; position: absolute; left: -58px; top: -10px; width: 48px; text-align: center; font-family: var(--font-ui); font-size: 10px; line-height: 18px; font-weight: 700; border-radius: 4px; background: var(--surface); color: var(--cut-color, var(--cut-default)); border: 1px solid var(--cut-color, var(--cut-default)); }
+[data-theme="pink"] .draft > hr::before { border-radius: 999px; }
+.no-labels .draft > hr::before { display: none; }
+.draft > [data-k="cutline"] { color: var(--cut-color, var(--cut-default)); }
+.r-cut + .r-cut { border-top: 2px var(--cut-style, solid) var(--cut-color, var(--cut-default)) !important; }
+.cut-style { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; padding-top: 8px; border-top: 1px solid var(--line2); }
+.cut-style .row { display: flex; flex-wrap: wrap; gap: 6px; }
+.cut-style .sw-btn[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--ink); }
+.sw-btn.sw-default { background: var(--cut-default); }
+.cut-shape { height: 30px; font-size: 12px; padding: 0 10px; }
 .draft > [data-hid] { display: none !important; }
 .ol-tools { display: flex; align-items: center; gap: 8px; padding: 0 4px 4px; }
 .ol-story { display: flex; align-items: center; gap: 2px; margin-top: 8px; border-top: 1px solid var(--line2); padding-top: 6px; }
@@ -386,6 +415,19 @@ body.dragging::after { content: '백업(.json)이나 원고(.txt, .pdf)를 놓�
 .fs-step .eb { min-width: 26px; height: 28px; padding: 0; }
 .fs-in { width: 28px; height: 28px; border: 0; background: transparent; text-align: center; font-family: var(--font-mono); font-size: 12px; color: var(--ink); -moz-appearance: textfield; appearance: textfield; }
 .fs-in::-webkit-inner-spin-button, .fs-in::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+.bk-pop { min-width: 320px; gap: 4px; }
+.bk-item { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px; border: 0; border-radius: 10px; background: transparent; text-align: left; color: var(--ink); }
+.bk-item:hover { background: var(--line2); }
+.bk-item b { display: block; font-size: 13px; }
+.bk-item small { display: block; font-size: 12px; color: var(--sub); line-height: 1.4; }
+
+/* 툴바: 자리가 모자라면 덜 쓰는 버튼부터 '⋯ 더보기'로 */
+.etool { container-type: inline-size; }
+.etool .t-more, .etool .t-bm, .etool .t-cm { display: none; }
+@container (max-width: 760px) { .etool .t-a { display: none; } .etool .t-more { display: inline-flex; } }
+@container (max-width: 650px) { .etool .t-b { display: none; } .etool .pop .t-bm { display: flex; } .etool .pop span.t-bm { display: block; } }
+@container (max-width: 580px) { .etool .t-c { display: none; } .etool .pop .t-cm { display: flex; } .etool .pop span.t-cm { display: block; } }
 
 /* 확인 창 */
 .mdl-wrap { position: fixed; inset: 0; z-index: 300; background: rgba(20,20,19,.38); display: flex; align-items: center; justify-content: center; padding: 20px; }
@@ -476,6 +518,12 @@ dialog.keys::backdrop { background: rgba(20,20,19,.35); }
   body > *:not(#print-area) { display: none !important; }
   #print-area { display: block; font-family: var(--font-text); color: #000; }
   #print-area h1 { font-size: 20pt; margin-bottom: 4pt; }
+  #print-area .pcover { break-after: page; padding-top: 30vh; text-align: center; }
+  #print-area .pwork { break-before: page; }
+  #print-area .pwt { font-size: 26pt; border-bottom: 2px solid #000; padding-bottom: 6pt; }
+  #print-area .pep + .pep { break-before: page; }
+  #print-area .pst { font-size: 10pt; color: #555; margin-bottom: 8pt; }
+  #print-area .psum { font-style: italic; color: #444; margin: 0 0 6pt; }
   #print-area .pp { break-before: page; }
   #print-area .pp:first-of-type { break-before: auto; }
   #print-area h2 { font-size: 13pt; margin: 14pt 0 8pt; border-bottom: 1px solid #000; }
@@ -669,11 +717,16 @@ function classify(line) {
   if ((m = line.match(/^([^\s:：()\[\]#>]{1,12})\s*[:：]\s*(.+)$/))) return { k: 'dialogue', speaker: m[1], text: m[2] };
   return { k: 'action', text: line };
 }
+var CUT_LINE_RE = /^-{3,}$/;
+var SUMMARY_RE = /^줄거리\s*[:：]\s*(.*)$/;
+/* 구분선(---)이 하나라도 있으면 구분선으로만 컷을 나누고, 없으면 예전처럼 빈 줄로 나눔 */
+function usesCutLines(text) { return /^[ \t]*-{3,}[ \t]*$/m.test(String(text || '')); }
 function parseDraft(text) {
-  var pages = [], page = null, cut = null, pendingStory = null;
+  var pages = [], page = null, cut = null, pendingStory = null, pendingSummary = '', justStory = false;
+  var dividers = usesCutLines(text);
   function newPage() {
     page = { id: uid(), cuts: [] };
-    if (pendingStory !== null) { page.story = pendingStory; pendingStory = null; }
+    if (pendingStory !== null) { page.story = pendingStory; if (pendingSummary) page.summary = pendingSummary; pendingStory = null; pendingSummary = ''; }
     pages.push(page); cut = null;
   }
   function ensureCut() {
@@ -682,9 +735,12 @@ function parseDraft(text) {
   }
   String(text || '').split(/\r?\n/).forEach(function (raw) {
     var line = raw.trim(), m;
-    if (!line) { cut = null; return; }
+    if (!line) { if (!dividers) cut = null; return; }
     var sm = line.match(/^##\s*(.*)$/);
-    if (sm) { pendingStory = sm[1].trim() || '제목 없는 이야기'; page = null; cut = null; return; }
+    if (sm) { pendingStory = sm[1].trim() || '제목 없는 이야기'; pendingSummary = ''; page = null; cut = null; justStory = true; return; }
+    if (justStory && (m = line.match(SUMMARY_RE))) { pendingSummary = m[1].trim(); justStory = false; return; }
+    justStory = false;
+    if (CUT_LINE_RE.test(line)) { cut = null; return; }
     if (/^#/.test(line)) { newPage(); return; }
     if ((m = line.match(/^\[(.+?)\]\s*(.*)$/))) {
       cut = null; ensureCut(); cut.shot = m[1].trim();
@@ -702,7 +758,7 @@ function storyInfo(pages) {
   (pages || []).forEach(function (p) {
     if (typeof p.story === 'string') { si++; n = 0; }
     n++;
-    out.push({ n: n, si: si, story: typeof p.story === 'string' ? p.story : null });
+    out.push({ n: n, si: si, story: typeof p.story === 'string' ? p.story : null, summary: typeof p.story === 'string' ? (p.summary || '') : '' });
   });
   return out;
 }
@@ -729,19 +785,26 @@ function cutToLines(c) {
 function episodeToText(ep) {
   var info = storyInfo(ep.pages);
   return (ep.pages || []).map(function (p, i) {
-    return (info[i].story !== null ? '## ' + info[i].story + '\n\n' : '') +
-      '# ' + info[i].n + '페이지\n' + p.cuts.map(function (c) { return cutToLines(c).join('\n'); }).filter(Boolean).join('\n\n');
+    return (info[i].story !== null ? '## ' + info[i].story + '\n' + (info[i].summary ? '줄거리: ' + info[i].summary + '\n' : '') + '\n' : '') +
+      '# ' + info[i].n + '페이지\n' + p.cuts.map(function (c) { return cutToLines(c).join('\n'); }).filter(Boolean).join('\n---\n');
   }).join('\n\n');
 }
 
 /* ═════════ 서식 있는 글 ↔ 일반 글 ═════════ */
 function textToHtml(text) {
-  var lines = String(text || '').split(/\r?\n/);
-  return lines.map(function (l) {
-    var m = l.match(/^##\s*(.*)$/);
-    if (m) return '<h2>' + esc(m[1].trim() || '제목 없는 이야기') + '</h2>';
-    return l ? '<div>' + esc(l) + '</div>' : '<div><br></div>';
-  }).join('');
+  var lines = String(text || '').split(/\r?\n/), out = [];
+  for (var i = 0; i < lines.length; i++) {
+    var l = lines[i], m = l.match(/^##\s*(.*)$/);
+    if (m) {
+      var sm = (lines[i + 1] || '').trim().match(SUMMARY_RE);
+      out.push('<h2' + (sm && sm[1].trim() ? ' data-summary="' + esc(sm[1].trim()) + '"' : '') + '>' + esc(m[1].trim() || '제목 없는 이야기') + '</h2>');
+      if (sm) i++;
+      continue;
+    }
+    if (CUT_LINE_RE.test(l.trim())) { out.push('<hr>'); continue; }
+    out.push(l ? '<div>' + esc(l) + '</div>' : '<div><br></div>');
+  }
+  return out.join('');
 }
 var BLOCK_RE = /^(DIV|P|LI|H[1-6]|BLOCKQUOTE|UL|OL|HR|PRE|SECTION|ARTICLE|TABLE|TR)$/;
 function htmlToText(html) {
@@ -758,12 +821,15 @@ function htmlToText(html) {
       if (!n.nextSibling && n.parentNode !== root && n.parentNode.textContent !== '') return;
       nl(); return;
     }
+    if (tag === 'HR') { if (cur() !== '') nl(); lines[lines.length - 1] = '---'; nl(); return; }
     var block = BLOCK_RE.test(tag);
     if (block && cur() !== '') nl();
     if (tag === 'H2' && !/^\s*##/.test(n.textContent)) lines[lines.length - 1] += '## ';
     if (tag === 'LI' && n.parentNode && n.parentNode.tagName === 'OL') lines[lines.length - 1] += (Array.prototype.indexOf.call(n.parentNode.children, n) + 1) + '. ';
     else if (tag === 'LI') lines[lines.length - 1] += '• ';
     for (var c = n.firstChild; c; c = c.nextSibling) walk(c);
+    var sumv = (tag === 'H2' || tag === 'DIV') && n.getAttribute('data-summary');
+    if (sumv && sumv.trim()) { nl(); lines[lines.length - 1] = '줄거리: ' + sumv.trim().replace(/[\r\n]+/g, ' '); }
     if (block && cur() !== '') nl();
   }
   for (var c = root.firstChild; c; c = c.nextSibling) walk(c);
@@ -799,6 +865,7 @@ function sanitizeHtml(html) {
       if (tag === 'FONT' && c.getAttribute('color') && /^#?[0-9a-z]+$/i.test(c.getAttribute('color'))) keep.push('color:' + c.getAttribute('color'));
       if (keep.length) el.setAttribute('style', keep.join(';'));
       if (name === 'A') { var href = c.getAttribute('href') || ''; if (/^(https?:|mailto:)/i.test(href)) el.setAttribute('href', href); }
+      if ((name === 'H2' || name === 'DIV') && c.getAttribute('data-summary')) el.setAttribute('data-summary', c.getAttribute('data-summary').replace(/[\r\n]+/g, ' ').slice(0, 300));
       clean(c, el);
       out.appendChild(el);
     }
@@ -811,6 +878,7 @@ function blockKind(text) {
   var t = text.replace(/ /g, ' ').trim();
   if (!t) return '';
   if (/^##/.test(t)) return 'story';
+  if (CUT_LINE_RE.test(t)) return 'cutline';
   if (/^#/.test(t)) return 'page';
   if (/^\[.+?\]/.test(t)) return 'shot';
   var c = classify(t);
@@ -891,7 +959,8 @@ function normalize() {
       if (!Array.isArray(e.pages)) e.pages = [];
       e.pages.forEach(function (p) {
         p.id = p.id || uid(); if (!Array.isArray(p.cuts)) p.cuts = [];
-        if (typeof p.story !== 'string') delete p.story;
+        if (typeof p.story !== 'string') { delete p.story; delete p.summary; }
+        else if (typeof p.summary !== 'string') delete p.summary;
         p.cuts.forEach(function (c) {
           c.id = c.id || uid(); c.shot = c.shot || ''; c.memo = c.memo || '';
           if (!Array.isArray(c.lines)) c.lines = [];
@@ -1047,13 +1116,14 @@ function exportTxt() {
   download(safeName(ep.title) + '.txt', text, 'text/plain;charset=utf-8');
 }
 function safeName(s) { return String(s).replace(/[\\/:*?"<>|]/g, '_').slice(0, 60) || 'conti'; }
-function printEp() {
-  var w = curWork(), ep = curEp(); if (!ep) return;
-  var h = '<h1>' + esc(ep.title) + '</h1><div>' + esc(w ? w.title : '') + '</div>';
-  var info = storyInfo(ep.pages);
-  ep.pages.forEach(function (p, pi) {
+function epPrintHTML(w, ep, withWork) {
+  var pages = ep.pages.length ? ep.pages : parseDraft(ep.draft || '');
+  var h = '<section class="pep">' + (withWork ? '' : '<div>' + esc(w ? w.title : '') + '</div>') + '<h1>' + esc(ep.title) + '</h1><div class="pst">' + esc(ep.status) + '</div>';
+  var info = storyInfo(pages);
+  if (!pages.length) h += '<p><i>내용 없음</i></p>';
+  pages.forEach(function (p, pi) {
     var inf = info[pi];
-    h += '<section class="pp">' + (inf.story !== null ? '<h1 style="font-size:16pt;margin-top:0">' + esc(inf.story) + '</h1>' : '') + '<h2>' + inf.n + '페이지</h2><table>';
+    h += '<section class="pp">' + (inf.story !== null ? '<h1 style="font-size:16pt;margin-top:0">' + esc(inf.story) + '</h1>' + (inf.summary ? '<p class="psum">' + esc(inf.summary) + '</p>' : '') : '') + '<h2>' + inf.n + '페이지</h2><table>';
     p.cuts.forEach(function (c, ci) {
       h += '<tr><td class="no">' + inf.n + '-' + (ci + 1) + (c.shot ? '<br><small>' + esc(c.shot) + '</small>' : '') + '</td><td>';
       c.lines.forEach(function (l) {
@@ -1064,8 +1134,90 @@ function printEp() {
     });
     h += '</table></section>';
   });
-  $('#print-area').innerHTML = h;
-  setTimeout(function () { window.print(); }, 50);
+  return h + '</section>';
+}
+function doPrint(html) {
+  $('#print-area').innerHTML = html;
+  setTimeout(function () {
+    try { window.print(); } catch (e) { notify('인쇄 창을 열 수 없어요\n이 화면에서는 인쇄가 막혀 있어요. 파일을 브라우저로 직접 열어서 다시 해 주세요.'); }
+  }, 50);
+}
+function printEp() {
+  var w = curWork(), ep = curEp(); if (!ep) return;
+  doPrint(epPrintHTML(w, ep, false));
+}
+/* 전체 원고 PDF: 모든 작품·회차를 인쇄 창으로 → 'PDF로 저장' */
+function printAll() {
+  if (!S.works.length) { toast('저장할 작품이 없어요'); return; }
+  var h = '<div class="pcover"><h1>콘티 보관함 · 전체 원고</h1><p>' + new Date().toLocaleString('ko-KR') + '</p></div>';
+  S.works.forEach(function (w) {
+    h += '<section class="pwork"><h1 class="pwt">' + esc(w.title) + '</h1>';
+    w.episodes.slice().reverse().forEach(function (ep) { h += epPrintHTML(w, ep, true); });
+    h += '</section>';
+  });
+  closePops();
+  toast('인쇄 창에서 대상을 "PDF로 저장"으로 고르세요');
+  doPrint(h);
+}
+/* 전체 원고 TXT: 다시 불러오면 작품·회차가 그대로 만들어짐 (메모·버전·글자 서식은 빠짐) */
+var TXT_MAGIC = '콘티 보관함 원고 백업';
+function backupTxt() {
+  saveNow();
+  var out = [TXT_MAGIC, '저장한 때: ' + new Date().toLocaleString('ko-KR'),
+    '(이 파일을 콘티 보관함에서 불러오면 작품과 회차가 다시 만들어져요. 메모 보드·버전 기록·글자 서식은 들어 있지 않으니, 완전한 백업은 .json으로 해 주세요.)', ''];
+  S.works.forEach(function (w) {
+    out.push('==================== 작품: ' + w.title + ' ====================', '');
+    w.episodes.slice().reverse().forEach(function (ep) {
+      out.push('-------------------- 회차: ' + ep.title + ' [' + ep.status + '] --------------------');
+      var draft = (ep.draft || '').trim(), cards = ep.pages.length ? episodeToText(ep) : '';
+      out.push(draft || cards || '');
+      if (draft && cards && parseDraftSig(draft) !== parseDraftSig(cards)) out.push('', '[콘티 카드 내용]', cards);
+      if ((ep.note || '').trim()) out.push('', '[작성 노트]', ep.note.trim());
+      out.push('');
+    });
+    var ms = S.memos.filter(function (m) { return m.workId === w.id; });
+    if (ms.length) {
+      out.push('[작품 메모]');
+      ms.forEach(function (m) { out.push('- ' + (m.kind === 'line' && m.speaker ? m.speaker + ': ' : '') + m.text.replace(/\n/g, ' / ') + (m.tags.length ? ' ' + m.tags.join(' ') : '')); });
+      out.push('');
+    }
+  });
+  var name = 'conti_원고_' + stamp() + '.txt';
+  download(name, out.join('\n'), 'text/plain;charset=utf-8');
+  S.settings.lastFileBackup = Date.now();
+  addVersion('file', name);
+  closePops(); changed(true);
+  toast('전체 원고를 .txt로 저장했어요');
+}
+/* 글과 카드 내용이 같은지 비교용 (공백·줄 수 차이 무시) */
+function parseDraftSig(text) {
+  return JSON.stringify(parseDraft(text).map(function (p) { return [p.story || '', p.summary || '', p.cuts.map(function (c) { return [c.shot, c.memo, c.lines.map(function (l) { return [l.k, l.speaker, l.text]; })]; })]; }));
+}
+function parseTxtBackup(text) {
+  var lines = String(text).split(/\r?\n/), works = [], w = null, ep = null, mode = 'body';
+  function flushEp() {
+    if (!ep) return;
+    var body = ep.body.join('\n').replace(/^\s+|\s+$/g, ''), cards = ep.cards.join('\n').trim();
+    ep.out.draft = body; ep.out.draftHtml = textToHtml(body);
+    ep.out.pages = parseDraft(cards || body);
+    if (ep.note.length) ep.out.note = ep.note.join('\n').trim();
+    w.episodes.unshift(ep.out); ep = null;
+  }
+  for (var i = 0; i < lines.length; i++) {
+    var l = lines[i], m;
+    if ((m = l.match(/^={5,}\s*작품:\s*(.*?)\s*={5,}\s*$/))) { flushEp(); w = { id: uid(), title: m[1] || '제목 없는 작품', episodes: [] }; works.push(w); mode = 'body'; continue; }
+    if ((m = l.match(/^-{5,}\s*회차:\s*(.*?)(?:\s*\[(초안|작업중|완료)\])?\s*-{5,}\s*$/))) {
+      flushEp(); if (!w) { w = { id: uid(), title: '불러온 작품', episodes: [] }; works.push(w); }
+      ep = { out: { id: uid(), title: m[1] || '제목 없는 회차', status: m[2] || '초안' }, body: [], cards: [], note: [] }; mode = 'body'; continue;
+    }
+    if (l.trim() === '[작품 메모]') { flushEp(); mode = 'memo'; continue; }
+    if (!ep) continue;
+    if (l.trim() === '[콘티 카드 내용]') { mode = 'cards'; continue; }
+    if (l.trim() === '[작성 노트]') { mode = 'note'; continue; }
+    if (mode === 'body') ep.body.push(l); else if (mode === 'cards') ep.cards.push(l); else if (mode === 'note') ep.note.push(l);
+  }
+  flushEp();
+  return works;
 }
 function openFile() { $('#file-input').value = ''; $('#file-input').click(); }
 /* PDF: 처음 쓸 때 PDF 읽기 도구(pdf.js)를 인터넷에서 받아와요 */
@@ -1177,7 +1329,7 @@ function importFile(file) {
   var reader = new FileReader();
   reader.onload = async function () {
     var text = String(reader.result || '');
-    if (/\.txt$/i.test(file.name) || (file.type && file.type.indexOf('text/plain') === 0)) return importTxt(file.name, text);
+    if (/\.txt$/i.test(file.name) || (file.type && file.type.indexOf('text/plain') === 0) || text.split(/\r?\n/)[0].trim() === TXT_MAGIC) return importTxt(file.name, text);
     var p;
     try { p = JSON.parse(text); } catch (e) { notify('읽을 수 없는 파일이에요. 콘티 보관함 백업(.json)이나 원고(.txt)를 골라 주세요.'); return; }
     var d = p && (p.data || p);
@@ -1200,7 +1352,18 @@ function importFile(file) {
   };
   reader.readAsText(file);
 }
-function importTxt(name, text) {
+async function importTxt(name, text) {
+  if (String(text).split(/\r?\n/)[0].trim() === TXT_MAGIC) {
+    var ws = parseTxtBackup(text), ne = ws.reduce(function (n, w) { return n + w.episodes.length; }, 0);
+    if (!ws.length) { notify('이 TXT 백업에서 작품을 찾지 못했어요.'); return; }
+    if (!await ask('TXT 백업에서 작품 ' + ws.length + '개 · 회차 ' + ne + '개를 불러올까요?\n지금 있는 작품은 그대로 두고, 불러온 작품을 새로 추가해요.')) return;
+    saveNow(); addVersion('import', 'TXT 불러오기 전 상태');
+    ws.forEach(function (w) { S.works.push(w); });
+    S.current = { workId: ws[0].id, episodeId: ws[0].episodes[0] ? ws[0].episodes[0].id : null };
+    normalize(); ui.view = 'write'; changed(true);
+    toast('TXT 백업에서 작품 ' + ws.length + '개를 불러왔어요');
+    return;
+  }
   var w = curWork();
   if (!w) { w = { id: uid(), title: '새 작품', episodes: [] }; S.works.push(w); }
   var title = name.replace(/\.txt$/i, '');
@@ -1231,7 +1394,12 @@ function renderTop() {
         '<button role="radio" data-theme-set="pink" aria-checked="' + (S.settings.theme === 'pink') + '"><span class="swatch" style="background:#FFB8CA"></span>딸기우유</button>' +
       '</div>' +
       '<button class="btn" data-act="open-file">' + svg('upload') + '불러오기</button>' +
-      '<button class="btn btn-primary" data-act="file-backup">' + svg('download') + '지금 백업</button>' +
+      '<span class="pop-wrap"><button class="btn btn-primary" data-act="toggle-pop" data-pop="bk" aria-expanded="false" aria-haspopup="true">' + svg('download') + '지금 백업' + svg('chevD', 12) + '</button>' +
+        '<div class="pop pop-right bk-pop" id="pop-bk" hidden>' +
+          '<button class="bk-item" data-act="file-backup"><span class="export-ext">.json</span><span><b>전체 백업</b><small>작품·메모·버전 기록까지 전부. 복원은 이걸로</small></span></button>' +
+          '<button class="bk-item" data-act="backup-txt"><span class="export-ext">.txt</span><span><b>전체 원고 텍스트</b><small>모든 회차 글. 다시 불러오면 작품·회차가 생겨요</small></span></button>' +
+          '<button class="bk-item" data-act="backup-pdf"><span class="export-ext">.pdf</span><span><b>전체 원고 PDF</b><small>인쇄 창에서 "PDF로 저장" · 읽기·보관용</small></span></button>' +
+        '</div></span>' +
     '</div>';
   renderStatus();
 }
@@ -1342,7 +1510,8 @@ function renderConti() {
       h += '<div class="story-head" id="cs-' + ep.id + '-' + inf.si + '"><button class="icon-btn" data-act="fold" data-si="' + inf.si + '" aria-expanded="' + !folds[inf.si] + '" aria-label="' + (folds[inf.si] ? '펴기' : '접기') + '">' + svg(folds[inf.si] ? 'chevR' : 'chevD', 16) + '</button>' +
         '<label style="flex:1;min-width:0;display:flex"><span class="sr">이야기 제목</span><input class="story-title" data-story-pi="' + pi + '" value="' + esc(inf.story) + '"></label>' +
         '<span class="small muted">' + spages + '페이지 · ' + scuts + '컷</span></div>';
-      if (folds[inf.si]) { var fl2 = storyFirstLine(ep.pages, info, inf.si); h += '<button class="story-first" data-act="fold" data-si="' + inf.si + '">' + esc(fl2 ? clip(fl2, 70) : '(내용 없음)') + '<span class="small muted">눌러서 펼치기</span></button>'; }
+      h += '<label style="display:block;margin:-4px 0 0 46px"><span class="sr">' + esc(inf.story) + ' 줄거리</span><input class="story-sum" data-story-sum-pi="' + pi + '" value="' + esc(inf.summary) + '" placeholder="' + esc(clip(storyFirstLine(ep.pages, info, inf.si), 80) || '줄거리 한 줄 · 원고에는 들어가지 않아요') + '"></label>';
+      if (folds[inf.si]) h += '<button class="story-first" data-act="fold" data-si="' + inf.si + '"><span class="small muted">접혀 있어요 · 눌러서 펼치기</span></button>';
     }
     if (inf.si >= 0 && folds[inf.si]) return;
     var cuts = p.cuts.map(function (c, ci) { return { c: c, ci: ci }; }).filter(function (x) {
@@ -1476,7 +1645,8 @@ function renderRead() {
       if (inf.story !== null) {
         var spages = info.filter(function (x) { return x.si === inf.si; }).length;
         h += '<div class="r-story" id="rs-' + e.id + '-' + inf.si + '"><button class="icon-btn" data-act="fold" data-si="' + inf.si + '" data-ep="' + e.id + '" aria-expanded="' + !folds[inf.si] + '" aria-label="' + (folds[inf.si] ? '펴기' : '접기') + '">' + svg(folds[inf.si] ? 'chevR' : 'chevD', 18) + '</button><h2>' + esc(inf.story) + '</h2><span class="small muted">' + spages + '페이지</span></div>';
-        if (folds[inf.si]) { var fl = storyFirstLine(pages, info, inf.si); h += '<button class="r-folded" data-act="fold" data-si="' + inf.si + '" data-ep="' + e.id + '"><span class="r-first">' + esc(fl ? clip(fl, 60) : '(내용 없음)') + '</span><span class="small muted">눌러서 펼치기</span></button>'; }
+        if (inf.summary) h += '<div class="r-sum">' + esc(inf.summary) + '</div>';
+        if (folds[inf.si]) h += '<button class="r-folded" data-act="fold" data-si="' + inf.si + '" data-ep="' + e.id + '"><span class="small muted">접혀 있어요 · 눌러서 펼치기</span></button>';
       }
       if (inf.si >= 0 && folds[inf.si]) return;
       h += '<div class="r-page">' + inf.n + '페이지</div>';
@@ -1520,6 +1690,8 @@ function renderRail() {
 
   h += '<section class="card panel"><h2>내보내기</h2>' +
     '<button class="export-btn" data-act="file-backup"><span class="export-ext">.json</span><span style="display:flex;flex-direction:column"><span style="font-size:13px;font-weight:500">전체 백업</span><span class="small muted">모든 작품·메모·버전 포함, 복원용</span></span></button>' +
+    '<button class="export-btn" data-act="backup-txt"><span class="export-ext">.txt</span><span style="display:flex;flex-direction:column"><span style="font-size:13px;font-weight:500">전체 원고 텍스트</span><span class="small muted">모든 작품·회차 · 다시 불러오기 가능</span></span></button>' +
+    '<button class="export-btn" data-act="backup-pdf"><span class="export-ext">.pdf</span><span style="display:flex;flex-direction:column"><span style="font-size:13px;font-weight:500">전체 원고 PDF</span><span class="small muted">모든 작품·회차를 한 파일로</span></span></button>' +
     '<button class="export-btn" data-act="export-txt"><span class="export-ext">.txt</span><span style="display:flex;flex-direction:column"><span style="font-size:13px;font-weight:500">이 회차 원고</span><span class="small muted">글 형식으로 · 다시 불러오기 가능</span></span></button>' +
     '<button class="export-btn" data-act="print"><span class="export-ext">.pdf</span><span style="display:flex;flex-direction:column"><span style="font-size:13px;font-weight:500">인쇄용 콘티</span><span class="small muted">인쇄 창에서 PDF로 저장</span></span></button></section>';
 
@@ -1528,15 +1700,26 @@ function renderRail() {
 }
 
 /* ═════════ 렌더: 글 화면 ═════════ */
-var VIEW_DEFAULTS = { font: '', fs: 17, lh: 1.9, pgap: 4, width: 760, indent: false, labels: true, typewriter: false, lineHL: false, smartPunct: true, memos: true };
+var VIEW_DEFAULTS = { cutColor: '', cutStyle: 'solid', font: '', fs: 17, lh: 1.9, pgap: 4, width: 760, indent: false, labels: true, typewriter: false, lineHL: false, smartPunct: true, memos: true };
 function vset() { S.settings.view = Object.assign({}, VIEW_DEFAULTS, S.settings.view || {}); return S.settings.view; }
 function applyViewVars() {
   var v = vset(), r = document.documentElement.style;
   r.setProperty('--fs', v.fs + 'px'); r.setProperty('--lh', v.lh); r.setProperty('--pgap', v.pgap + 'px');
   r.setProperty('--maxw', v.width + 'px');
-  if (v.font) r.setProperty('--font-text', fontStack(v.font)); else r.removeProperty('--font-text'); r.setProperty('--indent', v.indent ? '1em' : '0');
+  if (v.font) r.setProperty('--font-text', fontStack(v.font)); else r.removeProperty('--font-text');
+  if (v.cutColor) r.setProperty('--cut-color', v.cutColor); else r.removeProperty('--cut-color');
+  r.setProperty('--cut-style', v.cutStyle || 'solid'); r.setProperty('--indent', v.indent ? '1em' : '0');
   document.documentElement.classList.toggle('no-labels', !v.labels);
   document.documentElement.classList.toggle('hide-memos', !v.memos);
+}
+var CUT_COLORS = [['', '기본'], ['#FF8FAB', '분홍'], ['#F59E0B', '주황'], ['#22A06B', '초록'], ['#3B82F6', '파랑'], ['#8B5CF6', '보라'], ['#1B1D22', '검정']];
+function cutStyleHTML() {
+  var v = vset();
+  return '<div class="cut-style"><span class="lbl">구분선 색</span><div class="row">' + CUT_COLORS.map(function (c) {
+    return '<button type="button" class="sw-btn' + (c[0] ? '' : ' sw-default') + '" data-act="cut-color" data-c="' + c[0] + '" aria-pressed="' + ((v.cutColor || '') === c[0]) + '" aria-label="구분선 색 ' + c[1] + '" title="' + c[1] + '" style="' + (c[0] ? 'background:' + c[0] : '') + '"></button>';
+  }).join('') + '</div><span class="lbl">구분선 모양</span><div class="row">' +
+    [['solid', '실선'], ['dashed', '긴 점선'], ['dotted', '점선']].map(function (x) { return '<button type="button" class="chip cut-shape" data-act="cut-shape" data-s="' + x[0] + '" aria-pressed="' + ((v.cutStyle || 'solid') === x[0]) + '"><span style="display:inline-block;width:26px;border-top:2px ' + x[0] + ' currentColor;vertical-align:middle;margin-right:6px"></span>' + x[1] + '</button>'; }).join('') +
+  '</div></div>';
 }
 function fsStepper() {
   var v = vset();
@@ -1567,35 +1750,42 @@ function renderWrite() {
   var w = curWork(), panel = S.settings.wpanel === undefined ? 'outline' : S.settings.wpanel;
   var tc = [['', '기본'], ['#E03E3E', '빨강'], ['#D9730D', '주황'], ['#2F7D32', '초록'], ['#1F5FBF', '파랑'], ['#6B3FA0', '보라'], ['#8A8F98', '회색']];
   var hc = [['transparent', '없음'], ['#FFF1A8', '노랑'], ['#FFD6E0', '분홍'], ['#D5EDFF', '하늘'], ['#D9F2E3', '연두'], ['#EAE4FF', '연보라']];
-  function pop(id, label, title, inner, right) {
-    return '<span class="pop-wrap"><button class="eb" data-act="toggle-pop" data-pop="' + id + '" aria-expanded="false" title="' + title + '" aria-label="' + title + '">' + label + svg('chevD', 12) + '</button><div class="pop' + (right ? ' pop-right' : '') + '" id="pop-' + id + '" hidden>' + inner + '</div></span>';
+  function pop(id, label, title, inner, right, cls) {
+    return '<span class="pop-wrap' + (cls ? ' ' + cls : '') + '"><button class="eb" data-act="toggle-pop" data-pop="' + id + '" aria-expanded="false" title="' + title + '" aria-label="' + title + '">' + label + svg('chevD', 12) + '</button><div class="pop' + (right ? ' pop-right' : '') + '" id="pop-' + id + '" hidden>' + inner + '</div></span>';
   }
-  function item(attr, label, key) { return '<button class="pop-item" ' + attr + '><span>' + label + '</span>' + (key ? '<kbd>' + key + '</kbd>' : '') + '</button>'; }
+  function item(attr, label, key) { return '<button ' + (/class="/.test(attr) ? '' : 'class="pop-item" ') + attr + '><span>' + label + '</span>' + (key ? '<kbd>' + key + '</kbd>' : '') + '</button>'; }
   var tool =
     '<div class="etool" role="toolbar" aria-label="글 서식">' +
-      '<button class="eb" data-cmd="undo" aria-label="실행 취소 (Ctrl+Z)" title="실행 취소 (Ctrl+Z)">' + svg('undo', 16) + '</button>' +
-      '<button class="eb" data-cmd="redo" aria-label="다시 실행 (Ctrl+Y)" title="다시 실행 (Ctrl+Y)">' + svg('redo', 16) + '</button>' +
-      '<span class="sep" aria-hidden="true"></span>' +
-      '<label><span class="sr">문단 모양</span><select class="eselect" id="blockfmt"><option value="div">본문</option><option value="h2">이야기 제목</option><option value="h3">소제목</option><option value="blockquote">인용</option></select></label>' +
+      '<button class="eb t-b" data-cmd="undo" aria-label="실행 취소 (Ctrl+Z)" title="실행 취소 (Ctrl+Z)">' + svg('undo', 16) + '</button>' +
+      '<button class="eb t-b" data-cmd="redo" aria-label="다시 실행 (Ctrl+Y)" title="다시 실행 (Ctrl+Y)">' + svg('redo', 16) + '</button>' +
+      '<span class="sep t-b" aria-hidden="true"></span>' +
+      '<label class="t-c"><span class="sr">문단 모양</span><select class="eselect" id="blockfmt"><option value="div">본문</option><option value="h2">이야기 제목</option><option value="h3">소제목</option><option value="blockquote">인용</option></select></label>' +
       '<label><span class="sr">글꼴</span><select class="eselect" id="fontsel" title="선택한 글자의 글꼴">' + fontOptions('') + '</select></label>' +
       '<span class="sep" aria-hidden="true"></span>' +
       '<button class="eb" data-cmd="bold" aria-pressed="false" aria-label="굵게 (Ctrl+B)" title="굵게 (Ctrl+B)"><b>B</b></button>' +
       '<button class="eb" data-cmd="italic" aria-pressed="false" aria-label="기울임 (Ctrl+I)" title="기울임 (Ctrl+I)"><i style="font-family:Georgia,serif">I</i></button>' +
       '<button class="eb" data-cmd="underline" aria-pressed="false" aria-label="밑줄 (Ctrl+U)" title="밑줄 (Ctrl+U)"><u>U</u></button>' +
-      '<button class="eb" data-cmd="strikeThrough" aria-pressed="false" aria-label="취소선 (Ctrl+Shift+X)" title="취소선 (Ctrl+Shift+X)"><s>S</s></button>' +
+      '<button class="eb t-a" data-cmd="strikeThrough" aria-pressed="false" aria-label="취소선 (Ctrl+Shift+X)" title="취소선 (Ctrl+Shift+X)"><s>S</s></button>' +
       pop('color', '<span style="font-weight:700;border-bottom:3px solid #E03E3E;line-height:1.1">가</span>', '글자색·형광펜',
         '<span class="lbl">글자색</span><div class="row">' + tc.map(function (c) { return '<button class="sw-btn" data-cmd="foreColor" data-val="' + (c[0] || 'inherit') + '" aria-label="글자색 ' + c[1] + '" title="' + c[1] + '" style="background:' + (c[0] || 'var(--ink)') + '"></button>'; }).join('') +
         '</div><span class="lbl">형광펜 (Ctrl+Shift+H)</span><div class="row">' + hc.map(function (c) { return '<button class="sw-btn' + (c[0] === 'transparent' ? ' none' : '') + '" data-cmd="hiliteColor" data-val="' + c[0] + '" aria-label="형광펜 ' + c[1] + '" title="' + c[1] + '" style="' + (c[0] === 'transparent' ? '' : 'background:' + c[0]) + '"></button>'; }).join('') + '</div>') +
       pop('para', svg('alignL', 16), '정렬·목록',
         item('data-cmd="justifyLeft"', '왼쪽 정렬', 'Ctrl+Shift+L') + item('data-cmd="justifyCenter"', '가운데 정렬', 'Ctrl+Shift+E') + item('data-cmd="justifyRight"', '오른쪽 정렬', 'Ctrl+Shift+R') +
-        item('data-cmd="insertUnorderedList"', '글머리 목록', 'Ctrl+Shift+8') + item('data-cmd="insertOrderedList"', '번호 목록', 'Ctrl+Shift+7') + item('data-cmd="insertHorizontalRule"', '구분선', '')) +
-      '<button class="eb" data-cmd="createLink" aria-label="링크 (Ctrl+K)" title="링크 (Ctrl+K)">' + svg('link', 16) + '</button>' +
-      '<button class="eb" data-cmd="removeFormat" aria-label="서식 지우기 (Ctrl+\\)" title="서식 지우기 (Ctrl+\\)">' + svg('clear', 16) + '</button>' +
+        item('data-cmd="insertUnorderedList"', '글머리 목록', 'Ctrl+Shift+8') + item('data-cmd="insertOrderedList"', '번호 목록', 'Ctrl+Shift+7'), false, 't-a') +
+      '<button class="eb t-a" data-cmd="createLink" aria-label="링크 (Ctrl+K)" title="링크 (Ctrl+K)">' + svg('link', 16) + '</button>' +
+      '<button class="eb t-a" data-cmd="removeFormat" aria-label="서식 지우기 (Ctrl+\\)" title="서식 지우기 (Ctrl+\\)">' + svg('clear', 16) + '</button>' +
       '<span class="sep" aria-hidden="true"></span>' +
+      pop('more', '<span style="font-weight:700;letter-spacing:1px">⋯</span>', '더보기',
+        '<span class="lbl t-cm">문단 모양</span>' + item('class="pop-item t-cm" data-cmd="formatBlock" data-val="div"', '본문', '') + item('class="pop-item t-cm" data-cmd="formatBlock" data-val="h2"', '이야기 제목', 'Ctrl+Alt+1') + item('class="pop-item t-cm" data-cmd="formatBlock" data-val="h3"', '소제목', 'Ctrl+Alt+2') + item('class="pop-item t-cm" data-cmd="formatBlock" data-val="blockquote"', '인용', '') +
+        '<span class="lbl t-bm">편집</span>' + item('class="pop-item t-bm" data-cmd="undo"', '실행 취소', 'Ctrl+Z') + item('class="pop-item t-bm" data-cmd="redo"', '다시 실행', 'Ctrl+Y') +
+        '<span class="lbl">서식</span>' + item('data-cmd="strikeThrough"', '<s>취소선</s>', 'Ctrl+Shift+X') + item('data-cmd="createLink"', '링크', 'Ctrl+K') + item('data-cmd="removeFormat"', '서식 지우기', 'Ctrl+\\') +
+        '<span class="lbl">정렬·목록</span>' + item('data-cmd="justifyLeft"', '왼쪽 정렬', 'Ctrl+Shift+L') + item('data-cmd="justifyCenter"', '가운데 정렬', 'Ctrl+Shift+E') + item('data-cmd="justifyRight"', '오른쪽 정렬', 'Ctrl+Shift+R') +
+        item('data-cmd="insertUnorderedList"', '글머리 목록', 'Ctrl+Shift+8') + item('data-cmd="insertOrderedList"', '번호 목록', 'Ctrl+Shift+7'), false, 't-more') +
       pop('conti', '<span style="font-size:12px;font-weight:700">콘티</span>', '콘티 문법 넣기',
-        item('data-ins="story"', '<b>새 이야기 시작</b>', 'Ctrl+Alt+1') + item('data-ins="cut"', '컷 나누기', 'Ctrl+Enter') + item('data-ins="page"', '페이지 나누기', 'Ctrl+Shift+Enter') + item('data-ins="shot"', '[샷 크기]', 'Alt+5') +
+        item('data-ins="story"', '<b>새 이야기 시작</b>', 'Ctrl+Alt+1') + item('data-ins="cut"', '컷 나누기 (구분선)', 'Ctrl+Enter') + item('data-ins="page"', '페이지 나누기', 'Ctrl+Shift+Enter') + item('data-ins="shot"', '[샷 크기]', 'Alt+5') +
         item('data-ins="dialogue"', '<span style="color:var(--t-dia);font-weight:700">대사</span>', 'Alt+1') + item('data-ins="narration"', '<span style="color:var(--t-nar)">나레이션</span>', 'Alt+2') +
-        item('data-ins="sfx"', '<span style="color:var(--t-sfx);font-weight:700">효과음</span>', 'Alt+3') + item('data-ins="memo"', '메모', 'Alt+4')) +
+        item('data-ins="sfx"', '<span style="color:var(--t-sfx);font-weight:700">효과음</span>', 'Alt+3') + item('data-ins="memo"', '메모', 'Alt+4') + cutStyleHTML() +
+        '<button class="pop-item" data-act="blank-to-cut"><span>빈 줄로 나눈 컷 → 구분선으로 바꾸기</span></button>') +
       '<span style="flex:1"></span>' +
       fsStepper() +
       '<span class="pop-wrap"><button class="eb" data-act="toggle-pop" data-pop="vs" aria-expanded="false" title="보기 설정" aria-label="보기 설정"><span style="font-weight:700">가</span><span style="font-size:11px">가</span></button>' + viewSettingsPop('vs', false) + '</span>' +
@@ -1657,6 +1847,12 @@ function mountEditor() {
   ed.innerHTML = sanitizeHtml(ep.draftHtml || '');
   if (!ed.textContent.trim() && !ed.querySelector('hr,li')) ed.innerHTML = '';
   ed.classList.toggle('tw', !!vset().typewriter);
+  if (window.ResizeObserver) {
+    if (storyRO) storyRO.disconnect();
+    // 크기 변화 알림 안에서 바로 배치를 바꾸면 'ResizeObserver loop' 경고가 나므로 다음 화면 갱신 때 처리
+    storyRO = new ResizeObserver(function () { cancelAnimationFrame(storyRaf); storyRaf = requestAnimationFrame(layoutStoryOverlays); });
+    storyRO.observe(ed);
+  }
   tagBlocks();
   updateWriteSide();
   updateToolState();
@@ -1684,10 +1880,6 @@ function storyFirstLine(pages, info, si) {
 function setAttr(el, k, v) { if (v === null || v === undefined) { if (el.hasAttribute(k)) el.removeAttribute(k); } else if (el.getAttribute(k) !== String(v)) el.setAttribute(k, v); }
 function foldsOf(ep) { ui.fold = ui.fold || {}; ep = ep || curEp(); return ep ? (ui.fold[ep.id] = ui.fold[ep.id] || {}) : {}; }
 /* 이야기 접기: 이야기 제목 아래 블록을 숨김 (원고 내용은 그대로) */
-function peekable(text) {
-  var t = (text || '').replace(/ /g, ' ').trim();
-  return !!t && !/^#/.test(t) && !/^\[.+?\]$/.test(t) && !/^\/\//.test(t);
-}
 function blockOfCaret() {
   var ed = editorEl(), sel = window.getSelection();
   if (!ed || !sel.rangeCount || !ed.contains(sel.anchorNode)) return null;
@@ -1695,39 +1887,34 @@ function blockOfCaret() {
   while (b && b.parentNode !== ed) b = b.parentNode;
   return b && b.nodeType === 1 ? b : null;
 }
-/* 이야기 접기: 제목과 '첫 줄'(미리보기, 직접 고칠 수 있음)만 남기고 나머지를 숨김. 원고 내용은 그대로 */
+/* 이야기 접기: 제목 아래 본문을 숨김 (원고 내용은 그대로). 제목 밑에 '첫 줄 · N줄 접힘' 표시 */
 function applyFolds() {
   var ed = editorEl(); if (!ed) return;
-  var folds = foldsOf(), si = -1, hide = false, head = null, peek = null, count = 0;
-  var caretB = blockOfCaret();
+  var folds = foldsOf(), si = -1, hide = false, head = null, count = 0, first = '';
   function closeHead() {
     if (!head) return;
     setAttr(head, 'data-folded', hide ? '1' : null);
-    setAttr(head, 'data-nopeek', hide && !peek ? '1' : null);
-    if (peek) setAttr(peek, 'data-hidn', count);
+    setAttr(head, 'data-hidn', hide ? count : null);
   }
   for (var c = ed.firstElementChild; c; c = c.nextElementSibling) {
     if (c.getAttribute('data-k') === 'story') {
       closeHead();
-      si++; hide = !!folds[si]; head = c; peek = null; count = 0;
-      setAttr(c, 'data-hid', null); setAttr(c, 'data-peek', null); setAttr(c, 'data-hidn', null);
+      si++; hide = !!folds[si]; head = c; count = 0; first = '';
+      setAttr(c, 'data-hid', null);
       continue;
     }
-    // 지금 고치고 있는 미리보기 줄은 내용이 바뀌어도 그대로 미리보기로 둠
-    var isPeek = hide && !peek && (peekable(c.textContent) || (c === caretB && c.hasAttribute('data-peek')));
-    if (isPeek) { peek = c; setAttr(c, 'data-peek', '1'); setAttr(c, 'data-hid', null); continue; }
-    setAttr(c, 'data-peek', null); setAttr(c, 'data-hidn', null);
     setAttr(c, 'data-hid', hide ? '1' : null);
-    if (hide && (c.textContent || '').trim()) count++;
+    var ct = (c.textContent || '').replace(/ /g, ' ').trim();
+    if (hide && ct && c.tagName !== 'HR' && !CUT_LINE_RE.test(ct)) {
+      count++;
+    }
   }
   closeHead();
-  // 커서가 숨은 곳에 있으면 미리보기 줄(없으면 이야기 제목) 끝으로
+  var caretB = blockOfCaret();
   if (caretB && caretB.hasAttribute('data-hid')) {
-    var h = caretB, target = null;
-    while (h && !(h.nodeType === 1 && h.getAttribute('data-k') === 'story')) { if (h.nodeType === 1 && h.hasAttribute('data-peek')) target = h; h = h.previousSibling; }
-    target = target || h;
-    if (target) moveToBlockEnd(target);
+    var h = storyHeadOf(caretB); if (h) moveToBlockEnd(h);
   }
+  layoutStoryOverlays();
 }
 function storyHeadOf(block) {
   for (var h = block; h; h = h.previousElementSibling) if (h.getAttribute('data-k') === 'story') return h;
@@ -1739,19 +1926,15 @@ function caretAtEndOf(block) {
   var r = sel.getRangeAt(0).cloneRange(); r.setEnd(block, block.childNodes.length);
   return r.toString().replace(/ /g, ' ').trim() === '';
 }
-/* 접힌 이야기에서 Enter: 제목 끝이면 → 이야기를 펼치고 이야기 맨 끝에 새 줄. 미리보기 줄이면 → 펼친 뒤 평소처럼 */
+/* 접힌 이야기 제목 끝에서 Enter → 이야기를 펼치고 이야기 맨 끝에 새 줄 */
 function foldedEnter() {
-  var b = blockOfCaret(); if (!b) return false;
-  var head = b.getAttribute('data-k') === 'story' ? b : (b.hasAttribute('data-peek') ? storyHeadOf(b) : null);
-  if (!head || !head.hasAttribute('data-folded')) return false;
-  var si = storyIndexOf(head);
-  foldsOf()[si] = false;
-  if (b !== head) { applyFolds(); updateWriteSide(); return false; } // 미리보기 줄: 브라우저 기본 Enter
+  var head = blockOfCaret();
+  if (!head || head.getAttribute('data-k') !== 'story' || !head.hasAttribute('data-folded')) return false;
+  foldsOf()[storyIndexOf(head)] = false;
   if (!caretAtEndOf(head)) { applyFolds(); updateWriteSide(); return false; }
   applyFolds();
   var last = head;
   for (var c = head.nextElementSibling; c && c.getAttribute('data-k') !== 'story'; c = c.nextElementSibling) last = c;
-  // 이야기 끝이 이미 빈 줄이면 그 줄로, 아니면 새 줄을 만듦
   if (last !== head && !(last.textContent || '').trim() && /^(DIV|P)$/.test(last.tagName)) {
     var r = document.createRange(); r.setStart(last, 0); r.collapse(true);
     var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
@@ -1763,6 +1946,56 @@ function foldedEnter() {
   var nb = blockOfCaret(); if (nb && nb.scrollIntoView) nb.scrollIntoView({ block: 'center' });
   return true;
 }
+/* 이야기 제목 밑 '줄거리' 입력칸: 원고 바깥(겹쳐 놓은 층)에 있어서 원고에는 섞이지 않음 */
+var storyRO = null, storyRaf = 0;
+function setStyleIfChanged(el, k, v) { if (el.style[k] !== v) el.style[k] = v; }
+/* 이야기 본문의 첫 줄 (페이지 표시·샷만 있는 줄·메모·구분선은 건너뜀) */
+function storyFirstText(head) {
+  for (var c = head.nextElementSibling; c && c.getAttribute('data-k') !== 'story'; c = c.nextElementSibling) {
+    if (c.tagName === 'HR') continue;
+    var t = (c.textContent || '').replace(/\u00a0/g, ' ').trim();
+    if (!t || /^#/.test(t) || /^\[.+?\]$/.test(t) || /^\/\//.test(t) || CUT_LINE_RE.test(t)) continue;
+    return t.replace(/^\[.+?\]\s*/, '');
+  }
+  return '';
+}
+var SUM_PLACEHOLDER = '한 줄로 적어 두세요 · 원고에는 들어가지 않아요';
+function layoutStoryOverlays() {
+  var ed = editorEl(), page = document.getElementById('wpage'); if (!ed || !page) return;
+  var layer = document.getElementById('story-ov');
+  if (!layer) { layer = document.createElement('div'); layer.id = 'story-ov'; layer.className = 'story-ov'; page.appendChild(layer); }
+  var heads = $all('#draft > [data-k="story"]');
+  while (layer.children.length > heads.length) layer.lastChild.remove();
+  if (!heads.length) return;
+  var pr = page.getBoundingClientRect();
+  heads.forEach(function (h, i) {
+    var box = layer.children[i];
+    if (!box) {
+      box = document.createElement('div'); box.className = 'sum-box';
+      box.innerHTML = '<label class="sum-row"><span class="sum-lbl">줄거리</span><input class="sum-in" type="text" maxlength="200" placeholder="한 줄로 적어 두세요 · 원고에는 들어가지 않아요"></label><div class="sum-fold" hidden></div>';
+      layer.appendChild(box);
+    }
+    box.dataset.si = i;
+    var inp = box.querySelector('.sum-in'), fold = box.querySelector('.sum-fold');
+    var sum = h.getAttribute('data-summary') || '';
+    if (document.activeElement !== inp && inp.value !== sum) inp.value = sum;
+    var ph = sum ? SUM_PLACEHOLDER : (clip(storyFirstText(h), 80) || SUM_PLACEHOLDER);
+    if (inp.placeholder !== ph) inp.placeholder = ph;
+    box.classList.toggle('auto', !sum && ph !== SUM_PLACEHOLDER);
+    inp.setAttribute('aria-label', (h.textContent || '이야기') + ' 줄거리');
+    var folded = h.hasAttribute('data-folded');
+    fold.hidden = !folded;
+    if (folded) {
+      var n = +(h.getAttribute('data-hidn') || 0);
+      fold.textContent = n ? n + '줄 접힘' : '아직 내용이 없어요 · 제목 끝에서 Enter를 누르면 이어서 쓸 수 있어요';
+    }
+    var r = h.getBoundingClientRect();
+    setStyleIfChanged(box, 'top', Math.round(r.bottom - pr.top + 4) + 'px');
+    setStyleIfChanged(box, 'left', Math.round(r.left - pr.left) + 'px');
+    setStyleIfChanged(box, 'width', Math.round(r.width) + 'px');
+  });
+}
+function storyHeadByIndex(si) { return $all('#draft > [data-k="story"]')[si] || null; }
 function toggleFold(si, ep) {
   var f = foldsOf(ep); f[si] = !f[si];
   if (ui.view === 'write') { applyFolds(); updateWriteSide(); } else renderMain();
@@ -1777,7 +2010,7 @@ function setAllFolds(v, ep) {
 function syncDraft() {
   var ed = editorEl(), ep = curEp(); if (!ed || !ep) return;
   var clone = ed.cloneNode(true);
-  var TMP = ['data-k', 'data-hid', 'data-folded', 'data-hidn', 'data-first', 'data-peek', 'data-nopeek'];
+  var TMP = ['data-k', 'data-hid', 'data-folded', 'data-hidn', 'data-first', 'data-peek', 'data-nopeek', 'data-cutmode'];
   $all('[' + TMP.join('],[') + ']', clone).forEach(function (n) { TMP.forEach(function (a) { n.removeAttribute(a); }); });
   var before = (ep.draft || '').replace(/\s/g, '').length;
   ep.draftHtml = clone.innerHTML;
@@ -1786,15 +2019,20 @@ function syncDraft() {
   if (delta > 0 && delta < 5000) { S.stats = S.stats || {}; var dk = dayKey(Date.now()); S.stats[dk] = (S.stats[dk] || 0) + delta; }
 }
 /* 원고 블록 → 이야기·페이지·컷 위치 (목차 이동용) */
+function editorUsesCutLines(ed) {
+  if (ed.querySelector(':scope > hr')) return true;
+  for (var c = ed.firstElementChild; c; c = c.nextElementSibling) if (CUT_LINE_RE.test((c.textContent || '').trim())) return true;
+  return false;
+}
 function cutAnchors() {
   var ed = editorEl(), out = []; if (!ed) return out;
-  var si = -1, pn = 0, ci = -1, inCut = false, pageOpen = false;
+  var si = -1, pn = 0, ci = -1, inCut = false, pageOpen = false, dividers = editorUsesCutLines(ed);
   for (var c = ed.firstChild; c; c = c.nextSibling) {
     var t = (c.textContent || '').replace(/ /g, ' ').trim();
-    if (c.nodeType === 1 && c.tagName === 'HR') continue;
+    if ((c.nodeType === 1 && c.tagName === 'HR') || CUT_LINE_RE.test(t)) { inCut = false; continue; }
     var isStory = (c.nodeType === 1 && c.tagName === 'H2') || /^##/.test(t);
-    if (isStory) { si++; pn = 0; ci = -1; inCut = false; pageOpen = false; out.push({ type: 'story', si: si, el: c, text: t.replace(/^##\s*/, '') || '제목 없는 이야기' }); continue; }
-    if (!t) { inCut = false; continue; }
+    if (isStory) { si++; pn = 0; ci = -1; inCut = false; pageOpen = false; out.push({ type: 'story', si: si, el: c, text: t.replace(/^##\s*/, '') || '제목 없는 이야기', summary: c.nodeType === 1 ? (c.getAttribute('data-summary') || '') : '' }); continue; }
+    if (!t) { if (!dividers) inCut = false; continue; }
     if (/^#/.test(t)) { pn++; ci = -1; inCut = false; pageOpen = true; out.push({ type: 'page', si: si, pn: pn, el: c, text: t.replace(/^#+\s*/, '') || pn + '페이지' }); continue; }
     if (!pageOpen) { pn++; ci = -1; pageOpen = true; out.push({ type: 'page', si: si, pn: pn, el: c, text: pn + '페이지' }); }
     if (/^\[.+?\]/.test(t)) inCut = false;
@@ -1807,6 +2045,27 @@ function cutAnchors() {
     }
   }
   return out;
+}
+/* 빈 줄로 나눠 둔 컷을 구분선으로 바꾸기 (컷 사이의 빈 줄 → 선) */
+function convertBlanksToCutLines() {
+  var ed = editorEl(); if (!ed) return 0;
+  var kids = Array.prototype.slice.call(ed.childNodes), n = 0;
+  function txt(x) { return (x.textContent || '').replace(/ /g, ' ').trim(); }
+  function isEmpty(x) { return x.nodeType === 1 && x.tagName !== 'HR' && !txt(x) && !x.querySelector('hr'); }
+  function isHeadish(x) { var t = txt(x); return x.tagName === 'H2' || x.tagName === 'HR' || /^#/.test(t) || CUT_LINE_RE.test(t); }
+  for (var i = 0; i < kids.length; i++) {
+    if (!isEmpty(kids[i])) continue;
+    var j = i; while (j + 1 < kids.length && isEmpty(kids[j + 1])) j++;
+    var prev = kids[i - 1], next = kids[j + 1];
+    if (prev && next && prev.nodeType === 1 && next.nodeType === 1 && !isHeadish(prev) && !isHeadish(next)) {
+      var hr = document.createElement('hr');
+      ed.replaceChild(hr, kids[i]);
+      for (var k = i + 1; k <= j; k++) kids[k].remove();
+      n++;
+    }
+    i = j;
+  }
+  return n;
 }
 function updateWriteSide() {
   var ep = curEp(); if (!ep) return;
@@ -1848,7 +2107,8 @@ function updateWriteSide() {
       if (x.type === 'story') {
         var cnt = a.filter(function (y) { return y.si === x.si && y.type === 'cut'; }).length;
         oh += '<div class="ol-story"><button class="icon-btn" data-act="fold" data-si="' + x.si + '" aria-expanded="' + !folds[x.si] + '" aria-label="' + esc(x.text) + ' ' + (folds[x.si] ? '펴기' : '접기') + '">' + svg(folds[x.si] ? 'chevR' : 'chevD', 14) + '</button>' +
-          '<button class="ol-story-t" data-act="goto-anchor" data-i="' + i + '"><span>' + esc(x.text) + '</span><span class="small muted">' + cnt + '컷</span></button></div>';
+          '<button class="ol-story-t" data-act="goto-anchor" data-i="' + i + '"><span>' + esc(x.text) + '</span><span class="small muted">' + cnt + '컷</span></button></div>' +
+          (x.summary ? '<span class="ol-sum" title="' + esc(x.summary) + '">' + esc(x.summary) + '</span>' : '');
       } else if (x.type === 'page') oh += '<button class="ol-page' + (x.si >= 0 ? ' in-story' : '') + '" data-act="goto-anchor" data-i="' + i + '">' + esc(x.text) + '</button>';
       else oh += '<button class="ol-cut' + (x.si >= 0 ? ' in-story' : '') + '" data-act="goto-anchor" data-i="' + i + '"><span class="mono">' + x.pn + '-' + (x.ci + 1) + '</span><span>' + (x.shot ? '<b>' + esc(x.shot) + '</b> · ' : '') + esc(x.text) + '</span></button>';
     });
@@ -1946,6 +2206,7 @@ async function runCmd(cmd, val) {
   afterEdit();
 }
 function afterEdit() {
+  closePops();
   var sel = window.getSelection(), ed = editorEl();
   if (ed && sel.rangeCount && ed.contains(sel.anchorNode)) savedRange = sel.getRangeAt(0).cloneRange();
   tagBlocks(); syncDraft(); updateWriteSide(); updateToolState(); changed(false, 'draft:' + (curEp() || {}).id); }
@@ -1994,7 +2255,14 @@ function insertSyntax(kind) {
       document.execCommand('insertParagraph');
       break;
     case 'cut':
-      newLineIfNeeded(); document.execCommand('insertParagraph');
+      var edc = editorEl();
+      if (!editorUsesCutLines(edc)) {
+        // 예전처럼 빈 줄로 컷을 나눠 둔 글이면, 먼저 그 빈 줄들을 구분선으로 바꿔서 컷이 섞이지 않게 함
+        var conv = convertBlanksToCutLines();
+        if (conv) { tagBlocks(); toast('빈 줄로 나눈 컷 ' + conv + '곳을 구분선으로 바꿨어요'); block = currentBlock(); blockText = block ? (block.textContent || '') : ''; }
+      }
+      if (block && block.nodeType === 1 && blockText.trim()) moveToBlockEnd(block);
+      document.execCommand('insertHTML', false, '<hr><div><br></div>');
       break;
     case 'shot':
       if (block && blockText.trim() && !/^\s*\[/.test(blockText)) { newLineIfNeeded(); }
@@ -2124,7 +2392,7 @@ function renderBackup() {
   h += '<div style="display:flex;flex-wrap:wrap;gap:14px">' +
     '<div class="card panel" style="flex:1 1 260px"><h2>파일 백업</h2><p class="small" style="margin:0;color:var(--ink2)">모든 작품, 메모, 버전 기록을 파일 하나로 저장해요. 다른 컴퓨터에서 이 파일을 열고 불러오면 그대로 이어서 작업할 수 있어요.</p>' +
       '<p class="small muted" style="margin:0">마지막 파일 백업: ' + (S.settings.lastFileBackup ? dayLabel(S.settings.lastFileBackup) + ' ' + hm(S.settings.lastFileBackup) : '없음') + '</p>' +
-      '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-dark" data-act="file-backup">전체 백업 저장</button><button class="btn" data-act="open-file">백업 파일 불러오기</button></div></div>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-dark" data-act="file-backup">전체 백업 (.json)</button><button class="btn" data-act="backup-txt">전체 원고 (.txt)</button><button class="btn" data-act="backup-pdf">전체 원고 (.pdf)</button><button class="btn" data-act="open-file">백업 파일 불러오기</button></div></div>' +
     '<div class="card panel" style="flex:1 1 260px"><h2>백업 알림</h2>' +
       '<label class="switch-row"><span>파일 백업을 하루 넘게 안 하면 알려주기</span><input type="checkbox" data-setting="remind"' + (S.settings.remind ? ' checked' : '') + '></label>' +
       '<label class="switch-row"><span>회차 상태를 ‘완료’로 바꾸면 버전 남기기</span><input type="checkbox" data-setting="versionOnDone"' + (S.settings.versionOnDone ? ' checked' : '') + '></label>' +
@@ -2222,6 +2490,14 @@ var actions = {
     r.collapse(true); ed.focus(); var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
     if (a.el.nodeType === 1) { a.el.classList.add('flash'); setTimeout(function () { a.el.classList.remove('flash'); }, 1200); }
   },
+  'cut-color': function (el) { setVS('cutColor', el.dataset.c); $all('[data-act="cut-color"]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.c === el.dataset.c ? 'true' : 'false'); }); },
+  'cut-shape': function (el) { setVS('cutStyle', el.dataset.s); $all('[data-act="cut-shape"]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.s === el.dataset.s ? 'true' : 'false'); }); },
+  'blank-to-cut': function () {
+    if (!editorEl()) return;
+    var n = convertBlanksToCutLines(); closePops();
+    if (!n) { toast('바꿀 빈 줄이 없어요'); return; }
+    tagBlocks(); syncDraft(); updateWriteSide(); changed(false); toast('컷 사이 빈 줄 ' + n + '곳을 구분선으로 바꿨어요');
+  },
   'fs-step': function (el) { setVS('fs', vset().fs + (+el.dataset.d)); },
   'fold': function (el) { toggleFold(+el.dataset.si, el.dataset.ep ? epById(el.dataset.ep) : null); },
   'fold-all': function (el) { setAllFolds(el.dataset.v === '1', el.dataset.ep ? epById(el.dataset.ep) : null); },
@@ -2249,7 +2525,9 @@ var actions = {
     var open = pop.hidden; closePops(); pop.hidden = !open; el.setAttribute('aria-expanded', open ? 'true' : 'false');
   },
   'open-file': openFile,
-  'file-backup': fileBackup,
+  'file-backup': function () { closePops(); fileBackup(); },
+  'backup-txt': backupTxt,
+  'backup-pdf': printAll,
   'export-txt': exportTxt,
   'print': printEp,
   'hide-banner': function () { ui.bannerHidden = true; renderBanner(); },
@@ -2446,8 +2724,15 @@ document.addEventListener('input', function (e) {
     t._tm = setTimeout(function () { renderMain(); }, 200);
     return;
   }
+  if (t.classList && t.classList.contains('sum-in')) {
+    var bx = t.closest('.sum-box'), hd = bx && storyHeadByIndex(+bx.dataset.si);
+    if (hd) { setAttr(hd, 'data-summary', t.value.trim() ? t.value : null); syncDraft(); updateWriteSide(); changed(false, 'sum:' + bx.dataset.si); layoutStoryOverlays(); }
+    return;
+  }
+  if (t.dataset.storySumPi !== undefined) { var es2 = curEp(), pg2 = es2.pages[+t.dataset.storySumPi]; if (t.value.trim()) pg2.summary = t.value; else delete pg2.summary; changed(false, 'csum:' + es2.id + ':' + t.dataset.storySumPi); return; }
   if (t.id === 'draft') {
     if (!curEp()) return;
+    layoutStoryOverlays();
     if (vset().smartPunct && e.inputType === 'insertText' && e.data === '.') smartEllipsis();
     syncDraft(); caretSoon();
     clearTimeout(t._tm); t._tm = setTimeout(function () { tagBlocks(); updateWriteSide(); }, 250);
@@ -2571,6 +2856,15 @@ document.addEventListener('keydown', function (e) {
     if ((k === 'z' && e.shiftKey) || k === 'y') { e.preventDefault(); appRedo(); return; }
   }
 });
+document.addEventListener('keydown', function (e) {
+  var t = e.target;
+  if (!t.classList || !t.classList.contains('sum-in') || e.isComposing || e.keyCode === 229) return;
+  if (e.key === 'Enter' || e.key === 'Escape') {
+    e.preventDefault(); e.stopPropagation();
+    var bx = t.closest('.sum-box'), hd = bx && storyHeadByIndex(+bx.dataset.si);
+    if (hd) { editorEl().focus(); moveToBlockEnd(hd); }
+  }
+}, true);
 document.addEventListener('mousedown', function (e) {
   var sh = e.target.closest && e.target.closest('#draft > [data-k="story"]');
   if (sh && e.clientX < sh.getBoundingClientRect().left) {
